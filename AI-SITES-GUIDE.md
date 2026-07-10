@@ -202,7 +202,7 @@ PO WKLEJENIU (automatycznie zanonimizowane):
 
 ❌ Gdy są problemy:
 - "Błąd anonimizacji. Wklejam oryginalny tekst."
-- Sprawdź czy backend działa: http://localhost:4222
+- Sprawdź czy backend działa: http://localhost:6677
 ```
 
 ---
@@ -214,7 +214,7 @@ PO WKLEJENIU (automatycznie zanonimizowane):
 **Rozwiązanie:**
 1. Sprawdź czy backend działa:
    ```bash
-   curl http://localhost:4222/api/health
+   curl http://localhost:6677/api/health
    ```
 2. Jeśli nie działa - uruchom backend:
    ```bash
@@ -307,7 +307,7 @@ PO WKLEJENIU (automatycznie zanonimizowane):
 
 **Backend Health Check:**
 ```bash
-curl http://localhost:4222/api/health
+curl http://localhost:6677/api/health
 ```
 
 Powinieneś zobaczyć:

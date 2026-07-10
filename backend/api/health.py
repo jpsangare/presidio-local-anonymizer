@@ -19,5 +19,5 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'service': 'presidio-browser-anonymizer',
-        'version': '1.0.0'
+        'version': '1.4.0'
     }), 200

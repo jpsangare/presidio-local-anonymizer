@@ -33,7 +33,7 @@ python -m spacy download pl_core_news_md
 python app.py
 ```
 
-Backend will start on `http://localhost:4222`
+Backend will start on `http://localhost:6677`
 
 ### 2. Install Chrome Extension
 
@@ -55,7 +55,7 @@ Backend will start on `http://localhost:4222`
 
 1. Click extension icon
 2. Click "🔧 Konfiguracja Wtyczki"
-3. Enter backend URL (e.g., `http://localhost:4222`)
+3. Enter backend URL (e.g., `http://localhost:6677`)
 4. Click "🔍 Testuj Połączenie" to verify
 5. Click "💾 Zapisz" to save
 
@@ -175,7 +175,7 @@ No build step required - extension works directly from source.
 
 ### "Status: Offline"
 
-- Verify backend is running: `curl http://localhost:4222/api/health`
+- Verify backend is running: `curl http://localhost:6677/api/health`
 - Check backend URL in extension options
 - Check browser console for errors
 

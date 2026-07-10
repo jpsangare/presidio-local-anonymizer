@@ -1,7 +1,7 @@
 // Configuration management for Presidio Browser Anonymizer
 
 const DEFAULT_CONFIG = {
-  backendUrl: 'http://localhost:4222',
+  backendUrl: 'http://localhost:6677',
   autoRetry: true,
   retryAttempts: 3,
   timeout: 30000

@@ -30,9 +30,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function anonymizeText(text) {
   try {
     const backendUrl = await getBackendUrl();
-    console.log('[Presidio Background] Backend URL:', backendUrl);
     console.log('[Presidio Background] Sending request to:', `${backendUrl}/api/anonymize`);
-    console.log('[Presidio Background] Text to anonymize:', text.substring(0, 50));
+    console.log('[Presidio Background] Text length:', text.length);
 
     const response = await fetch(`${backendUrl}/api/anonymize`, {
       method: 'POST',
@@ -47,7 +46,7 @@ async function anonymizeText(text) {
     }
 
     const data = await response.json();
-    console.log('[Presidio Background] Anonymization successful:', data.anonymized_text?.substring(0, 50));
+    console.log('[Presidio Background] Anonymization successful, entities:', data.stats?.total_entities);
     return data;
   } catch (error) {
     console.error('[Presidio Background] Anonymization error:', error);

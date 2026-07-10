@@ -31,7 +31,7 @@ async function loadBackendUrl() {
     }
   } catch (error) {
     console.error('Failed to load backend URL:', error);
-    currentBackendUrl = 'http://localhost:4222';
+    currentBackendUrl = 'http://localhost:6677';
     updateButtonLinks();
   }
 }

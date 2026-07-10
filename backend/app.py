@@ -82,24 +82,33 @@ def internal_error(error):
     }), 500
 
 def main():
-    """Start the Flask server"""
+    """Start the Flask server (dual-stack loopback: IPv4 + IPv6)"""
+    import threading
+    from werkzeug.serving import make_server
 
-    # Display startup information
+    port = int(os.environ.get('PRESIDIO_PORT', '6677'))
+
     logger.info("=" * 60)
     logger.info("Presidio Browser Anonymizer - Backend Service")
     logger.info("=" * 60)
-    logger.info("🌐 Backend URL: http://127.0.0.1:4222")
-    logger.info("🔧 Settings: http://127.0.0.1:4222")
-    logger.info("📊 Dashboard: http://127.0.0.1:4222/dashboard")
+    logger.info(f"🌐 Backend URL: http://localhost:{port} (IPv4 + IPv6 loopback)")
+    logger.info(f"🔧 Settings: http://localhost:{port}")
+    logger.info(f"📊 Dashboard: http://localhost:{port}/dashboard")
     logger.info("=" * 60)
 
-    # Start server
-    app.run(
-        host='127.0.0.1',  # Localhost only for security
-        port=4222,
-        debug=False,  # Disable in production
-        threaded=True  # Handle multiple requests
-    )
+    s4 = make_server('127.0.0.1', port, app, threaded=True)
+    try:
+        s6 = make_server('::1', port, app, threaded=True)
+    except OSError:
+        # System bez IPv6 loopback - działamy tylko na IPv4
+        s6 = None
+        logger.warning("IPv6 loopback niedostępny, backend działa tylko na 127.0.0.1")
+
+    if s6 is not None:
+        threading.Thread(target=s4.serve_forever, daemon=True).start()
+        s6.serve_forever()
+    else:
+        s4.serve_forever()
 
 if __name__ == '__main__':
     main()

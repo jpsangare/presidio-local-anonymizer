@@ -21,10 +21,10 @@
 ### 3. Sprawdź czy backend działa
 ```bash
 # Test 1: Health check
-curl http://localhost:4222/api/health
+curl http://localhost:6677/api/health
 
 # Test 2: Anonimizacja
-curl -X POST http://localhost:4222/api/anonymize \
+curl -X POST http://localhost:6677/api/anonymize \
   -H "Content-Type: application/json" \
   -d '{"text":"Jan Kowalski, email: jan@example.com, tel: 123456789"}'
 ```
@@ -126,7 +126,7 @@ Rozszerzenie powinno działać na WSZYSTKICH stronach (<all_urls>), w tym:
 
 1. **Backend nie działa:**
    ```bash
-   curl http://localhost:4222/api/health
+   curl http://localhost:6677/api/health
    # Jeśli nie działa: uruchom backend
    cd /Users/gaca/presidio-local-anonymizer/backend
    source .venv/bin/activate
@@ -136,7 +136,7 @@ Rozszerzenie powinno działać na WSZYSTKICH stronach (<all_urls>), w tym:
 2. **Błędny URL backendu:**
    - Otwórz popup rozszerzenia
    - Kliknij "Ustawienia"
-   - Sprawdź czy URL to: `http://localhost:4222`
+   - Sprawdź czy URL to: `http://localhost:6677`
 
 3. **CORS błąd:**
    - Sprawdź background service worker console
@@ -205,8 +205,8 @@ chrome.storage.local.get(['extensionEnabled'], (result) => {
 
 **Background Service Worker:**
 ```
-[Presidio Background] Backend URL: http://localhost:4222
-[Presidio Background] Sending request to: http://localhost:4222/api/anonymize
+[Presidio Background] Backend URL: http://localhost:6677
+[Presidio Background] Sending request to: http://localhost:6677/api/anonymize
 [Presidio Background] Response status: 200
 [Presidio Background] Anonymization successful: [OSOBA] tel [REGON]
 ```
@@ -235,7 +235,7 @@ chrome.storage.local.get(['extensionEnabled'], (result) => {
 
 **CORS error:**
 ```
-Access to fetch at 'http://localhost:4222/api/anonymize' from origin 'chrome-extension://...' has been blocked by CORS policy
+Access to fetch at 'http://localhost:6677/api/anonymize' from origin 'chrome-extension://...' has been blocked by CORS policy
 ```
 → Sprawdź czy backend ma prawidłową konfigurację CORS
 

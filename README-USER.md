@@ -43,7 +43,7 @@
 - Przycisk "Wyczyść Logi"
 
 **Jak zobaczyć:**
-1. Otwórz http://localhost:4222/dashboard
+1. Otwórz http://localhost:6677/dashboard
 2. Kliknij "Logi" w menu (ikona dokumentu)
 3. Zobacz historię anonimizacji
 
@@ -131,7 +131,7 @@ open test-extension.html
 ### Krok 7: Sprawdź Logi w Dashboardzie
 
 ```
-1. Otwórz http://localhost:4222/dashboard
+1. Otwórz http://localhost:6677/dashboard
 2. Kliknij "Logi" w menu (4. pozycja, ikona dokumentu)
 3. Sprawdź czy widzisz historię anonimizacji
 4. Zobacz tekst oryginalny → zanonimizowany
@@ -209,7 +209,7 @@ open /Users/gaca/presidio-local-anonymizer/test-extension.html
 
 **1. Sprawdź backend:**
 ```bash
-curl http://localhost:4222/api/health
+curl http://localhost:6677/api/health
 ```
 
 Jeśli nie działa:
@@ -259,7 +259,7 @@ python app.py
 5. ✅ Test na ChatGPT (Ctrl+V)
 6. ✅ Test na Claude (Ctrl+V)
 7. ✅ Test na Perplexity (Ctrl+V)
-8. ✅ Sprawdź logi (http://localhost:4222/dashboard → Logi)
+8. ✅ Sprawdź logi (http://localhost:6677/dashboard → Logi)
 
 ---
 
@@ -302,7 +302,7 @@ Przeczytaj:
 1. **AI-SITES-GUIDE.md** - jak używać na różnych stronach AI
 2. **TESTING.md** - jak testować i debugować
 3. Sprawdź logi w DevTools (F12)
-4. Sprawdź backend health: `curl http://localhost:4222/api/health`
+4. Sprawdź backend health: `curl http://localhost:6677/api/health`
 
 ---
 

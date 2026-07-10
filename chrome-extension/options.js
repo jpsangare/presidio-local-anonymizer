@@ -177,10 +177,10 @@ async function saveConfig() {
 
 // Reset to defaults
 async function resetConfig() {
-  backendUrlInput.value = 'http://localhost:4222';
+  backendUrlInput.value = 'http://localhost:6677';
   
   try {
-    await chrome.storage.sync.set({ backendUrl: 'http://localhost:4222' });
+    await chrome.storage.sync.set({ backendUrl: 'http://localhost:6677' });
     showStatus('✅ Przywrócono ustawienia domyślne', 'success');
   } catch (error) {
     showStatus('❌ Błąd resetowania: ' + error.message, 'error');

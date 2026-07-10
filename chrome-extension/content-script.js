@@ -90,7 +90,7 @@ function showNotification(message, type = 'info') {
   setTimeout(() => {
     toast.style.opacity = '0';
     setTimeout(() => {
-      document.body.removeChild(toast);
+      toast.remove();
     }, 300);
   }, 3000);
 }
@@ -286,7 +286,7 @@ async function anonymizeBeforeSend(textarea) {
   }
 
   try {
-    console.log('[Presidio] Starting anonymization for text:', text.substring(0, 50) + '...');
+    console.log('[Presidio] Starting anonymization, text length:', text.length);
     showNotification('Anonimizowanie przed wysłaniem...', 'info');
 
     const response = await chrome.runtime.sendMessage({
@@ -352,6 +352,10 @@ document.addEventListener('submit', async (e) => {
   }
 }, true);
 
+// Buttons whose next click should pass through untouched (programmatic re-click
+// after anonymization) - without this guard the handler re-triggers itself forever
+const passthroughClicks = new WeakSet();
+
 // Monitor button clicks (ChatGPT, Claude, etc.)
 document.addEventListener('click', async (e) => {
   // Skip if extension is disabled
@@ -362,6 +366,11 @@ document.addEventListener('click', async (e) => {
   const button = e.target.closest('button');
 
   if (!button) return;
+
+  if (passthroughClicks.has(button)) {
+    passthroughClicks.delete(button);
+    return;
+  }
 
   // Check if this is a "Send" button (ChatGPT, Claude, etc.)
   const buttonText = button.textContent.toLowerCase();
@@ -398,51 +407,13 @@ document.addEventListener('click', async (e) => {
     // Anonymize content
     await anonymizeBeforeSend(textarea);
 
-    // Click button after anonymization
+    // Click button after anonymization (passthrough - see guard above)
+    passthroughClicks.add(button);
     setTimeout(() => {
       button.click();
     }, 100);
   }
 }, true);
 
-// Monitor Enter key press (common way to send messages)
-document.addEventListener('keydown', async (e) => {
-  // Skip if extension is disabled
-  if (!extensionEnabled) {
-    return;
-  }
-
-  // Enter without Shift (send message in most chat apps)
-  // NOTE: This is disabled because it's unreliable for ChatGPT/Claude/Perplexity
-  // Use PASTE (Ctrl+V) or BUTTON CLICK instead - they work much better!
-  //
-  // if (e.key === 'Enter' && !e.shiftKey) {
-  //   console.log('[Presidio] Enter key pressed (no Shift)');
-  //   const target = e.target;
-  //
-  //   // Only process if it's a textarea or contenteditable
-  //   if (target.tagName === 'TEXTAREA' || target.isContentEditable || target.contentEditable === 'true') {
-  //     console.log('[Presidio] Enter pressed in input field, anonymizing before send...');
-  //
-  //     // Prevent default send
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //
-  //     // Anonymize content
-  //     await anonymizeBeforeSend(target);
-  //
-  //     // Trigger Enter again after anonymization
-  //     setTimeout(() => {
-  //       const enterEvent = new KeyboardEvent('keydown', {
-  //         key: 'Enter',
-  //         code: 'Enter',
-  //         keyCode: 13,
-  //         which: 13,
-  //         bubbles: true,
-  //         cancelable: true
-  //       });
-  //       target.dispatchEvent(enterEvent);
-  //     }, 100);
-  //   }
-  // }
-}, true);
+// NOTE: Enter-to-send interception was removed - unreliable on ChatGPT/Claude/Perplexity.
+// PASTE (Ctrl+V) and send-button interception cover those flows.
