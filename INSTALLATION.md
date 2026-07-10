@@ -15,18 +15,17 @@ Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
 
 ### Windows
 
-1. **Pobierz projekt:**
+> 🪟 **Wersja dla laika (bez gita i terminala):** [WINDOWS.md](WINDOWS.md)
+
+1. **Pobierz projekt** (git albo zielony przycisk `Code` → `Download ZIP` + wypakuj):
    ```cmd
    git clone https://github.com/gacabartosz/presidio-local-anonymizer
    cd presidio-local-anonymizer
    ```
 
-2. **Uruchom instalator:**
-   ```cmd
-   install-windows.bat
-   ```
+2. **Kliknij 2x `Uruchom-Windows.bat`** — pierwszy raz instaluje wszystko (łącznie z Pythonem, jeśli go brak), potem startuje backend i otwiera dashboard
 
-3. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:4222`
+3. **Gotowe!** Backend działa na `http://localhost:6677`. Autostart przy logowaniu: kliknij 2x `Autostart-Windows.bat`
 
 ### macOS
 
@@ -41,7 +40,7 @@ Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
    ./install-mac.sh
    ```
 
-3. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:4222`
+3. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:6677`
 
 ### Linux
 
@@ -68,7 +67,7 @@ Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
    ./install-linux.sh
    ```
 
-4. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:4222`
+4. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:6677`
 
 ---
 
@@ -94,7 +93,7 @@ Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
 
 1. Kliknij **ikonę wtyczki** w pasku narzędzi Chrome
 2. Kliknij **"🔧 Konfiguracja Wtyczki"**
-3. Wpisz URL: `http://localhost:4222`
+3. Wpisz URL: `http://localhost:6677`
 4. Kliknij **"🔍 Testuj Połączenie"**
 5. Jeśli widzisz "✅ Połączenie udane!" → kliknij **"💾 Zapisz"**
 
@@ -180,16 +179,16 @@ Mieszkam w [LOKALIZACJA] przy ul. [LOKALIZACJA].
 
 ### Backend nie uruchamia się
 
-**Problem:** Błąd "Port 4222 is already in use"
+**Problem:** Błąd "Port 6677 is already in use"
 
 **Rozwiązanie:**
 ```bash
 # Windows
-netstat -ano | findstr :4222
+netstat -ano | findstr :6677
 taskkill /PID <numer_PID> /F
 
 # macOS/Linux
-lsof -i :4222
+lsof -i :6677
 kill -9 <PID>
 ```
 
@@ -197,13 +196,13 @@ kill -9 <PID>
 
 1. **Sprawdź czy backend działa:**
    ```bash
-   curl http://localhost:4222/api/health
+   curl http://localhost:6677/api/health
    ```
    Powinno zwrócić: `{"status":"healthy"}`
 
 2. **Sprawdź URL w konfiguracji wtyczki:**
    - Otwórz opcje wtyczki
-   - Upewnij się że URL to `http://localhost:4222`
+   - Upewnij się że URL to `http://localhost:6677`
    - Kliknij "Testuj Połączenie"
 
 3. **Restart backendu:**
@@ -290,7 +289,7 @@ pip install -r requirements.txt --upgrade
 2. Create Basic Task → "Presidio Backend"
 3. Trigger: "When I log on"
 4. Action: "Start a program"
-5. Program: `C:\path\to\presidio-local-anonymizer\install-windows.bat`
+5. Program: `C:\path\to\presidio-local-anonymizer\Uruchom-Windows.bat`
 
 ### macOS (launchd)
 

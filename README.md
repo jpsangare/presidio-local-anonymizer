@@ -17,7 +17,7 @@
   <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python"></a>
   <img src="https://img.shields.io/badge/chrome-extension-brightgreen.svg" alt="Chrome Extension">
-  <img src="https://img.shields.io/badge/version-1.3.2-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/manifest-v3-brightgreen.svg" alt="Manifest V3">
 </p>
 
@@ -33,7 +33,13 @@
 
 ## ✨ Features
 
-### 🆕 New in v1.3.2:
+### 🆕 New in v1.4.0:
+- 🪟 **Windows one-click** - `Uruchom-Windows.bat`: installs everything (incl. Python) and starts the backend with a double-click; `Autostart-Windows.bat` for start-at-login. Guide for non-technical users: [WINDOWS.md](WINDOWS.md)
+- 🔌 **New default port 6677** - unified across backend, extension and docs (configurable via `PRESIDIO_PORT`)
+- 🐛 **Send-button fix** - fixed an infinite anonymize/click loop when intercepting send buttons
+- 🔒 **No PII in console** - extension logs no longer print clipboard/text fragments
+
+### v1.3.x:
 - 🔘 **Toggle ON/OFF** - Enable/disable auto-anonymization with one click in extension popup
 - 📊 **Dashboard Logs** - View history: original → anonymized text with timestamps
 - 🚀 **Chrome Web Store Ready** - Manifest V3 compliant, ready for publication
@@ -59,11 +65,19 @@
 
 ### Option 1: Automatic Installation (Recommended)
 
-#### Windows
+#### Windows (no technical knowledge needed!)
+
+> 🪟 **Nie znasz się na komputerach? Zobacz [WINDOWS.md](WINDOWS.md)** — instalacja w 3 krokach, bez gita i terminala.
+
+1. **Download ZIP:** green `Code` button → `Download ZIP` → extract
+2. **Double-click `Uruchom-Windows.bat`** — first run installs everything (auto-installs Python if missing), then starts the backend and opens the dashboard
+3. Optional: double-click `Autostart-Windows.bat` to start the backend automatically at login
+
+Or via git:
 ```cmd
 git clone https://github.com/gacabartosz/presidio-local-anonymizer
 cd presidio-local-anonymizer
-install-windows.bat
+Uruchom-Windows.bat
 ```
 
 #### macOS
@@ -97,7 +111,7 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 python app.py
 ```
 
-Backend runs at: **http://localhost:4222**
+Backend runs at: **http://localhost:6677**
 
 ---
 
@@ -134,7 +148,7 @@ Backend runs at: **http://localhost:4222**
 
 ## 📊 Web Dashboard
 
-Open in browser: **http://localhost:4222/dashboard**
+Open in browser: **http://localhost:6677/dashboard**
 
 <p align="center">
   <img src="https://via.placeholder.com/800x400/2c3e50/ecf0f1?text=Dashboard+Screenshot" alt="Dashboard"/>
@@ -191,7 +205,7 @@ Dashboard features:
 
 **Total: 28 PII entity types!**
 
-Configure in Dashboard: http://localhost:4222/dashboard → Ustawienia
+Configure in Dashboard: http://localhost:6677/dashboard → Ustawienia
 
 ---
 
@@ -209,14 +223,14 @@ Configure in Dashboard: http://localhost:4222/dashboard → Ustawienia
 
 ### Test on Dashboard:
 
-1. Open http://localhost:4222/dashboard
+1. Open http://localhost:6677/dashboard
 2. Navigate to "Test" section
 3. Paste test text and click "Anonymize"
 4. See results with entity detection details
 
 ### Check Logs:
 
-1. Open http://localhost:4222/dashboard
+1. Open http://localhost:6677/dashboard
 2. Click "Logi" in navigation
 3. See history: original → anonymized (last 100 entries)
 
@@ -311,7 +325,7 @@ Then reload extension:
 
 ```
 presidio-local-anonymizer/
-├── backend/                    # Flask API (localhost:4222)
+├── backend/                    # Flask API (localhost:6677)
 │   ├── app.py                 # Main server
 │   ├── api/                   # REST endpoints
 │   │   ├── anonymize.py       # Anonymization + logs API
@@ -401,14 +415,14 @@ presidio-local-anonymizer/
 ### Q: Text doesn't anonymize?
 **A:** Check:
 1. Extension toggle is ON (click icon)
-2. Backend running (dashboard: http://localhost:4222/dashboard)
+2. Backend running (dashboard: http://localhost:6677/dashboard)
 3. Using PASTE method (Ctrl+V) - most reliable!
 
 ### Q: Does it work on ChatGPT/Claude/Perplexity?
 **A:** YES! Use PASTE method (Ctrl+V) - 100% reliable. See [AI-SITES-GUIDE.md](AI-SITES-GUIDE.md)
 
 ### Q: Where can I see what's happening?
-**A:** Open dashboard: http://localhost:4222/dashboard
+**A:** Open dashboard: http://localhost:6677/dashboard
 - Real-time statistics
 - Activity logs (last 100 operations)
 - Test anonymization
@@ -485,7 +499,7 @@ For sensitive data, consider additional security measures.
 - 📖 [Documentation](INSTALLATION.md) - Start here
 - 🐛 [GitHub Issues](https://github.com/gacabartosz/presidio-local-anonymizer/issues) - Report bugs
 - 💬 [GitHub Discussions](https://github.com/gacabartosz/presidio-local-anonymizer/discussions) - Ask questions
-- 📊 [Dashboard](http://localhost:4222/dashboard) - Service status and logs
+- 📊 [Dashboard](http://localhost:6677/dashboard) - Service status and logs
 
 **Star this repo** if you find it useful! ⭐
 
@@ -493,7 +507,7 @@ For sensitive data, consider additional security measures.
 
 <p align="center">
   <strong>Made with ❤️ using Claude Code</strong><br/>
-  <sub>Version 1.3.2 | Last Updated: November 2025</sub>
+  <sub>Version 1.4.0 | Last Updated: July 2026</sub>
 </p>
 
 <p align="center">

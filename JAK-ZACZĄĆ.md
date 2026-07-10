@@ -3,6 +3,8 @@
 **Prosty przewodnik instalacji Presidio Browser Anonymizer**
 *Dla osób bez wiedzy technicznej - wszystko krok po kroku!*
 
+> 🪟 **Masz Windows?** Jest jeszcze prostsza droga: [WINDOWS.md](WINDOWS.md) — pobierasz ZIP i klikasz dwa razy jeden plik. Nic więcej.
+
 ---
 
 ## 🤔 Co to w ogóle jest?
@@ -67,19 +69,13 @@ Backend to program, który będzie wykrywał i ukrywał dane osobowe.
 
 ### Windows
 
-1. **Sprawdź czy masz Pythona:**
-   - Otwórz Wiersz polecenia (CMD)
-   - Wpisz: `python --version`
-   - Jeśli widzisz wersję (np. "Python 3.11.5") → **OK, masz!**
-   - Jeśli nie → **Pobierz Pythona:**
-     - Wejdź na: https://www.python.org/downloads/
-     - Pobierz najnowszą wersję
-     - **WAŻNE:** Podczas instalacji zaznacz "Add Python to PATH"!
+1. **W folderze z programem kliknij 2x na: `Uruchom-Windows.bat`** — i to wszystko!
+   - Skrypt sam sprawdzi Pythona (a jeśli go nie masz — sam go zainstaluje)
+   - Pobierze biblioteki i polski model językowy (5-10 minut, ~500 MB, tylko za pierwszym razem)
+   - Uruchomi backend i sam otworzy panel w przeglądarce ✅
+2. **Opcjonalnie:** kliknij 2x `Autostart-Windows.bat`, żeby backend startował sam po włączeniu komputera
 
-2. **Uruchom instalator:**
-   - W folderze z programem kliknij 2x na: `install-windows.bat`
-   - Poczekaj 5-10 minut (pobiera się ~500 MB danych)
-   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:4222` → **DZIAŁA!** ✅
+> Szczegółowy przewodnik z rozwiązywaniem problemów: [WINDOWS.md](WINDOWS.md)
 
 ### Mac
 
@@ -99,7 +95,7 @@ Backend to program, który będzie wykrywał i ukrywał dane osobowe.
    ./install-mac.sh
    ```
    - Poczekaj 5-10 minut
-   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:4222` → **DZIAŁA!** ✅
+   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:6677` → **DZIAŁA!** ✅
 
 ### Linux (Ubuntu/Debian)
 
@@ -114,7 +110,7 @@ Backend to program, który będzie wykrywał i ukrywał dane osobowe.
    ./install-linux.sh
    ```
    - Poczekaj 5-10 minut
-   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:4222` → **DZIAŁA!** ✅
+   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:6677` → **DZIAŁA!** ✅
 
 ---
 
@@ -151,7 +147,7 @@ Backend to program, który będzie wykrywał i ukrywał dane osobowe.
 4. Powinieneś zobaczyć: **"Status: Online"** (zielony) ✅
 5. Jeśli widzisz "Offline" (czerwony):
    - Sprawdź czy terminal/wiersz polecenia z backendem jest wciąż otwarty
-   - Jeśli nie, uruchom ponownie: `install-windows.bat` (Windows) lub `./install-mac.sh` (Mac)
+   - Jeśli nie, uruchom ponownie: `Uruchom-Windows.bat` (Windows) lub `./install-mac.sh` (Mac)
 
 ### Test 2: Wypróbuj na ChatGPT
 
@@ -182,7 +178,7 @@ Backend to program, który będzie wykrywał i ukrywał dane osobowe.
 
 Możesz podejrzeć co wtyczka robi:
 
-1. Otwórz w przeglądarce: http://localhost:4222/dashboard
+1. Otwórz w przeglądarce: http://localhost:6677/dashboard
 
 2. Zobaczysz:
    - ✅ Status serwisu (online/offline)
@@ -207,7 +203,7 @@ Możesz podejrzeć co wtyczka robi:
 **Rozwiązanie:**
 1. Zamknij terminal/wiersz polecenia
 2. Uruchom ponownie instalator:
-   - Windows: `install-windows.bat`
+   - Windows: `Uruchom-Windows.bat`
    - Mac: `./install-mac.sh`
    - Linux: `./install-linux.sh`
 
@@ -275,7 +271,7 @@ Możesz podejrzeć co wtyczka robi:
 
 **Gdzie szukać pomocy?**
 
-1. **Sprawdź Dashboard:** http://localhost:4222/dashboard
+1. **Sprawdź Dashboard:** http://localhost:6677/dashboard
    - Zobacz logi, co się dzieje
 
 2. **GitHub Issues:** https://github.com/gacabartosz/presidio-local-anonymizer/issues
@@ -293,7 +289,7 @@ Możesz podejrzeć co wtyczka robi:
 ```cmd
 git clone https://github.com/gacabartosz/presidio-local-anonymizer
 cd presidio-local-anonymizer
-install-windows.bat
+Uruchom-Windows.bat
 ```
 
 **Mac:**
@@ -331,7 +327,7 @@ cd presidio-local-anonymizer
    - Zielony = działa, czerwony = wyłączona
 
 3. **Sprawdzaj logi w Dashboard**
-   - http://localhost:4222/dashboard → Logi
+   - http://localhost:6677/dashboard → Logi
    - Zobacz co zostało wykryte i ukryte
 
 4. **Nie zamykaj terminala!**
