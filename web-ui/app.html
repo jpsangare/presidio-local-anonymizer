@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -664,7 +664,25 @@
         </div>
         <div id="test-result" class="hidden" style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:8px;">
           <h4 style="color:#10b981;margin-bottom:8px;">Texte anonymisé :</h4>
-          <p id="anonymized-text" style="font-family:monospace;"></p>
+          <p id="anonymized-text" style="font-family:monospace;white-space:pre-wrap;"></p>
+        </div>
+      </div>
+
+      <div class="card" id="deanon-panel" style="display:none;">
+        <h2>🔓 Désanonymiser une réponse IA</h2>
+        <p style="color:#6b7280;font-size:14px;margin-bottom:12px;">
+          Collez la réponse de l'IA (contenant les tokens <code>[PERSONNE_1]</code>, etc.)
+          pour retrouver les valeurs originales.
+        </p>
+        <textarea id="deanon-input" placeholder="Collez ici la réponse de l'IA..." style="width:100%;height:100px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-family:monospace;"></textarea>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="deanonymizeResponse()">🔓 Désanonymiser</button>
+          <button class="btn btn-secondary" onclick="clearDeanon()">Effacer</button>
+        </div>
+        <div id="deanon-result" class="hidden" style="margin-top:16px;padding:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">
+          <h4 style="color:#10b981;margin-bottom:8px;">Réponse désanonymisée :</h4>
+          <p id="deanon-text" style="font-family:monospace;white-space:pre-wrap;"></p>
+          <p id="deanon-count" style="font-size:12px;color:#6b7280;margin-top:8px;"></p>
         </div>
       </div>
     </section>
@@ -682,6 +700,58 @@
           <div class="status-dot online"></div>
           <span>Online</span>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>➕ Ajouter un type de données</h2>
+        <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">
+          Définissez un nouveau motif regex : il sera actif immédiatement, en français et en anglais.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:13px;color:#374151;">Nom (majuscules, ex. FR_PASSEPORT)</label>
+            <input id="ne-name" type="text" placeholder="FR_PASSEPORT" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#374151;">Masque (ex. [PASSEPORT])</label>
+            <input id="ne-mask" type="text" placeholder="[PASSEPORT]" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:13px;color:#374151;">Description</label>
+            <input id="ne-description" type="text" placeholder="Numéro de passeport français" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:13px;color:#374151;">Expression régulière</label>
+            <input id="ne-regex" type="text" placeholder="\b\d{2}[A-Z]{2}\d{5}\b" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#374151;">Score (0 à 1, seuil : 0,35)</label>
+            <input id="ne-score" type="number" min="0.05" max="1" step="0.05" value="0.5" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#374151;">Validateur (somme de contrôle)</label>
+            <select id="ne-validator" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;background:white;">
+              <option value="">Aucun</option>
+              <option value="luhn">Luhn (SIREN, SIRET, cartes)</option>
+              <option value="nir">NIR (sécurité sociale française)</option>
+              <option value="regon">REGON</option>
+              <option value="nip">NIP</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:13px;color:#374151;">Mots de contexte (séparés par des virgules, optionnel)</label>
+            <input id="ne-context" type="text" placeholder="passeport, passport" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:13px;color:#374151;">Texte d’exemple pour tester</label>
+            <textarea id="ne-sample" placeholder="Mon passeport est 12AB34567" style="width:100%;height:60px;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="testNewPattern()">🧪 Tester le motif</button>
+          <button class="btn btn-primary" onclick="addNewEntity()">➕ Ajouter et activer</button>
+        </div>
+        <div id="ne-result" class="hidden" style="margin-top:12px;padding:12px;border-radius:8px;font-size:14px;"></div>
       </div>
 
       <div id="settings-container">
@@ -744,6 +814,7 @@
   <script>
     const API_BASE = 'http://localhost:6677/api';
     let entitySettings = {};
+    let entityMeta = {};
     const supportedLanguages = ['fr', 'en', 'de'];
     const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
     const savedLanguage = localStorage.getItem('dashboardLanguage');
@@ -759,17 +830,17 @@
         nav_logs: 'Historique',
         nav_setup: 'Installation',
         dashboard_title: 'Tableau de bord',
-        dashboard_subtitle: 'Surveillez et testez le service d’anonymisation en temps réel.',
+        dashboard_subtitle: 'Surveillez et testez le service d\'anonymisation en temps réel.',
         status_service: 'État du service',
         status_online: 'En ligne',
         status_offline: 'Hors ligne',
         request_count: 'Nombre de requêtes',
-        test_title: '🧪 Tester l’anonymisation',
+        test_title: '🧪 Tester l\'anonymisation',
         test_placeholder: 'Saisissez un texte contenant des données personnelles...',
         test_button: '🚀 Tester',
         clear_button: 'Effacer',
         result_title: 'Texte anonymisé :',
-        settings_title: 'Paramètres d’anonymisation',
+        settings_title: 'Paramètres d\'anonymisation',
         settings_subtitle: 'Gérez les types de données personnelles à détecter et à anonymiser.',
         service_status: 'État du service',
         loading_settings: 'Chargement des paramètres...',
@@ -781,20 +852,20 @@
         setup_subtitle: 'Vérifiez la configuration requise et installez le backend.',
         system_check: 'Vérification du système',
         checking: 'Vérification de la configuration requise...',
-        install_instructions: 'Instructions d’installation',
+        install_instructions: 'Instructions d\'installation',
         backend_running: 'Le backend fonctionne ! ✅',
-        setup_repair_prompt: 'Pour mettre à jour ou réparer l’installation :',
+        setup_repair_prompt: 'Pour mettre à jour ou réparer l\'installation :',
         setup_download_repository: 'Téléchargez le dépôt depuis GitHub',
-        setup_run_installer: 'Lancez le script d’installation correspondant à votre système',
+        setup_run_installer: 'Lancez le script d\'installation correspondant à votre système',
         setup_configured: 'Le backend sera configuré automatiquement',
-        category_polish: '🇵🇱 Données polonaises',
+        category_polish: '🇫🇷 Données françaises',
         category_us: '🇺🇸 Données américaines',
         category_other_countries: '🌍 Autres pays',
         category_other: '🔐 Autres types',
         version: 'Version',
         created_by: 'Créé par',
         example: 'Exemple',
-        logs_title: 'Journaux d’anonymisation',
+        logs_title: 'Journaux d\'anonymisation',
         logs_subtitle: 'Historique des textes anonymisés : contenu avant et après traitement.',
         logs_history: 'Historique des opérations',
         clear_logs: '🗑️ Effacer les journaux',
@@ -808,17 +879,17 @@
         anonymized_text: 'Texte anonymisé :',
         empty_test: 'Saisissez un texte à tester !',
         clear_logs_confirm: 'Voulez-vous vraiment effacer tous les journaux ?',
-        clear_logs_error: 'Échec de l’effacement des journaux',
+        clear_logs_error: 'Échec de l\'effacement des journaux',
         settings_error: 'Échec du chargement des paramètres',
         setup_error: 'Échec de la vérification du système',
         request_error: 'Erreur : ',
         polish_entities: {
           EMAIL_ADDRESS: ['Adresse e-mail', 'Adresse utilisée pour les communications électroniques'],
-          PL_PESEL: ['PESEL', 'Numéro d’identification polonais PESEL (11 chiffres)'],
-          PL_NIP: ['NIP', 'Numéro d’identification fiscale polonais (10 chiffres)'],
-          PL_PASSPORT: ['Passeport polonais', 'Numéro de passeport polonais (2 lettres + 7 chiffres)'],
-          PL_ID_CARD: ['Carte d’identité', 'Numéro de carte d’identité polonaise (3 lettres + 6 chiffres)'],
-          PL_REGON: ['REGON', 'Numéro d’immatriculation d’entreprise REGON (9 ou 14 chiffres)'],
+          PL_PESEL: ['PESEL', 'Numéro d\'identification PESEL (11 chiffres)'],
+          PL_NIP: ['NIP', 'Numéro d\'identification fiscale NIP (10 chiffres)'],
+          PL_PASSPORT: ['Passeport', 'Numéro de passeport (2 lettres + 7 chiffres)'],
+          PL_ID_CARD: ['Carte d\'identité', 'Numéro de carte d\'identité (3 lettres + 6 chiffres)'],
+          PL_REGON: ['REGON', 'Numéro d\'immatriculation d\'entreprise REGON (9 ou 14 chiffres)'],
           PHONE_NUMBER: ['Numéro de téléphone', 'Numéros de téléphone nationaux et internationaux'],
           CREDIT_CARD: ['Carte bancaire', 'Numéros de cartes de crédit et de débit'],
           IBAN_CODE: ['Numéro IBAN', 'Numéro de compte bancaire international'],
@@ -829,14 +900,14 @@
           US_PASSPORT: ['Passeport américain', 'Numéro de passeport américain'],
           US_BANK_NUMBER: ['Compte bancaire américain', 'Numéro de compte bancaire aux États-Unis'],
           US_DRIVER_LICENSE: ['Permis de conduire américain', 'Permis de conduire des États-Unis'],
-          US_ITIN: ['ITIN américain', 'Numéro d’identification fiscale individuel américain'],
+          US_ITIN: ['ITIN américain', 'Numéro d\'identification fiscale individuel américain'],
           UK_NHS: ['Numéro NHS britannique', 'Numéro du service de santé britannique'],
-          AU_ABN: ['ABN australien', 'Numéro d’entreprise australien'],
-          AU_ACN: ['ACN australien', 'Numéro d’immatriculation des sociétés australiennes'],
+          AU_ABN: ['ABN australien', 'Numéro d\'entreprise australien'],
+          AU_ACN: ['ACN australien', 'Numéro d\'immatriculation des sociétés australiennes'],
           AU_TFN: ['TFN australien', 'Numéro de dossier fiscal australien'],
           AU_MEDICARE: ['Medicare australien', 'Numéro Medicare australien'],
-          SG_NRIC_FIN: ['NRIC/FIN singapourien', 'Numéro d’identification singapourien'],
-          NRP: ['Numéro d’identification portugais', 'Numéro d’identification portugais'],
+          SG_NRIC_FIN: ['NRIC/FIN singapourien', 'Numéro d\'identification singapourien'],
+          NRP: ['Numéro d\'identification portugais', 'Numéro d\'identification portugais'],
           PERSON: ['Nom et prénom', 'Noms et prénoms de personnes'],
           LOCATION: ['Lieu', 'Adresses, villes et pays'],
           CRYPTO: ['Portefeuille de cryptomonnaie', 'Adresses de portefeuilles Bitcoin, Ethereum, etc.'],
@@ -886,7 +957,7 @@
         setup_configured: 'The backend will be configured automatically',
 
         // Categories
-        category_polish: '🇵🇱 Polish Data',
+        category_polish: '🇫🇷 French Data',
         category_us: '🇺🇸 US Data',
         category_other_countries: '🌍 Other Countries',
         category_other: '🔐 Other Types',
@@ -917,11 +988,11 @@
         request_error: 'Error: ',
         entity_info: {
           EMAIL_ADDRESS: ['Email address', 'Address used for electronic communication'],
-          PL_PESEL: ['PESEL', 'Polish PESEL identification number (11 digits)'],
-          PL_NIP: ['NIP', 'Polish tax identification number (10 digits)'],
-          PL_PASSPORT: ['Polish passport', 'Polish passport number (2 letters + 7 digits)'],
-          PL_ID_CARD: ['ID card', 'Polish identity card number (3 letters + 6 digits)'],
-          PL_REGON: ['REGON', 'Business registry number (9 or 14 digits)'],
+          PL_PESEL: ['PESEL', 'PESEL identification number (11 digits)'],
+          PL_NIP: ['NIP', 'Tax identification number NIP (10 digits)'],
+          PL_PASSPORT: ['Passport', 'Passport number (2 letters + 7 digits)'],
+          PL_ID_CARD: ['Identity card', 'Identity card number (3 letters + 6 digits)'],
+          PL_REGON: ['REGON', 'Business registry number REGON (9 or 14 digits)'],
           PHONE_NUMBER: ['Phone number', 'Domestic and international phone numbers'],
           CREDIT_CARD: ['Credit card', 'Credit and debit card numbers'],
           IBAN_CODE: ['IBAN number', 'International bank account number'],
@@ -989,7 +1060,7 @@
         setup_configured: 'Das Backend wird automatisch konfiguriert',
 
         // Categories
-        category_polish: '🇵🇱 Polnische Daten',
+        category_polish: '🇫🇷 Französische Daten',
         category_us: '🇺🇸 US-Daten',
         category_other_countries: '🌍 Andere Länder',
         category_other: '🔐 Andere Typen',
@@ -1147,6 +1218,9 @@
       if (sectionId === 'logs') loadLogs();
     }
 
+    // Session ID de la dernière anonymisation (pour désanonymiser)
+    let currentSessionId = null;
+
     // Dashboard functions
     async function testAnonymize() {
       const text = document.getElementById('test-input').value;
@@ -1163,6 +1237,14 @@
         document.getElementById('anonymized-text').textContent = data.anonymized_text;
         document.getElementById('test-result').classList.remove('hidden');
 
+        // Activer le panneau de désanonymisation si on a un session_id
+        if (data.session_id) {
+          currentSessionId = data.session_id;
+          document.getElementById('deanon-panel').style.display = '';
+          document.getElementById('deanon-result').classList.add('hidden');
+          document.getElementById('deanon-input').value = '';
+        }
+
         const count = parseInt(document.getElementById('request-count').textContent);
         document.getElementById('request-count').textContent = count + 1;
       } catch (err) {
@@ -1170,9 +1252,39 @@
       }
     }
 
+    async function deanonymizeResponse() {
+      const text = document.getElementById('deanon-input').value.trim();
+      if (!text) return;
+      if (!currentSessionId) return alert('Aucune session active. Testez d\'abord un texte.');
+
+      try {
+        const res = await fetch(`${API_BASE}/deanonymize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: currentSessionId, text })
+        });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || 'Erreur de désanonymisation');
+
+        document.getElementById('deanon-text').textContent = data.deanonymized_text;
+        document.getElementById('deanon-count').textContent =
+          `${data.replacements} substitution(s) effectuée(s)`;
+        document.getElementById('deanon-result').classList.remove('hidden');
+      } catch (err) {
+        alert(t('request_error') + err.message);
+      }
+    }
+
+    function clearDeanon() {
+      document.getElementById('deanon-input').value = '';
+      document.getElementById('deanon-result').classList.add('hidden');
+    }
+
     function clearTest() {
       document.getElementById('test-input').value = '';
       document.getElementById('test-result').classList.add('hidden');
+      document.getElementById('deanon-panel').style.display = 'none';
+      currentSessionId = null;
     }
 
     // Settings functions
@@ -1183,8 +1295,10 @@
 
         if (data.entities && Array.isArray(data.entities)) {
           entitySettings = {};
+          entityMeta = {};
           data.entities.forEach(e => {
             entitySettings[e.name] = e.enabled;
+            entityMeta[e.name] = { description: e.description || '', mask: e.mask || `[${e.name}]` };
           });
         }
 
@@ -1210,35 +1324,35 @@
             {
               name: 'PL_PESEL',
               displayName: 'PESEL',
-              description: 'Numéro d’identification PESEL polonais (11 chiffres)',
+              description: 'Numéro d\'identification PESEL (11 chiffres)',
               example: '92032912345',
               defaultEnabled: true
             },
             {
               name: 'PL_NIP',
               displayName: 'NIP',
-              description: 'Numéro d’identification fiscale (10 chiffres)',
+              description: 'Numéro d\'identification fiscale (10 chiffres)',
               example: '1234563218',
               defaultEnabled: true
             },
             {
               name: 'PL_PASSPORT',
-              displayName: 'Passeport polonais',
-              description: 'Numéro de passeport polonais (2 lettres + 7 chiffres)',
+              displayName: 'Passeport',
+              description: 'Numéro de passeport (2 lettres + 7 chiffres)',
               example: 'AB1234567',
               defaultEnabled: true
             },
             {
               name: 'PL_ID_CARD',
-              displayName: 'Carte d’identité',
-              description: 'Numéro de carte d’identité polonaise (3 lettres + 6 chiffres)',
+              displayName: 'Carte d\'identité',
+              description: 'Numéro de carte d\'identité (3 lettres + 6 chiffres)',
               example: 'ABC123456',
               defaultEnabled: true
             },
             {
               name: 'PL_REGON',
               displayName: 'REGON',
-              description: 'Numéro REGON d’entreprise (9 ou 14 chiffres)',
+              description: 'Numéro REGON d\'entreprise (9 ou 14 chiffres)',
               example: '123456785',
               defaultEnabled: true
             },
@@ -1367,14 +1481,14 @@
             {
               name: 'SG_NRIC_FIN',
               displayName: 'Singapore NRIC/FIN',
-              description: 'Numéro d’identification singapourien',
+              description: 'Numéro d\'identification singapourien',
               example: 'S1234567D',
               defaultEnabled: false
             },
             {
               name: 'NRP',
               displayName: 'NRP (Portugal)',
-              description: 'Numéro d’identification portugais',
+              description: 'Numéro d\'identification portugais',
               example: '123456789',
               defaultEnabled: false
             }
@@ -1457,7 +1571,145 @@
         `;
       });
 
+      // Les entités ajoutées via le panneau « Ajouter » ne sont pas dans la liste
+      // codée en dur : elles sont affichées dans une catégorie dédiée.
+      const knownNames = new Set();
+      Object.values(entityData).forEach(cat => cat.entities.forEach(e => knownNames.add(e.name)));
+      html += renderCustomEntities(knownNames);
+
       document.getElementById('settings-container').innerHTML = html;
+    }
+
+    function renderCustomEntities(knownNames) {
+      const customNames = Object.keys(entitySettings).filter(name => !knownNames.has(name));
+      if (customNames.length === 0) return '';
+
+      let html = `
+        <div class="card category-section">
+          <div class="category-header">✨ Données personnalisées</div>
+          <div class="entity-grid">
+      `;
+
+      customNames.forEach(name => {
+        const enabled = !!entitySettings[name];
+        const meta = entityMeta[name] || {};
+        html += `
+          <div class="entity-card ${enabled ? 'enabled' : ''}" onclick="toggleEntity('${name}')">
+            <div class="entity-card-header">
+              <div class="entity-name">${escapeHtml(name)}</div>
+              <div class="toggle-switch ${enabled ? 'enabled' : ''}">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="entity-description">${escapeHtml(meta.description || '')}</div>
+            <code class="entity-example">${escapeHtml(meta.mask || `[${name}]`)}</code>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      return html;
+    }
+
+    async function testNewPattern() {
+      const resultDiv = document.getElementById('ne-result');
+      const payload = {
+        regex: document.getElementById('ne-regex').value,
+        text: document.getElementById('ne-sample').value,
+        score: parseFloat(document.getElementById('ne-score').value) || 0.5,
+        validator: document.getElementById('ne-validator').value || undefined,
+        context: document.getElementById('ne-context').value
+          .split(',').map(s => s.trim()).filter(Boolean)
+      };
+
+      if (!payload.regex || !payload.text) {
+        resultDiv.className = '';
+        resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fef2f2;color:#b91c1c;';
+        resultDiv.textContent = 'Saisissez une expression régulière et un texte d\'exemple.';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/test-pattern`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        resultDiv.className = '';
+        if (!res.ok) {
+          resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fef2f2;color:#b91c1c;';
+          resultDiv.textContent = data.message || 'Erreur';
+        } else if (data.matches.length === 0) {
+          resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fffbeb;color:#92400e;';
+          resultDiv.textContent = 'Aucune correspondance. Vérifiez le motif ou la somme de contrôle.';
+        } else {
+          resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#ecfdf5;color:#065f46;';
+          resultDiv.innerHTML = '✅ Correspondances : ' + data.matches
+            .map(m => `<code>${escapeHtml(m.text)}</code> (score ${m.score})`).join(', ');
+        }
+      } catch (err) {
+        resultDiv.className = '';
+        resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fef2f2;color:#b91c1c;';
+        resultDiv.textContent = 'Backend injoignable : ' + err.message;
+      }
+    }
+
+    async function addNewEntity() {
+      const name = document.getElementById('ne-name').value.trim().toUpperCase();
+      const mask = document.getElementById('ne-mask').value.trim();
+      const description = document.getElementById('ne-description').value.trim();
+      const regex = document.getElementById('ne-regex').value;
+      const score = parseFloat(document.getElementById('ne-score').value) || 0.5;
+      const validator = document.getElementById('ne-validator').value;
+      const context = document.getElementById('ne-context').value
+        .split(',').map(s => s.trim()).filter(Boolean);
+      const resultDiv = document.getElementById('ne-result');
+
+      if (!/^[A-Z][A-Z0-9_]*$/.test(name) || !mask || !regex) {
+        resultDiv.className = '';
+        resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fef2f2;color:#b91c1c;';
+        resultDiv.textContent = 'Nom (MAJUSCULES), masque et expression régulière sont obligatoires.';
+        return;
+      }
+
+      const entity = {
+        description: description || name,
+        enabled: true,
+        mask,
+        patterns: [{ name: name + '_1', regex, score }]
+      };
+      if (validator) entity.validator = validator;
+      if (context.length) entity.context = context;
+
+      try {
+        const saveRes = await fetch(`${API_BASE}/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entities: { [name]: entity } })
+        });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) throw new Error(saveData.message || 'Échec de l\'enregistrement');
+
+        // Rechargement à chaud : le nouveau motif devient actif sans redémarrage
+        const reloadRes = await fetch(`${API_BASE}/reload`, { method: 'POST' });
+        const reloadData = await reloadRes.json();
+        if (!reloadRes.ok) throw new Error(reloadData.message || 'Échec du rechargement');
+
+        resultDiv.className = '';
+        resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#ecfdf5;color:#065f46;';
+        resultDiv.textContent = `✅ « ${name} » ajouté et actif (français + anglais).`;
+
+        ['ne-name', 'ne-mask', 'ne-description', 'ne-regex', 'ne-context', 'ne-sample']
+          .forEach(id => document.getElementById(id).value = '');
+
+        await loadSettings();
+      } catch (err) {
+        resultDiv.className = '';
+        resultDiv.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;font-size:14px;background:#fef2f2;color:#b91c1c;';
+        resultDiv.textContent = 'Erreur : ' + err.message;
+      }
     }
 
     function toggleEntity(name) {
@@ -1486,9 +1738,9 @@
     function resetSettings() {
       if (!confirm(t('confirm_reset'))) return;
 
-      // Reset to default settings - Polish entities enabled, rest disabled
+      // Reset to default settings - French/Polish entities enabled, rest disabled
       entitySettings = {
-        // Polish entities - enabled by default
+        // French entities and specific identifiers - enabled by default
         'EMAIL_ADDRESS': true,
         'PL_PESEL': true,
         'PL_NIP': true,

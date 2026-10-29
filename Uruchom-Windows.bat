@@ -12,7 +12,7 @@ cd /d "%~dp0"
 
 set "PORT=6677"
 set "VENV_PY=%~dp0backend\.venv\Scripts\python.exe"
-set "MARKER=%~dp0backend\.venv\install-ok.txt"
+set "MARKER=%~dp0backend\.venv\install-ok-fr-en.txt"
 
 echo ============================================================
 echo  Presidio Browser Anonymizer
@@ -95,13 +95,17 @@ if errorlevel 1 (
 echo [OK] Bibliothèques installées
 echo.
 
-echo [3/3] Téléchargement du modèle linguistique polonais (environ 80 Mo)...
-"%VENV_PY%" -m spacy download pl_core_news_md
-if errorlevel 1 (
-    echo [ERREUR] Impossible de télécharger le modèle. Vérifiez votre connexion Internet et réessayez.
-    pause
-    exit /b 1
-)
+echo [3/3] Téléchargement des modèles linguistiques français et anglais (environ 90 Mo chacun)...
+"%VENV_PY%" -m spacy download fr_core_news_md
+if errorlevel 1 goto model_error
+"%VENV_PY%" -m spacy download en_core_web_md
+if errorlevel 1 goto model_error
+goto model_ok
+:model_error
+echo [ERREUR] Impossible de télécharger les modèles. Vérifiez votre connexion Internet et réessayez.
+pause
+exit /b 1
+:model_ok
 echo [OK] Modèle téléchargé
 echo.
 

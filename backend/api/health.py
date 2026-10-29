@@ -16,8 +16,12 @@ def health_check():
     Returns:
         JSON with service status
     """
+    from api import anonymize
+
     return jsonify({
         'status': 'healthy',
         'service': 'presidio-browser-anonymizer',
-        'version': '1.4.0'
+        'version': '1.4.0',
+        'analyzer_ready': anonymize.analyzer is not None,
+        'analyzer_error': anonymize.analyzer_error
     }), 200

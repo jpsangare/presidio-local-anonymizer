@@ -155,7 +155,7 @@ J’habite à [LIEU], au [LIEU].
 
 ## Types de données détectés
 
-### Données polonaises
+### Données polonaises (identifiants spécifiques)
 - **PESEL** - Numéro PESEL
 - **NIP** - Numéro d’identification fiscale
 - **REGON** - Numéro REGON
@@ -233,7 +233,7 @@ sudo dnf install python3 python3-pip
 
 ### Le modèle SpaCy ne se télécharge pas
 
-**Problème :** erreur lors de l’exécution de `python -m spacy download pl_core_news_md`
+**Problème :** erreur lors de l’exécution de `python -m spacy download fr_core_news_md` ou `python -m spacy download en_core_web_md`
 
 **Solution :**
 ```bash
@@ -242,7 +242,7 @@ source .venv/bin/activate  # macOS/Linux
 .venv\Scripts\activate.bat  # Windows
 
 # Réessayez
-pip install https://github.com/explosion/spacy-models/releases/download/pl_core_news_md-3.7.0/pl_core_news_md-3.7.0-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_md-3.7.0/fr_core_news_md-3.7.0-py3-none-any.whl
 ```
 
 ### L’extension ne détecte pas les données

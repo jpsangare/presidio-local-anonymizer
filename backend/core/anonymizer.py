@@ -4,7 +4,7 @@ Remplace les entités détectées par les masques définis dans la configuration
 """
 
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional, Tuple
 
 from presidio_analyzer import RecognizerResult
 from presidio_anonymizer import AnonymizerEngine
@@ -13,10 +13,20 @@ from presidio_anonymizer.entities import OperatorConfig
 logger = logging.getLogger("app.anonymizer")
 
 
+# Mapping: mask label (e.g. "[PERSONNE]") → human-readable prefix for numbering
+_ENTITY_LABEL_MAP: Dict[str, str] = {}
+
+
+def _label_for(entity_type: str, config: Dict[str, Any]) -> str:
+    """Return the mask string for an entity type, e.g. ‘[PERSONNE]’."""
+    return config[‘entities’].get(entity_type, {}).get(‘mask’, f’[{entity_type}]’)
+
+
 def anonymize_text(
     text: str,
     analyzer_results: List[RecognizerResult],
-    config: Dict[str, Any]
+    config: Dict[str, Any],
+    mapping: Optional[Dict[str, str]] = None,
 ) -> str:
     """
     Anonymise le texte en remplaçant les entités détectées par les masques correspondants.
@@ -29,43 +39,87 @@ def anonymize_text(
     Returns:
         str: Texte anonymisé
 
-    Example:
-        >>> text = "Jan Kowalski, email: jan@example.com"
-        >>> results = analyzer.analyze(text, ...)
-        >>> anonymized = anonymize_text(text, results, config)
-        >>> print(anonymized)
-        [PERSONNE], email: [EMAIL]
+    Args:
+        text: Texte à anonymiser
+        analyzer_results: Liste de résultats de Presidio Analyzer
+        config: Dictionnaire de configuration des masques par entité
+        mapping: Si fourni, sera rempli avec {token_numéroté: valeur_originale}
+                 pour permettre la désanonymisation ultérieure.
+
+    Returns:
+        str: Texte anonymisé avec tokens numérotés si mapping fourni,
+             sinon masques génériques.
     """
     if not analyzer_results:
         logger.debug("Aucune entité à anonymiser n’a été détectée.")
         return text
 
-    # Créer le moteur d’anonymisation
-    anonymizer = AnonymizerEngine()
+    if mapping is not None:
+        return _anonymize_with_mapping(text, analyzer_results, config, mapping)
 
-    # Associer les entités aux opérateurs (masques)
+    # Mode simple sans mapping (rétrocompatible)
+    anonymizer = AnonymizerEngine()
     operators = {}
-    for entity_name, entity_config in config['entities'].items():
-        mask = entity_config.get('mask', f"[{entity_name}]")
+    for entity_name, entity_config in config[‘entities’].items():
+        mask = entity_config.get(‘mask’, f"[{entity_name}]")
         operators[entity_name] = OperatorConfig("replace", {"new_value": mask})
 
-    # Consigner les entités détectées (sans enregistrer les valeurs personnelles)
     entity_counts = {}
     for result in analyzer_results:
         entity_counts[result.entity_type] = entity_counts.get(result.entity_type, 0) + 1
-
     logger.info(f"Entités détectées : {entity_counts}")
 
-    # Effectuer l’anonymisation
     anonymized_result = anonymizer.anonymize(
         text=text,
         analyzer_results=analyzer_results,
         operators=operators
     )
-
     logger.debug(f"Anonymisation terminée. Longueur du texte : {len(text)} -> {len(anonymized_result.text)}")
-
     return anonymized_result.text
+
+
+def _anonymize_with_mapping(
+    text: str,
+    analyzer_results: List[RecognizerResult],
+    config: Dict[str, Any],
+    mapping: Dict[str, str],
+) -> str:
+    """Anonymise avec tokens numérotés stables et remplit la table de correspondance."""
+    # Trier par position décroissante pour remplacer de la fin vers le début
+    sorted_results = sorted(analyzer_results, key=lambda r: r.start, reverse=True)
+
+    # Counters par type de masque (label)
+    counters: Dict[str, int] = {}
+    # Cache valeur → token (même valeur = même token)
+    value_to_token: Dict[str, str] = {}
+
+    result_text = text
+    for result in sorted_results:
+        original_value = text[result.start:result.end]
+        if original_value in value_to_token:
+            token = value_to_token[original_value]
+        else:
+            label = _label_for(result.entity_type, config)
+            # Strip brackets for counter key: "[PERSONNE]" → "PERSONNE"
+            counter_key = label.strip(‘[]’)
+            counters[counter_key] = counters.get(counter_key, 0) + 1
+            token = f"[{counter_key}_{counters[counter_key]}]"
+            value_to_token[original_value] = token
+            mapping[token] = original_value
+
+        result_text = result_text[:result.start] + token + result_text[result.end:]
+
+    logger.info(f"Anonymisation avec mapping : {len(mapping)} tokens créés")
+    return result_text
+
+
+def deanonymize_text(anonymized_text: str, mapping: Dict[str, str]) -> str:
+    """Remplace les tokens numérotés par leurs valeurs originales."""
+    result = anonymized_text
+    # Sort by token length desc to avoid partial replacements
+    for token, original in sorted(mapping.items(), key=lambda x: -len(x[0])):
+        result = result.replace(token, original)
+    return result
 
 
 def prepare_anonymization_report(

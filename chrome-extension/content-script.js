@@ -2,6 +2,7 @@
 
 let extensionEnabled = true;
 let currentLanguage = DEFAULT_UI_LANGUAGE;
+let lastSessionId = null; // Session ID de la dernière anonymisation (pour désanonymiser)
 
 // Load extension state on initialization
 async function loadExtensionState() {
@@ -107,6 +108,43 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
+// Keyboard shortcut: Ctrl+Shift+D to deanonymize selected text
+document.addEventListener('keydown', async (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+    e.preventDefault();
+
+    if (!lastSessionId) {
+      showNotification(extensionText('noSession', currentLanguage), 'info');
+      return;
+    }
+
+    const selectedText = window.getSelection().toString().trim();
+    if (!selectedText) {
+      showNotification(extensionText('selectText', currentLanguage), 'info');
+      return;
+    }
+
+    try {
+      showNotification(extensionText('deanonymizing', currentLanguage), 'info');
+      const response = await chrome.runtime.sendMessage({
+        action: 'deanonymize',
+        sessionId: lastSessionId,
+        text: selectedText
+      });
+
+      if (response.success) {
+        replaceSelectedText(response.data.deanonymized_text);
+        showNotification(extensionText('textDeanonymized', currentLanguage), 'success');
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Deanonymization failed:', error);
+      showNotification(extensionText('anonymizationError', currentLanguage), 'error');
+    }
+  }
+});
+
 // Keyboard shortcut: Ctrl+Shift+A to anonymize selected text
 document.addEventListener('keydown', async (e) => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
@@ -177,6 +215,7 @@ document.addEventListener('paste', async (e) => {
     console.log('[Presidio] Anonymization response:', response.success);
 
     if (response.success) {
+      if (response.data.session_id) lastSessionId = response.data.session_id;
       const anonymizedText = response.data.anonymized_text;
       const activeElement = document.activeElement;
 

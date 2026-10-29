@@ -27,10 +27,91 @@ entities:
     description: Date ou date et heure
     enabled: true
     mask: '[DATE]'
+    context:
+    - date
+    - né
+    - née
+    - naissance
+    - rendez-vous
+    patterns:
+    - name: DATE_FR_LONG
+      regex: \b\d{1,2}(er)?\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+\d{4}\b
+      score: 0.8
+    - name: DATE_FR_NUMERIC
+      regex: \b\d{1,2}[/.-]\d{1,2}[/.-]\d{4}\b
+      score: 0.6
   EMAIL_ADDRESS:
     description: Adresse e-mail
     enabled: true
     mask: '[EMAIL]'
+  FR_PLATE:
+    description: Plaque d’immatriculation française (format AA-123-AA)
+    enabled: true
+    mask: '[PLAQUE]'
+    context:
+    - immatriculation
+    - plaque
+    - voiture
+    - véhicule
+    patterns:
+    - name: PLATE_DASHES
+      regex: \b[A-Z]{2}-\d{3}-[A-Z]{2}\b
+      score: 0.7
+    - name: PLATE_SPACES
+      regex: \b[A-Z]{2} \d{3} [A-Z]{2}\b
+      score: 0.6
+  FR_SECU:
+    description: Numéro de sécurité sociale français (NIR, 15 chiffres)
+    enabled: true
+    mask: '[SECU]'
+    validator: nir
+    context:
+    - sécurité sociale
+    - sécu
+    - nir
+    - immatriculé
+    - assuré
+    patterns:
+    - name: NIR_SPACED
+      regex: \b[12]\s\d{2}\s\d{2}\s\d{2}\s\d{3}\s\d{3}\s\d{2}\b
+      score: 0.7
+    - name: NIR_PLAIN
+      regex: \b[12]\d{14}\b
+      score: 0.5
+  FR_SIREN:
+    description: Numéro SIREN français (9 chiffres, entreprises)
+    enabled: true
+    mask: '[SIREN]'
+    validator: luhn
+    context:
+    - siren
+    - siret
+    - entreprise
+    - société
+    patterns:
+    - name: SIREN_SPACED
+      regex: \b\d{3} \d{3} \d{3}\b
+      score: 0.5
+    - name: SIREN_PLAIN
+      regex: \b\d{9}\b
+      score: 0.4
+  FR_SIRET:
+    description: Numéro SIRET français (14 chiffres, établissements)
+    enabled: true
+    mask: '[SIRET]'
+    validator: luhn
+    context:
+    - siret
+    - siren
+    - entreprise
+    - établissement
+    patterns:
+    - name: SIRET_SPACED
+      regex: \b\d{3} \d{3} \d{3} \d{5}\b
+      score: 0.6
+    - name: SIRET_PLAIN
+      regex: \b\d{14}\b
+      score: 0.4
   IBAN_CODE:
     description: Numéro de compte bancaire IBAN
     enabled: true
@@ -71,6 +152,7 @@ entities:
     description: Numéro d’identification fiscale polonais (NIP)
     enabled: true
     mask: '[NIP]'
+    validator: nip
     patterns:
     - name: NIP_PATTERN_WITH_DASHES
       regex: \b\d{3}-\d{3}-\d{2}-\d{2}\b|\b\d{3}-\d{2}-\d{2}-\d{3}\b
@@ -101,6 +183,7 @@ entities:
     description: Numéro REGON polonais (identification des entreprises)
     enabled: true
     mask: '[REGON]'
+    validator: regon
     patterns:
     - name: REGON_9
       regex: \b\d{9}\b
@@ -140,5 +223,5 @@ entities:
     description: Numéro de sécurité sociale américain (SSN)
     enabled: false
     mask: '[SSN]'
-language: pl
+language: fr
 threshold: 0.35

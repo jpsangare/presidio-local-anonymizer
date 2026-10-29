@@ -7,8 +7,8 @@ Chrome extension for real-time PII anonymization powered by Microsoft Presidio.
 - **Real-time Anonymization**: Anonymize selected text with Ctrl+Shift+A
 - **Context Menu**: Right-click selected text → "Anonymize selected text" (label follows the selected UI language)
 - **Configurable Backend**: Connect to any Presidio backend instance
-- **French and English UI**: French is the default; choose the interface language in the popup or extension settings. This changes the interface only; backend entity detection remains configured for Polish.
-- **Polish Language Support**: Optimized for Polish PII (PESEL, NIP, names, locations)
+- **French and English UI**: French is the default; choose the interface language in the popup or extension settings.
+- **French & English Language Support**: Optimized for French and English PII, with additional support for Polish identifiers (PESEL, NIP, REGON)
 - **28 Entity Types**: Emails, phones, credit cards, IDs, and more
 
 ## Installation
@@ -28,7 +28,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
 # Download SpaCy model
-python -m spacy download pl_core_news_md
+python -m spacy download fr_core_news_md && python -m spacy download en_core_web_md
 
 # Run backend
 python app.py
@@ -109,7 +109,12 @@ Works everywhere:
 
 ## Detected Entities
 
-### Polish Specific
+### French Specific
+- **FR_SECU**: Numéro de sécurité sociale (NIR)
+- **FR_SIREN**: Numéro d'identification d'entreprise
+- **FR_SIRET**: Numéro d'établissement
+
+### Polish Specific (identifiers also supported)
 - **PESEL**: Personal identification number
 - **NIP**: Tax identification number
 - **REGON**: Business registry number

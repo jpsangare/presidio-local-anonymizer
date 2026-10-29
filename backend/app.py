@@ -21,6 +21,7 @@ sys.path.insert(0, str(backend_dir))
 from api.health import health_bp
 from api.anonymize import anonymize_bp
 from api.config import config_bp
+from api.patterns import patterns_bp
 from api.setup import setup_bp
 
 # Configure logging
@@ -32,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__, static_folder='../web-ui', static_url_path='')
-app.config['JSON_AS_ASCII'] = False  # Support for Polish characters
+app.config['JSON_AS_ASCII'] = False  # Support for accented characters (French, Polish, etc.)
 
 # CORS configuration - allow only localhost and browser extension
 CORS(app, resources={
@@ -52,6 +53,7 @@ CORS(app, resources={
 app.register_blueprint(health_bp, url_prefix='/api')
 app.register_blueprint(anonymize_bp, url_prefix='/api')
 app.register_blueprint(config_bp, url_prefix='/api')
+app.register_blueprint(patterns_bp, url_prefix='/api')
 app.register_blueprint(setup_bp, url_prefix='/api/setup')
 
 # Root endpoint - serve main app

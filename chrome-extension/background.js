@@ -25,6 +25,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, message: error.message }));
     return true;
   }
+
+  if (request.action === 'deanonymize') {
+    deanonymizeText(request.sessionId, request.text)
+      .then(result => sendResponse({ success: true, data: result }))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 // Anonymize text using the API
@@ -53,6 +60,18 @@ async function anonymizeText(text) {
     console.error('[Presidio Background] Anonymization error:', error);
     throw error;
   }
+}
+
+// Deanonymize AI response using saved session mapping
+async function deanonymizeText(sessionId, text) {
+  const backendUrl = await getBackendUrl();
+  const response = await fetch(`${backendUrl}/api/deanonymize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: sessionId, text })
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
 }
 
 // Open the side panel (right side) when the toolbar icon is clicked

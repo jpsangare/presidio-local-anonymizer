@@ -1,0 +1,123 @@
+[
+  {
+    "id": "fr-identite-contact",
+    "text": "Jean Dupont, e-mail : jean@example.com, tél. : 06 12 34 56 78",
+    "expected": [["PERSON", "Jean Dupont"], ["EMAIL_ADDRESS", "jean@example.com"], ["PHONE_NUMBER", "06 12 34 56 78"]]
+  },
+  {
+    "id": "fr-presentation",
+    "text": "Je m’appelle Jean Dupont",
+    "expected": [["PERSON", "Jean Dupont"]]
+  },
+  {
+    "id": "fr-iban",
+    "text": "Mon IBAN est FR7630006000011234567890189",
+    "expected": [["IBAN_CODE", "FR7630006000011234567890189"]]
+  },
+  {
+    "id": "fr-carte-bancaire",
+    "text": "Carte bancaire : 4111 1111 1111 1111",
+    "expected": [["CREDIT_CARD", "4111 1111 1111 1111"]]
+  },
+  {
+    "id": "fr-ip",
+    "text": "Serveur interne 192.168.1.10",
+    "expected": [["IP_ADDRESS", "192.168.1.10"]]
+  },
+  {
+    "id": "fr-url",
+    "text": "Voir https://example.com/page",
+    "expected": [["URL", "https://example.com/page"]]
+  },
+  {
+    "id": "fr-personne-lieu",
+    "text": "Jean Dupont habite à Lyon",
+    "expected": [["PERSON", "Jean Dupont"], ["LOCATION", "Lyon"]]
+  },
+  {
+    "id": "fr-email-avec-point",
+    "text": "Écrire à jean.dupont@exemple.fr",
+    "expected": [["EMAIL_ADDRESS", "jean.dupont@exemple.fr"]]
+  },
+  {
+    "id": "en-telephone",
+    "text": "Call me at +1 415 555 2671",
+    "expected": [["PHONE_NUMBER", "+1 415 555 2671"]]
+  },
+  {
+    "id": "en-personne-email",
+    "text": "My name is John Smith and my email is john.smith@example.org",
+    "expected": [["PERSON", "John Smith"], ["EMAIL_ADDRESS", "john.smith@example.org"]]
+  },
+  {
+    "id": "pl-nip-pesel",
+    "text": "NIP 123-456-32-18 et PESEL 92010212345",
+    "expected": [["PL_NIP", "123-456-32-18"], ["PL_PESEL", "92010212345"]]
+  },
+  {
+    "id": "pl-personne-telephone",
+    "text": "Contact: Anna Kowalska, tel. +48 600 123 456",
+    "expected": [["PERSON", "Anna Kowalska"], ["PHONE_NUMBER", "+48 600 123 456"]]
+  },
+  {
+    "id": "neutre-sans-donnee",
+    "text": "Le code source est disponible sur demande.",
+    "expected": []
+  },
+  {
+    "id": "en-lieu",
+    "text": "He lives in London",
+    "expected": [["LOCATION", "London"]]
+  },
+  {
+    "id": "fr-sans-donnee",
+    "text": "Rien à signaler, la réunion est reportée.",
+    "expected": []
+  },
+  {
+    "id": "connu-date-francaise",
+    "text": "Réunion le 12 mars 2024 à 10h",
+    "expected": [["DATE_TIME", "12 mars 2024"]],
+    "known_issue": "La date est bien détectée, mais le modèle NER français prend le mot capitalisé « Réunion » pour un lieu."
+  },
+  {
+    "id": "fr-secu-valide",
+    "text": "Mon numéro de sécurité sociale est 1 85 05 78 006 084 91",
+    "expected": [["FR_SECU", "1 85 05 78 006 084 91"]]
+  },
+  {
+    "id": "fr-secu-invalide",
+    "text": "sécu 1 85 05 78 006 084 99",
+    "expected": []
+  },
+  {
+    "id": "fr-siren-valide",
+    "text": "SIREN 552 100 554",
+    "expected": [["FR_SIREN", "552 100 554"]]
+  },
+  {
+    "id": "fr-siren-invalide",
+    "text": "SIREN 123 456 789",
+    "expected": []
+  },
+  {
+    "id": "fr-siret-valide",
+    "text": "SIRET 552 100 554 00013",
+    "expected": [["FR_SIRET", "552 100 554 00013"]]
+  },
+  {
+    "id": "fr-plaque",
+    "text": "ma voiture AB-123-CD",
+    "expected": [["FR_PLATE", "AB-123-CD"]]
+  },
+  {
+    "id": "fr-date-longue",
+    "text": "Je suis né le 1er janvier 1990 à Marseille",
+    "expected": [["DATE_TIME", "1er janvier 1990"], ["LOCATION", "Marseille"]]
+  },
+  {
+    "id": "fr-date-numerique",
+    "text": "rdv le 05/11/2026",
+    "expected": [["DATE_TIME", "05/11/2026"]]
+  }
+]

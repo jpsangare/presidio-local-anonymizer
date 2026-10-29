@@ -45,8 +45,9 @@ pip install -r requirements.txt
 echo "[OK] Dépendances installées"
 echo ""
 
-echo "[4/5] Téléchargement du modèle SpaCy (pl_core_news_md)..."
-python -m spacy download pl_core_news_md
+echo "[4/5] Téléchargement des modèles SpaCy (fr_core_news_md, en_core_web_md)..."
+python -m spacy download fr_core_news_md
+python -m spacy download en_core_web_md
 echo "[OK] Modèle SpaCy téléchargé"
 echo ""
 

@@ -71,7 +71,7 @@ Le backend est le programme qui détecte et masque les données personnelles.
 
 1. **Dans le dossier du programme, double-cliquez sur `Uruchom-Windows.bat`** — c’est tout !
    - Le script vérifie si Python est installé (et l’installe automatiquement si nécessaire).
-   - Il télécharge les bibliothèques et le modèle linguistique polonais (5 à 10 minutes, environ 500 Mo, uniquement la première fois).
+   - Il télécharge les bibliothèques et les modèles linguistiques français et anglais (5 à 10 minutes, environ 500 Mo, uniquement la première fois).
    - Il démarre le backend et ouvre automatiquement le tableau de bord dans le navigateur. ✅
 2. **Facultatif :** double-cliquez sur `Autostart-Windows.bat` pour lancer automatiquement le backend au démarrage de l’ordinateur.
 

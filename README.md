@@ -51,7 +51,7 @@
 - 🔒 **100% offline** - Everything runs locally, no data leaves your machine
 - 🏆 **Microsoft Presidio** - Professional PII detection engine
 - 📋 **28 entity types** - PESEL, NIP, REGON, emails, phones, credit cards, passports, IDs
-- 🇵🇱 **Polish language optimized** - Native support for Polish PII
+- 🇫🇷 **French & English optimized** - Native support for French and English PII, plus Polish identifiers (PESEL, NIP, REGON)
 - 🇫🇷 **French by default** - French and English interface, selectable from the extension popup
 - 🌐 **Works everywhere** - ChatGPT, Claude, Gmail, forms, content-editable fields
 - 📊 **Web Dashboard** - Real-time monitoring, testing, and logs
@@ -166,7 +166,7 @@ Dashboard features:
 
 ## 🔒 Detected Data Types
 
-### 🇵🇱 Polish Data (Default: Enabled):
+### 🇵🇱 Polish Identifiers (Default: Enabled):
 
 | Type | Example | Mask | Confidence |
 |------|---------|------|------------|
@@ -234,6 +234,14 @@ Configure in Dashboard: http://localhost:6677/dashboard → Paramètres
 1. Open http://localhost:6677/dashboard
 2. Click « Journaux » in navigation
 3. See history: original → anonymized (last 100 entries)
+
+### Automated tests (pytest):
+
+Double-click `Lancer-Tests.bat` (Windows) or run `./lancer-tests.sh` (Mac/Linux). Extra arguments go to pytest (e.g. `Lancer-Tests.bat -k api -x`). The script uses `backend\.venv` if present and installs missing dependencies automatically.
+
+- Tests live in [`tests/`](tests/): config, regex patterns, anonymizer, result merging, HTTP API and a detection corpus (`tests/data/corpus.json`) that reports precision and recall.
+- Tests that need the spaCy models (`fr_core_news_md`, `en_core_web_md`) are skipped with a clear reason if they are not installed.
+- Cases tagged `known_issue` in the corpus track known false positives/negatives without failing the run.
 
 **More testing guides:** [TESTING.md](TESTING.md)
 
@@ -371,7 +379,7 @@ presidio-local-anonymizer/
 **Backend:**
 - Flask 3.0 - Lightweight web framework
 - Microsoft Presidio 2.2.354 - PII detection engine
-- SpaCy 3.7.2 - NLP for Polish language
+- SpaCy 3.7.2 - NLP for French and English language
 - Python 3.8+ - Modern Python
 
 **Extension:**
@@ -475,7 +483,7 @@ You are free to use, modify, and distribute this software.
 ## 🙏 Credits
 
 - **[Microsoft Presidio](https://github.com/microsoft/presidio)** - PII detection and anonymization engine
-- **[SpaCy](https://spacy.io/)** - Industrial-strength NLP for Polish language support
+- **[SpaCy](https://spacy.io/)** - Industrial-strength NLP for French and English language support
 - **[Flask](https://flask.palletsprojects.com/)** - Lightweight web framework
 - **[Claude Code](https://claude.com/claude-code)** - AI-powered development assistant
 

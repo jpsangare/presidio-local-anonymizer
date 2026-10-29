@@ -25,7 +25,7 @@ Lorsque vous collez dans ChatGPT, Claude ou Gmail un texte contenant des donnée
 2. Si Windows affiche la fenêtre bleue « Windows a protégé votre ordinateur », cliquez sur **« Informations complémentaires »** → **« Exécuter quand même »** (le programme est sûr : son code est public sur GitHub).
 3. La fenêtre noire s’occupe de tout :
    - elle vérifie si Python est installé (sinon, elle l’installe automatiquement ; il peut arriver qu’elle vous demande de cliquer une nouvelle fois sur le fichier) ;
-   - elle télécharge les bibliothèques nécessaires et le modèle linguistique polonais ;
+   - elle télécharge les bibliothèques nécessaires et les modèles linguistiques français et anglais ;
    - elle lance le programme et **ouvre automatiquement le tableau de bord dans le navigateur**.
 4. Lorsque le tableau de bord s’affiche dans le navigateur, tout fonctionne ! ✅
 

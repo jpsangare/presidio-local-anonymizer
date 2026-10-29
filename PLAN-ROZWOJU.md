@@ -7,7 +7,7 @@ Ce document fait référence pour l’orientation du projet. Mettez-le à jour �
 
 ## 1. État actuel (v1.4.0)
 
-- **Backend :** Flask + Microsoft Presidio 2.2.354 + spaCy `pl_core_news_md`, port **6677** (configurable via `PRESIDIO_PORT`), loopback uniquement (IPv4+IPv6), sans authentification (décision délibérée : service exclusivement local).
+- **Backend :** Flask + Microsoft Presidio 2.2.354 + spaCy `fr_core_news_md` + `en_core_web_md`, port **6677** (configurable via `PRESIDIO_PORT`), loopback uniquement (IPv4+IPv6), sans authentification (décision délibérée : service exclusivement local).
 - **Extension Chrome :** Manifest V3, trois mécanismes : anonymisation au collage (Ctrl+V, la méthode la plus fiable), raccourci Ctrl+Shift+A, interception du bouton « Envoyer ».
 - **Windows pour débutants :** `Uruchom-Windows.bat` (installation et démarrage en un clic, installation automatique de Python via winget), `Autostart-Windows.bat`, guide `WINDOWS.md`.
 - **Entités :** 28 types, priorité aux données polonaises (PESEL, NIP, REGON, carte d’identité, passeport) et aux données internationales.
@@ -74,7 +74,7 @@ Les fondations existent déjà dans le commit v2.0.0 abandonné (voir le point 2
 ## 5. Maintenance (processus continu)
 
 ### Rythme trimestriel (30 à 60 min)
-- [ ] `pip list --outdated` dans le venv → mettre à jour **presidio-analyzer/anonymizer** et **spaCy** (attention : une nouvelle version de spaCy peut nécessiter une nouvelle version du modèle `pl_core_news_md` — toujours tester la détection après la mise à jour).
+- [ ] `pip list --outdated` dans le venv → mettre à jour **presidio-analyzer/anonymizer** et **spaCy** (attention : une nouvelle version de spaCy peut nécessiter une nouvelle version des modèles `fr_core_news_md` / `en_core_web_md` — toujours tester la détection après la mise à jour).
 - [ ] Consulter le changelog de Chrome pour repérer les changements de MV3 (API dépréciées, par exemple le devenir de `document.execCommand`).
 - [ ] Tester manuellement trois sites : ChatGPT, Claude, Gmail (leur interface change fréquemment, ce qui peut casser l’heuristique du bouton « Envoyer »).
 - [ ] Examiner les issues GitHub.
