@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('close-result-btn')?.addEventListener('click', () => {
     document.getElementById('deanon-result').classList.add('hidden');
   });
+  document.getElementById('session-id-apply')?.addEventListener('click', applyManualSession);
 
   setInterval(checkBackendStatus, 5000);
 });
@@ -155,14 +156,25 @@ async function loadLastSession() {
 function setSession(id) {
   currentSessionId = id;
   const badge = document.getElementById('session-badge');
-  if (!badge) return;
-  if (id) {
-    badge.textContent = '✓ Session active';
-    badge.className = 'session-badge active';
-  } else {
-    badge.textContent = 'Aucune session';
-    badge.className = 'session-badge missing';
+  const input = document.getElementById('session-id-input');
+  if (badge) {
+    if (id) {
+      badge.textContent = '✓ Session active';
+      badge.className = 'session-badge active';
+    } else {
+      badge.textContent = 'Aucune session';
+      badge.className = 'session-badge missing';
+    }
   }
+  if (input && id) input.value = id;
+}
+
+function applyManualSession() {
+  const input = document.getElementById('session-id-input');
+  const id = input?.value.trim();
+  if (!id) return;
+  setSession(id);
+  chrome.storage.local.set({ lastSessionId: id });
 }
 
 // ── Deanonymization ───────────────────────────────────────────────────────────

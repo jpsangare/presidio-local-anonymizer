@@ -398,7 +398,19 @@
         🔓 Désanonymiser la réponse
         <span class="session-badge missing" id="session-badge">Aucune session</span>
       </div>
-      <div style="font-size:11px;color:#6b7280;">Collez la réponse de l'IA ci-dessous puis cliquez sur Désanonymiser.</div>
+      <div style="font-size:11px;color:#6b7280;">
+        Anonymisez un texte via l'extension, ou collez un ID de session du tableau de bord.
+      </div>
+      <!-- Session ID manuel -->
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input
+          id="session-id-input"
+          type="text"
+          placeholder="ID de session (optionnel)"
+          style="flex:1;padding:5px 8px;font-size:11px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;"
+        />
+        <button id="session-id-apply" class="tb-btn" style="white-space:nowrap;">Utiliser</button>
+      </div>
     </div>
 
     <!-- Rich-text editor -->
