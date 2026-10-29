@@ -1,11 +1,11 @@
-// Popup script for Presidio Browser Anonymizer
+// MasqueIA Popup Script
 
 let currentBackendUrl = '';
 let extensionEnabled = true;
 let currentLanguage = DEFAULT_UI_LANGUAGE;
 let currentSessionId = null;
 
-// Initialize popup
+// ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   currentLanguage = await getUiLanguage();
   applyPopupLanguage();
@@ -14,81 +14,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   await checkBackendStatus();
   await loadLastSession();
 
-  // Add event listeners for buttons
   document.getElementById('settings-btn')?.addEventListener('click', openSettings);
   document.getElementById('dashboard-btn')?.addEventListener('click', openDashboard);
   document.getElementById('setup-btn')?.addEventListener('click', openSetup);
   document.getElementById('options-btn')?.addEventListener('click', openOptions);
   document.getElementById('extension-toggle')?.addEventListener('click', toggleExtension);
   document.getElementById('language-select')?.addEventListener('change', changeLanguage);
-  document.getElementById('deanon-btn')?.addEventListener('click', deanonymizeResponse);
-  document.getElementById('deanon-clear')?.addEventListener('click', clearDeanon);
 
-  // Auto-refresh status every 5 seconds
   setInterval(checkBackendStatus, 5000);
 });
 
-async function loadLastSession() {
-  const result = await chrome.storage.local.get(['lastSessionId']);
-  if (result.lastSessionId) {
-    currentSessionId = result.lastSessionId;
-    document.getElementById('deanon-panel')?.classList.remove('hidden');
-  }
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tab-' + name + '-btn').classList.add('active');
 }
 
-async function deanonymizeResponse() {
-  const text = document.getElementById('deanon-input').value.trim();
-  if (!text) return;
-  if (!currentSessionId) {
-    alert(extensionText('noSession', currentLanguage));
-    return;
-  }
-  const btn = document.getElementById('deanon-btn');
-  const label = document.getElementById('deanon-btn-label');
-  label.textContent = extensionText('deanonymizing', currentLanguage);
-  btn.disabled = true;
-  try {
-    const response = await chrome.runtime.sendMessage({
-      action: 'deanonymize',
-      sessionId: currentSessionId,
-      text
-    });
-    if (response.success) {
-      document.getElementById('deanon-text').textContent = response.data.deanonymized_text;
-      document.getElementById('deanon-count').textContent =
-        `${response.data.replacements} token(s) restauré(s)`;
-      document.getElementById('deanon-result').classList.remove('hidden');
-    } else {
-      alert(response.error || 'Erreur de désanonymisation');
-    }
-  } finally {
-    label.textContent = extensionText('textDeanonymized', currentLanguage).replace('🔓 ', '') || 'Désanonymiser';
-    btn.disabled = false;
-  }
-}
-
-function clearDeanon() {
-  document.getElementById('deanon-input').value = '';
-  document.getElementById('deanon-result').classList.add('hidden');
-}
-
+// ── Language ──────────────────────────────────────────────────────────────────
 function applyPopupLanguage() {
   document.documentElement.lang = currentLanguage;
-  const languageSelect = document.getElementById('language-select');
-  languageSelect.options[0].textContent = extensionText('french', currentLanguage);
-  languageSelect.options[1].textContent = extensionText('english', currentLanguage);
-  languageSelect.value = currentLanguage;
-  document.getElementById('status-text').textContent = extensionText('checking', currentLanguage);
-  document.getElementById('language-label').textContent = extensionText('language', currentLanguage);
-  document.getElementById('popup-subtitle').textContent = extensionText('popupSubtitle', currentLanguage);
-  document.getElementById('toggle-label').textContent = extensionText('autoAnonymization', currentLanguage);
+  const sel = document.getElementById('language-select');
+  sel.options[0].textContent = extensionText('french', currentLanguage);
+  sel.options[1].textContent = extensionText('english', currentLanguage);
+  sel.value = currentLanguage;
+  document.getElementById('status-text').textContent       = extensionText('checking', currentLanguage);
+  document.getElementById('language-label').textContent    = extensionText('language', currentLanguage);
+  document.getElementById('popup-subtitle').textContent    = extensionText('popupSubtitle', currentLanguage);
+  document.getElementById('toggle-label').textContent      = extensionText('autoAnonymization', currentLanguage);
   document.getElementById('service-status-label').textContent = extensionText('serviceStatus', currentLanguage);
   document.getElementById('offline-warning-title').textContent = extensionText('backendOffline', currentLanguage);
-  document.getElementById('offline-warning-help').textContent = extensionText('startOrInstall', currentLanguage);
-  document.getElementById('setup-btn').textContent = extensionText('installBackend', currentLanguage);
-  document.getElementById('settings-btn').textContent = extensionText('settings', currentLanguage);
-  document.getElementById('dashboard-btn').textContent = extensionText('dashboard', currentLanguage);
-  document.getElementById('options-btn').textContent = extensionText('extensionSettings', currentLanguage);
+  document.getElementById('offline-warning-help').textContent  = extensionText('startOrInstall', currentLanguage);
+  document.getElementById('setup-btn').textContent         = extensionText('installBackend', currentLanguage);
+  document.getElementById('settings-btn').textContent      = extensionText('settings', currentLanguage);
+  document.getElementById('dashboard-btn').textContent     = extensionText('dashboard', currentLanguage);
+  document.getElementById('options-btn').textContent       = extensionText('extensionSettings', currentLanguage);
+  document.getElementById('deanon-editor').dataset.placeholder =
+    currentLanguage === 'fr' ? 'Collez ici la réponse de l\'IA...' : 'Paste the AI response here...';
 }
 
 async function changeLanguage(event) {
@@ -99,151 +62,159 @@ async function changeLanguage(event) {
   checkBackendStatus();
 }
 
-// Load backend URL from storage
+// ── Backend URL ───────────────────────────────────────────────────────────────
 async function loadBackendUrl() {
   try {
-    const response = await chrome.runtime.sendMessage({ action: 'getBackendUrl' });
-    if (response.success) {
-      currentBackendUrl = response.url;
-      // Update button links
-      updateButtonLinks();
-    }
-  } catch (error) {
-    console.error('Failed to load backend URL:', error);
+    const r = await chrome.runtime.sendMessage({ action: 'getBackendUrl' });
+    currentBackendUrl = r.success ? r.url : 'http://localhost:6677';
+  } catch (_) {
     currentBackendUrl = 'http://localhost:6677';
-    updateButtonLinks();
   }
+  updateButtonLinks();
 }
 
-// Update button links with current backend URL
 function updateButtonLinks() {
-  const settingsBtn = document.getElementById('settings-btn');
-  const dashboardBtn = document.getElementById('dashboard-btn');
-
-  if (settingsBtn) {
-    settingsBtn.href = `${currentBackendUrl}/?lang=${currentLanguage}`;
-  }
-  if (dashboardBtn) {
-    dashboardBtn.href = `${currentBackendUrl}/dashboard?lang=${currentLanguage}`;
-  }
-  const setupBtn = document.getElementById('setup-btn');
-  if (setupBtn) setupBtn.href = `${currentBackendUrl}/setup?lang=${currentLanguage}`;
+  const l = currentLanguage;
+  document.getElementById('settings-btn').href  = `${currentBackendUrl}/?lang=${l}`;
+  document.getElementById('dashboard-btn').href = `${currentBackendUrl}/dashboard?lang=${l}`;
+  const sb = document.getElementById('setup-btn');
+  if (sb) sb.href = `${currentBackendUrl}/setup?lang=${l}`;
 }
 
-// Check backend status
+// ── Backend status ────────────────────────────────────────────────────────────
 async function checkBackendStatus() {
-  const statusBadge = document.getElementById('status-badge');
-  const statusDot = document.getElementById('status-dot');
-  const statusText = document.getElementById('status-text');
-  const offlineWarning = document.getElementById('offline-warning');
+  const badge   = document.getElementById('status-badge');
+  const dot     = document.getElementById('status-dot');
+  const text    = document.getElementById('status-text');
+  const warn    = document.getElementById('offline-warning');
   const setupBtn = document.getElementById('setup-btn');
-  const settingsBtn = document.getElementById('settings-btn');
-  const dashboardBtn = document.getElementById('dashboard-btn');
-
   try {
-    const response = await chrome.runtime.sendMessage({
-      action: 'testConnection',
-      url: currentBackendUrl
-    });
-
-    if (response.success) {
-      // Backend is online
-      statusBadge.className = 'status-badge online';
-      statusDot.className = 'status-dot online';
-      statusText.textContent = extensionText('online', currentLanguage);
-
-      // Hide offline warning and setup button
-      offlineWarning?.classList.add('hidden');
-      setupBtn?.classList.add('hidden');
-
-      // Show normal buttons
-      settingsBtn?.classList.remove('hidden');
-      dashboardBtn?.classList.remove('hidden');
-    } else {
-      throw new Error(response.message);
-    }
-  } catch (error) {
-    // Backend is offline
-    statusBadge.className = 'status-badge offline';
-    statusDot.className = 'status-dot offline';
-    statusText.textContent = extensionText('offline', currentLanguage);
-
-    // Show offline warning and setup button
-    offlineWarning?.classList.remove('hidden');
+    const r = await chrome.runtime.sendMessage({ action: 'testConnection', url: currentBackendUrl });
+    if (!r.success) throw new Error(r.message);
+    badge.className = 'badge online';
+    dot.className   = 'dot online';
+    text.textContent = extensionText('online', currentLanguage);
+    warn?.classList.add('hidden');
+    setupBtn?.classList.add('hidden');
+  } catch (_) {
+    badge.className = 'badge offline';
+    dot.className   = 'dot offline';
+    text.textContent = extensionText('offline', currentLanguage);
+    warn?.classList.remove('hidden');
     setupBtn?.classList.remove('hidden');
-
-    // Keep normal buttons visible
-    // (user might want to manually start backend)
-
-    console.error('Backend check failed:', error);
   }
 }
 
-// Load extension state from storage
+// ── Extension toggle ──────────────────────────────────────────────────────────
 async function loadExtensionState() {
-  try {
-    const result = await chrome.storage.local.get(['extensionEnabled']);
-    extensionEnabled = result.extensionEnabled !== false; // Default to true
-    updateToggleUI();
-  } catch (error) {
-    console.error('Failed to load extension state:', error);
-    extensionEnabled = true;
-    updateToggleUI();
-  }
+  const r = await chrome.storage.local.get(['extensionEnabled']);
+  extensionEnabled = r.extensionEnabled !== false;
+  updateToggleUI();
 }
 
-// Toggle extension on/off
 async function toggleExtension() {
   extensionEnabled = !extensionEnabled;
-
-  // Save to storage
-  try {
-    await chrome.storage.local.set({ extensionEnabled });
-    updateToggleUI();
-
-    // Notify background script
-    chrome.runtime.sendMessage({
-      action: 'setExtensionState',
-      enabled: extensionEnabled
-    });
-  } catch (error) {
-    console.error('Failed to save extension state:', error);
-  }
+  await chrome.storage.local.set({ extensionEnabled });
+  updateToggleUI();
+  chrome.runtime.sendMessage({ action: 'setExtensionState', enabled: extensionEnabled });
 }
 
-// Update toggle button UI
 function updateToggleUI() {
-  const toggle = document.getElementById('extension-toggle');
-  if (toggle) {
-    if (extensionEnabled) {
-      toggle.classList.add('active');
-    } else {
-      toggle.classList.remove('active');
-    }
-    toggle.setAttribute('aria-pressed', String(extensionEnabled));
+  const t = document.getElementById('extension-toggle');
+  if (!t) return;
+  t.classList.toggle('active', extensionEnabled);
+  t.setAttribute('aria-pressed', String(extensionEnabled));
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function openSettings(e)  { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` }); }
+function openDashboard(e) { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` }); }
+function openSetup(e)     { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` }); }
+function openOptions(e)   { if (e) e.preventDefault(); chrome.runtime.openOptionsPage(); }
+
+// ── Session ───────────────────────────────────────────────────────────────────
+async function loadLastSession() {
+  const r = await chrome.storage.local.get(['lastSessionId']);
+  setSession(r.lastSessionId || null);
+}
+
+function setSession(id) {
+  currentSessionId = id;
+  const badge = document.getElementById('session-badge');
+  if (!badge) return;
+  if (id) {
+    badge.textContent = '✓ Session active';
+    badge.className = 'session-badge active';
+  } else {
+    badge.textContent = 'Aucune session';
+    badge.className = 'session-badge missing';
   }
 }
 
-// Open settings in new tab
-function openSettings(e) {
-  e.preventDefault();
-  chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` });
+// ── Deanonymization ───────────────────────────────────────────────────────────
+async function deanonymizeResponse() {
+  const editor = document.getElementById('deanon-editor');
+  const text = editor.innerText.trim();
+  if (!text) return;
+
+  if (!currentSessionId) {
+    alert(extensionText('noSession', currentLanguage));
+    showTab('main');
+    return;
+  }
+
+  const btn   = document.getElementById('deanon-btn');
+  const label = document.getElementById('deanon-btn-label');
+  btn.disabled = true;
+  label.textContent = extensionText('deanonymizing', currentLanguage);
+
+  try {
+    const r = await chrome.runtime.sendMessage({
+      action: 'deanonymize',
+      sessionId: currentSessionId,
+      text
+    });
+
+    if (r.success) {
+      const resultEl = document.getElementById('deanon-result');
+      document.getElementById('deanon-text').textContent = r.data.deanonymized_text;
+      document.getElementById('deanon-count').textContent =
+        `${r.data.replacements} token(s) restauré(s)`;
+      resultEl.classList.remove('hidden');
+    } else {
+      alert(r.error || 'Erreur de désanonymisation');
+    }
+  } catch (err) {
+    alert('Erreur : ' + err.message);
+  } finally {
+    btn.disabled = false;
+    label.textContent = 'Désanonymiser';
+  }
 }
 
-// Open dashboard in new tab
-function openDashboard(e) {
-  e.preventDefault();
-  chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` });
+async function copyResult() {
+  const txt = document.getElementById('deanon-text').textContent;
+  await navigator.clipboard.writeText(txt);
 }
 
-// Open setup wizard in new tab
-function openSetup(e) {
-  e.preventDefault();
-  chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` });
+// ── Rich-text toolbar helpers ─────────────────────────────────────────────────
+function execCmd(cmd) {
+  document.getElementById('deanon-editor').focus();
+  document.execCommand(cmd, false, null);
 }
 
-// Open extension options
-function openOptions(e) {
-  if (e) e.preventDefault();
-  chrome.runtime.openOptionsPage();
+function clearEditor() {
+  document.getElementById('deanon-editor').innerHTML = '';
+  document.getElementById('deanon-result').classList.add('hidden');
+}
+
+async function pasteFromClipboard() {
+  try {
+    const txt = await navigator.clipboard.readText();
+    const editor = document.getElementById('deanon-editor');
+    editor.focus();
+    document.execCommand('insertText', false, txt);
+  } catch (_) {
+    document.getElementById('deanon-editor').focus();
+  }
 }

@@ -3,355 +3,441 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Presidio Anonymizer</title>
+  <title>MasqueIA</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 100%;
-      min-height: 100vh;
-      padding: 16px;
+      width: 360px;
+      min-height: 480px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f9fafb;
+      display: flex;
+      flex-direction: column;
     }
 
+    /* ── Header ── */
     .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 12px;
-    }
-
-    h1 {
-      font-size: 18px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .status {
-      background: white;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .status-label {
-      font-size: 14px;
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-badge.online {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
-    }
-
-    .status-badge.offline {
-      background: rgba(239, 68, 68, 0.1);
-      color: #dc2626;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .status-dot.online {
-      background: #10b981;
-    }
-
-    .status-dot.offline {
-      background: #ef4444;
-    }
-
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 8px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      padding: 14px 16px 0;
       color: white;
     }
 
-    .btn-primary:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-secondary {
-      background: white;
-      color: #374151;
-      border: 1px solid #d1d5db;
-    }
-
-    .btn-secondary:hover {
-      background: #f9fafb;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 16px;
-    }
-
-    .footer a {
-      color: #2563eb;
-      text-decoration: none;
-    }
-
-    .language-setting {
+    .header-top {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .logo { width: 36px; height: 36px; flex-shrink: 0; }
+
+    .header-top h1 { font-size: 17px; font-weight: 700; }
+    .header-top .subtitle { font-size: 11px; opacity: 0.8; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.65);
       font-size: 12px;
-      color: #6b7280;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
     }
 
-    .language-setting select {
-      padding: 4px 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
+    .tab-btn.active {
+      color: white;
+      border-bottom-color: white;
+    }
+
+    /* ── Tab content ── */
+    .tab-content { display: none; flex: 1; padding: 14px 14px 12px; }
+    .tab-content.active { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── Cards ── */
+    .card {
       background: white;
-      color: #374151;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .toggle-container {
-      background: white;
+      border-radius: 10px;
       padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* ── Status ── */
+    .status-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .toggle-label {
-      font-size: 14px;
-      color: #374151;
-      font-weight: 500;
+    .status-label { font-size: 13px; color: #374151; font-weight: 500; }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
     }
+
+    .badge.online  { background: #d1fae5; color: #059669; }
+    .badge.offline { background: #fee2e2; color: #dc2626; }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+    }
+
+    .dot.online  { background: #10b981; }
+    .dot.offline { background: #ef4444; }
+
+    /* ── Toggle ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label { font-size: 13px; color: #374151; font-weight: 500; }
 
     .switch {
       position: relative;
-      width: 48px;
-      height: 24px;
+      width: 44px; height: 22px;
       background: #d1d5db;
-      border-radius: 12px;
+      border-radius: 11px;
       cursor: pointer;
       transition: background 0.3s;
     }
 
-    .switch.active {
-      background: #10b981;
-    }
+    .switch.active { background: #10b981; }
 
     .switch-knob {
       position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
+      top: 2px; left: 2px;
+      width: 18px; height: 18px;
       background: white;
       border-radius: 50%;
       transition: transform 0.3s;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
-    .switch.active .switch-knob {
-      transform: translateX(24px);
-    }
+    .switch.active .switch-knob { transform: translateX(22px); }
 
-    .deanon-panel {
-      background: white;
-      padding: 14px;
+    /* ── Buttons ── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
       border-radius: 8px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border-left: 3px solid #7c3aed;
-    }
-
-    .deanon-panel h3 {
       font-size: 13px;
       font-weight: 600;
-      color: #374151;
-      margin-bottom: 8px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: filter 0.2s;
     }
 
-    .deanon-panel textarea {
-      width: 100%;
-      height: 80px;
-      padding: 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-family: monospace;
+    .btn:hover { filter: brightness(0.92); }
+    .btn-primary   { background: #4f46e5; color: white; }
+    .btn-secondary { background: white; color: #374151; border: 1px solid #d1d5db; }
+    .btn-green     { background: #10b981; color: white; }
+    .btn-purple    { background: #7c3aed; color: white; }
+    .btn-sm {
+      padding: 7px 12px;
       font-size: 12px;
-      resize: vertical;
-      box-sizing: border-box;
+      width: auto;
+      display: inline-block;
     }
 
-    .deanon-result {
-      margin-top: 10px;
-      padding: 10px;
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 6px;
+    /* ── Offline warning ── */
+    .offline-warn {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 12px;
       font-size: 12px;
+      color: #b91c1c;
+      text-align: center;
     }
 
-    .deanon-result p {
-      font-family: monospace;
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin-bottom: 6px;
-    }
-
-    .deanon-result small {
+    /* ── Language ── */
+    .lang-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
       color: #6b7280;
     }
 
-    .btn-purple {
-      background: #7c3aed;
-      color: white;
+    .lang-row select {
+      padding: 3px 7px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 12px;
+      background: white;
+      color: #374151;
     }
 
-    .btn-purple:hover {
-      background: #6d28d9;
+    /* ── Footer ── */
+    .footer {
+      font-size: 10px;
+      color: #9ca3af;
+      text-align: center;
+      padding: 0 14px 10px;
     }
+
+    .footer a { color: #7c3aed; text-decoration: none; }
+
+    /* ══ TAB 2 — Deanonymization ══ */
+    .deanon-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .session-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .session-badge.active  { background: #d1fae5; color: #059669; }
+    .session-badge.missing { background: #fee2e2; color: #dc2626; }
+
+    /* Rich-text editor */
+    .editor-wrap {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      gap: 2px;
+      padding: 5px 8px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .tb-btn {
+      padding: 3px 7px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      background: white;
+      font-size: 12px;
+      cursor: pointer;
+      color: #374151;
+    }
+
+    .tb-btn:hover { background: #f3f4f6; }
+
+    .editor {
+      min-height: 110px;
+      max-height: 160px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-y: auto;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #111827;
+    }
+
+    .editor:empty::before {
+      content: attr(data-placeholder);
+      color: #9ca3af;
+    }
+
+    /* Highlight tokens */
+    .editor .token {
+      background: #ede9fe;
+      color: #6d28d9;
+      border-radius: 3px;
+      padding: 1px 3px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    /* Result area */
+    .result-wrap {
+      border: 1.5px solid #a7f3d0;
+      border-radius: 8px;
+      background: #f0fdf4;
+      padding: 10px 12px;
+    }
+
+    .result-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #059669;
+      margin-bottom: 6px;
+    }
+
+    .result-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #111827;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 130px;
+      overflow-y: auto;
+    }
+
+    .result-meta {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
+
+  <!-- Header with tabs -->
   <div class="header">
-    <svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="popupBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
-        </linearGradient>
-        <linearGradient id="popupShieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="8" fill="url(#popupBgGradient)"/>
-      <path d="M32 6 L55 16 V38 C55 52 43 60 32 62 C21 60 9 52 9 38 V16 Z"
-            fill="url(#popupShieldGradient)" stroke="#1e3a8a" stroke-width="1.5"/>
-      <rect x="23" y="34" width="18" height="22" rx="2" fill="white"/>
-      <path d="M32 22 Q38 22 38 28 V34 H26 V28 Q26 22 32 22"
-            fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
-      <circle cx="32" cy="42" r="2.5" fill="#2563eb"/>
-      <rect x="30.5" y="44" width="3" height="8" rx="1.5" fill="#2563eb"/>
-    </svg>
-    <h1>MasqueIA</h1>
-    <div class="subtitle" id="popup-subtitle">Protection des données personnelles</div>
-  </div>
+    <div class="header-top">
+      <svg class="logo" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hbg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <rect width="128" height="128" rx="24" fill="url(#hbg)"/>
+        <ellipse cx="64" cy="72" rx="46" ry="30" fill="white" opacity="0.95"/>
+        <ellipse cx="44" cy="68" rx="13" ry="9" fill="#4f46e5"/>
+        <ellipse cx="84" cy="68" rx="13" ry="9" fill="#4f46e5"/>
+        <rect x="59" y="98" width="10" height="20" rx="5" fill="white" opacity="0.75"/>
+        <circle cx="64" cy="22" r="6" fill="white" opacity="0.85"/>
+        <circle cx="32" cy="30" r="4" fill="white" opacity="0.6"/>
+        <circle cx="96" cy="30" r="4" fill="white" opacity="0.6"/>
+      </svg>
+      <div>
+        <h1>MasqueIA</h1>
+        <div class="subtitle" id="popup-subtitle">Protection des données personnelles</div>
+      </div>
+    </div>
 
-  <!-- Extension Toggle -->
-  <div class="toggle-container">
-    <div class="toggle-label" id="toggle-label">Anonymisation automatique</div>
-    <div class="switch active" id="extension-toggle" role="button" tabindex="0" aria-pressed="true">
-      <div class="switch-knob"></div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-main-btn" onclick="showTab('main')">🛡️ Extension</button>
+      <button class="tab-btn" id="tab-deanon-btn" onclick="showTab('deanon')">🔓 Désanonymiser</button>
     </div>
   </div>
 
-  <div class="status">
-    <div class="status-label" id="service-status-label">État du service</div>
-    <div class="status-badge offline" id="status-badge">
-      <div class="status-dot offline" id="status-dot"></div>
-      <span id="status-text">Vérification...</span>
+  <!-- Tab 1: Main -->
+  <div id="tab-main" class="tab-content active">
+
+    <div class="card">
+      <div class="toggle-row">
+        <div class="toggle-label" id="toggle-label">Anonymisation automatique</div>
+        <div class="switch active" id="extension-toggle" role="button" tabindex="0" aria-pressed="true">
+          <div class="switch-knob"></div>
+        </div>
+      </div>
     </div>
+
+    <div class="card">
+      <div class="status-row">
+        <div class="status-label" id="service-status-label">État du service</div>
+        <div class="badge offline" id="status-badge">
+          <div class="dot offline" id="status-dot"></div>
+          <span id="status-text">Vérification...</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="offline-warning" class="offline-warn hidden">
+      <div id="offline-warning-title">⚠️ Le backend ne répond pas</div>
+      <div id="offline-warning-help" style="opacity:0.8;margin-top:3px;">Démarrez ou installez le backend</div>
+    </div>
+
+    <a href="#" id="setup-btn" class="btn btn-green hidden">🚀 Installer le backend</a>
+    <a href="#" id="settings-btn" class="btn btn-primary">⚙️ Paramètres</a>
+    <a href="#" id="dashboard-btn" class="btn btn-secondary">📊 Tableau de bord</a>
+    <button id="options-btn" class="btn btn-secondary">🔧 Configuration de l'extension</button>
+
+    <div class="lang-row">
+      <span id="language-label">Langue</span>
+      <select id="language-select">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
   </div>
 
-  <!-- Offline warning (hidden by default) -->
-  <div id="offline-warning" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; color: #dc2626; padding: 16px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center;">
-    <span id="offline-warning-title">⚠️ Le backend ne répond pas</span><br>
-    <span id="offline-warning-help" style="font-size: 12px; opacity: 0.8;">Démarrez ou installez le backend</span>
-  </div>
+  <!-- Tab 2: Deanonymization -->
+  <div id="tab-deanon" class="tab-content">
 
-  <!-- Setup button (shown when offline) -->
-  <a href="#" id="setup-btn" target="_blank" class="btn btn-primary hidden" style="background: linear-gradient(135deg, #10b981, #059669);">
-    🚀 Installer le backend
-  </a>
-
-  <!-- Deanonymization panel (shown when a session exists) -->
-  <div id="deanon-panel" class="deanon-panel hidden">
-    <h3>🔓 <span id="deanon-title">Désanonymiser la réponse IA</span></h3>
-    <textarea id="deanon-input" placeholder="Collez ici la réponse de l\'IA..."></textarea>
-    <div style="display:flex;gap:6px;margin-top:8px;">
-      <button id="deanon-btn" class="btn btn-purple" style="flex:1;padding:8px;margin-bottom:0;font-size:13px;">🔓 <span id="deanon-btn-label">Désanonymiser</span></button>
-      <button id="deanon-clear" class="btn btn-secondary" style="padding:8px;margin-bottom:0;font-size:13px;width:auto;">✕</button>
+    <div class="card" style="gap:8px;display:flex;flex-direction:column;">
+      <div class="deanon-header">
+        🔓 Désanonymiser la réponse
+        <span class="session-badge missing" id="session-badge">Aucune session</span>
+      </div>
+      <div style="font-size:11px;color:#6b7280;">Collez la réponse de l'IA ci-dessous puis cliquez sur Désanonymiser.</div>
     </div>
-    <div id="deanon-result" class="deanon-result hidden">
-      <p id="deanon-text"></p>
-      <small id="deanon-count"></small>
+
+    <!-- Rich-text editor -->
+    <div class="editor-wrap">
+      <div class="editor-toolbar">
+        <button class="tb-btn" onclick="execCmd('bold')" title="Gras"><b>G</b></button>
+        <button class="tb-btn" onclick="execCmd('italic')" title="Italique"><i>I</i></button>
+        <button class="tb-btn" onclick="clearEditor()" title="Effacer">✕ Vider</button>
+        <button class="tb-btn" onclick="pasteFromClipboard()" title="Coller" style="margin-left:auto;">📋 Coller</button>
+      </div>
+      <div
+        id="deanon-editor"
+        class="editor"
+        contenteditable="true"
+        data-placeholder="Collez ici la réponse de l'IA...">
+      </div>
     </div>
+
+    <div class="actions-row">
+      <button id="deanon-btn" class="btn btn-purple" onclick="deanonymizeResponse()">
+        🔓 <span id="deanon-btn-label">Désanonymiser</span>
+      </button>
+    </div>
+
+    <!-- Result -->
+    <div id="deanon-result" class="result-wrap hidden">
+      <div class="result-label">✅ Texte original restauré</div>
+      <div class="result-text" id="deanon-text"></div>
+      <div class="result-meta" id="deanon-count"></div>
+      <div style="margin-top:8px;display:flex;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="copyResult()">📋 Copier</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('deanon-result').classList.add('hidden')">✕</button>
+      </div>
+    </div>
+
   </div>
-
-  <a href="#" id="settings-btn" target="_blank" class="btn btn-primary">
-    ⚙️ Paramètres
-  </a>
-  <a href="#" id="dashboard-btn" target="_blank" class="btn btn-secondary">
-    📊 Tableau de bord
-  </a>
-  <button id="options-btn" class="btn btn-secondary">
-    🔧 Configuration de l’extension
-  </button>
-
-  <label class="language-setting" for="language-select">
-    <span id="language-label">Langue</span>
-    <select id="language-select">
-      <option value="fr">Français</option>
-      <option value="en">English</option>
-    </select>
-  </label>
 
   <div class="footer">
-    v1.3.0 • <a href="https://github.com/jpsangare" target="_blank">jpsangare</a>
+    v1.0.0 • <a href="https://github.com/jpmsangare" target="_blank">jpmsangare</a>
   </div>
 
   <script src="locales.js"></script>
