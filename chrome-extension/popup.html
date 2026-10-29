@@ -343,8 +343,8 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" id="tab-main-btn" onclick="showTab('main')">🛡️ Extension</button>
-      <button class="tab-btn" id="tab-deanon-btn" onclick="showTab('deanon')">🔓 Désanonymiser</button>
+      <button class="tab-btn active" id="tab-main-btn">🛡️ Extension</button>
+      <button class="tab-btn" id="tab-deanon-btn">🔓 Désanonymiser</button>
     </div>
   </div>
 
@@ -404,10 +404,10 @@
     <!-- Rich-text editor -->
     <div class="editor-wrap">
       <div class="editor-toolbar">
-        <button class="tb-btn" onclick="execCmd('bold')" title="Gras"><b>G</b></button>
-        <button class="tb-btn" onclick="execCmd('italic')" title="Italique"><i>I</i></button>
-        <button class="tb-btn" onclick="clearEditor()" title="Effacer">✕ Vider</button>
-        <button class="tb-btn" onclick="pasteFromClipboard()" title="Coller" style="margin-left:auto;">📋 Coller</button>
+        <button class="tb-btn" id="tb-bold" title="Gras"><b>G</b></button>
+        <button class="tb-btn" id="tb-italic" title="Italique"><i>I</i></button>
+        <button class="tb-btn" id="tb-clear" title="Effacer">✕ Vider</button>
+        <button class="tb-btn" id="tb-paste" title="Coller" style="margin-left:auto;">📋 Coller</button>
       </div>
       <div
         id="deanon-editor"
@@ -418,7 +418,7 @@
     </div>
 
     <div class="actions-row">
-      <button id="deanon-btn" class="btn btn-purple" onclick="deanonymizeResponse()">
+      <button id="deanon-btn" class="btn btn-purple">
         🔓 <span id="deanon-btn-label">Désanonymiser</span>
       </button>
     </div>
@@ -429,8 +429,8 @@
       <div class="result-text" id="deanon-text"></div>
       <div class="result-meta" id="deanon-count"></div>
       <div style="margin-top:8px;display:flex;gap:6px;">
-        <button class="btn btn-secondary btn-sm" onclick="copyResult()">📋 Copier</button>
-        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('deanon-result').classList.add('hidden')">✕</button>
+        <button class="btn btn-secondary btn-sm" id="copy-result-btn">📋 Copier</button>
+        <button class="btn btn-secondary btn-sm" id="close-result-btn">✕</button>
       </div>
     </div>
 

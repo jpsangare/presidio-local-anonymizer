@@ -21,6 +21,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('extension-toggle')?.addEventListener('click', toggleExtension);
   document.getElementById('language-select')?.addEventListener('change', changeLanguage);
 
+  // Tabs
+  document.getElementById('tab-main-btn')?.addEventListener('click', () => showTab('main'));
+  document.getElementById('tab-deanon-btn')?.addEventListener('click', () => showTab('deanon'));
+
+  // Deanon toolbar
+  document.getElementById('tb-bold')?.addEventListener('click', () => execCmd('bold'));
+  document.getElementById('tb-italic')?.addEventListener('click', () => execCmd('italic'));
+  document.getElementById('tb-clear')?.addEventListener('click', clearEditor);
+  document.getElementById('tb-paste')?.addEventListener('click', pasteFromClipboard);
+
+  // Deanon actions
+  document.getElementById('deanon-btn')?.addEventListener('click', deanonymizeResponse);
+  document.getElementById('copy-result-btn')?.addEventListener('click', copyResult);
+  document.getElementById('close-result-btn')?.addEventListener('click', () => {
+    document.getElementById('deanon-result').classList.add('hidden');
+  });
+
   setInterval(checkBackendStatus, 5000);
 });
 
