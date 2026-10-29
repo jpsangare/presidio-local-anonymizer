@@ -1,54 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
     </linearGradient>
-    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    <linearGradient id="maskGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0d9ff"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-    </filter>
   </defs>
 
-  <!-- Background - full square -->
-  <rect width="200" height="200" fill="url(#bgGradient)"/>
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
 
-  <!-- Large shield - fills most of the square -->
-  <path d="M100 15 L175 50 V120 C175 165 135 190 100 195 C65 190 25 165 25 120 V50 Z"
-        fill="url(#shieldGradient)" stroke="#1e3a8a" stroke-width="4" filter="url(#shadow)"/>
+  <!-- Mask body -->
+  <ellipse cx="64" cy="72" rx="46" ry="30" fill="url(#maskGrad)"/>
 
-  <!-- Shield highlight -->
-  <path d="M100 25 L165 55 V115 C165 155 130 177 100 182 C70 177 35 155 35 115 V55 Z"
-        fill="#3b82f6" opacity="0.3"/>
+  <!-- Left eye hole -->
+  <ellipse cx="44" cy="68" rx="13" ry="9" fill="#4f46e5"/>
+  <!-- Left eye shine -->
+  <ellipse cx="40" cy="65" rx="4" ry="3" fill="white" opacity="0.35"/>
 
-  <!-- Large lock body -->
-  <rect x="70" y="105" width="60" height="70" rx="6" fill="white" filter="url(#shadow)"/>
+  <!-- Right eye hole -->
+  <ellipse cx="84" cy="68" rx="13" ry="9" fill="#4f46e5"/>
+  <!-- Right eye shine -->
+  <ellipse cx="80" cy="65" rx="4" ry="3" fill="white" opacity="0.35"/>
 
-  <!-- Lock shackle (ring) -->
-  <path d="M100 70 Q120 70 120 90 V105 H80 V90 Q80 70 100 70"
-        fill="none" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  <!-- Handle / stick at bottom -->
+  <rect x="59" y="98" width="10" height="20" rx="5" fill="white" opacity="0.75"/>
 
-  <!-- Keyhole -->
-  <circle cx="100" cy="130" r="8" fill="#2563eb"/>
-  <rect x="96" y="135" width="8" height="25" rx="3" fill="#2563eb"/>
-
-  <!-- Decorative bars (redacted/anonymous effect) -->
-  <rect x="45" y="45" width="30" height="6" rx="3" fill="white" opacity="0.4"/>
-  <rect x="125" y="45" width="30" height="6" rx="3" fill="white" opacity="0.4"/>
-
-  <!-- Corner accents -->
-  <rect x="10" y="10" width="20" height="3" rx="1.5" fill="white" opacity="0.5"/>
-  <rect x="10" y="10" width="3" height="20" rx="1.5" fill="white" opacity="0.5"/>
-
-  <rect x="170" y="10" width="20" height="3" rx="1.5" fill="white" opacity="0.5"/>
-  <rect x="187" y="10" width="3" height="20" rx="1.5" fill="white" opacity="0.5"/>
-
-  <rect x="10" y="187" width="20" height="3" rx="1.5" fill="white" opacity="0.5"/>
-  <rect x="10" y="170" width="3" height="20" rx="1.5" fill="white" opacity="0.5"/>
-
-  <rect x="170" y="187" width="20" height="3" rx="1.5" fill="white" opacity="0.5"/>
-  <rect x="187" y="170" width="3" height="20" rx="1.5" fill="white" opacity="0.5"/>
+  <!-- Decorative dots top (representing "IA" sparkles) -->
+  <circle cx="32" cy="30" r="4" fill="white" opacity="0.6"/>
+  <circle cx="64" cy="22" r="6" fill="white" opacity="0.85"/>
+  <circle cx="96" cy="30" r="4" fill="white" opacity="0.6"/>
 </svg>
