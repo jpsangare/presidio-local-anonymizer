@@ -2,9 +2,12 @@
 
 let currentBackendUrl = '';
 let extensionEnabled = true;
+let currentLanguage = DEFAULT_UI_LANGUAGE;
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
+  currentLanguage = await getUiLanguage();
+  applyPopupLanguage();
   await loadBackendUrl();
   await loadExtensionState();
   await checkBackendStatus();
@@ -15,10 +18,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('setup-btn')?.addEventListener('click', openSetup);
   document.getElementById('options-btn')?.addEventListener('click', openOptions);
   document.getElementById('extension-toggle')?.addEventListener('click', toggleExtension);
+  document.getElementById('language-select')?.addEventListener('change', changeLanguage);
 
   // Auto-refresh status every 5 seconds
   setInterval(checkBackendStatus, 5000);
 });
+
+function applyPopupLanguage() {
+  document.documentElement.lang = currentLanguage;
+  const languageSelect = document.getElementById('language-select');
+  languageSelect.options[0].textContent = extensionText('french', currentLanguage);
+  languageSelect.options[1].textContent = extensionText('english', currentLanguage);
+  languageSelect.value = currentLanguage;
+  document.getElementById('status-text').textContent = extensionText('checking', currentLanguage);
+  document.getElementById('language-label').textContent = extensionText('language', currentLanguage);
+  document.getElementById('popup-subtitle').textContent = extensionText('popupSubtitle', currentLanguage);
+  document.getElementById('toggle-label').textContent = extensionText('autoAnonymization', currentLanguage);
+  document.getElementById('service-status-label').textContent = extensionText('serviceStatus', currentLanguage);
+  document.getElementById('offline-warning-title').textContent = extensionText('backendOffline', currentLanguage);
+  document.getElementById('offline-warning-help').textContent = extensionText('startOrInstall', currentLanguage);
+  document.getElementById('setup-btn').textContent = extensionText('installBackend', currentLanguage);
+  document.getElementById('settings-btn').textContent = extensionText('settings', currentLanguage);
+  document.getElementById('dashboard-btn').textContent = extensionText('dashboard', currentLanguage);
+  document.getElementById('options-btn').textContent = extensionText('extensionSettings', currentLanguage);
+}
+
+async function changeLanguage(event) {
+  currentLanguage = event.target.value;
+  await chrome.storage.local.set({ uiLanguage: currentLanguage });
+  applyPopupLanguage();
+  updateButtonLinks();
+  checkBackendStatus();
+}
 
 // Load backend URL from storage
 async function loadBackendUrl() {
@@ -42,11 +73,13 @@ function updateButtonLinks() {
   const dashboardBtn = document.getElementById('dashboard-btn');
 
   if (settingsBtn) {
-    settingsBtn.href = currentBackendUrl + '/';
+    settingsBtn.href = `${currentBackendUrl}/?lang=${currentLanguage}`;
   }
   if (dashboardBtn) {
-    dashboardBtn.href = currentBackendUrl + '/dashboard';
+    dashboardBtn.href = `${currentBackendUrl}/dashboard?lang=${currentLanguage}`;
   }
+  const setupBtn = document.getElementById('setup-btn');
+  if (setupBtn) setupBtn.href = `${currentBackendUrl}/setup?lang=${currentLanguage}`;
 }
 
 // Check backend status
@@ -69,7 +102,7 @@ async function checkBackendStatus() {
       // Backend is online
       statusBadge.className = 'status-badge online';
       statusDot.className = 'status-dot online';
-      statusText.textContent = 'Online';
+      statusText.textContent = extensionText('online', currentLanguage);
 
       // Hide offline warning and setup button
       offlineWarning?.classList.add('hidden');
@@ -85,7 +118,7 @@ async function checkBackendStatus() {
     // Backend is offline
     statusBadge.className = 'status-badge offline';
     statusDot.className = 'status-dot offline';
-    statusText.textContent = 'Offline';
+    statusText.textContent = extensionText('offline', currentLanguage);
 
     // Show offline warning and setup button
     offlineWarning?.classList.remove('hidden');
@@ -139,25 +172,26 @@ function updateToggleUI() {
     } else {
       toggle.classList.remove('active');
     }
+    toggle.setAttribute('aria-pressed', String(extensionEnabled));
   }
 }
 
 // Open settings in new tab
 function openSettings(e) {
   e.preventDefault();
-  chrome.tabs.create({ url: currentBackendUrl + '/' });
+  chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` });
 }
 
 // Open dashboard in new tab
 function openDashboard(e) {
   e.preventDefault();
-  chrome.tabs.create({ url: currentBackendUrl + '/dashboard' });
+  chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` });
 }
 
 // Open setup wizard in new tab
 function openSetup(e) {
   e.preventDefault();
-  chrome.tabs.create({ url: currentBackendUrl + '/setup' });
+  chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` });
 }
 
 // Open extension options

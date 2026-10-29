@@ -38,7 +38,7 @@ def anonymize():
     Response JSON:
         {
             "original_text": "Jan Kowalski, PESEL: 92010212345",
-            "anonymized_text": "[OSOBA], PESEL: [PESEL]",
+            "anonymized_text": "[PERSONNE], PESEL: [PESEL]",
             "entities_found": [
                 {
                     "type": "PERSON",
@@ -174,7 +174,7 @@ def get_logs():
                 {
                     "timestamp": "2025-11-15T12:30:45.123456",
                     "original_text": "Jan Kowalski, PESEL: 92010212345",
-                    "anonymized_text": "[OSOBA], PESEL: [PESEL]",
+                    "anonymized_text": "[PERSONNE], PESEL: [PESEL]",
                     "entities_count": 2,
                     "entities_found": [...],
                     "processing_time_ms": 45

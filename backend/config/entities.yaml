@@ -16,59 +16,59 @@ entities:
     enabled: false
     mask: '[TFN]'
   CREDIT_CARD:
-    description: Numer karty kredytowej
+    description: Numéro de carte bancaire
     enabled: true
-    mask: '[KARTA]'
+    mask: '[CARTE]'
   CRYPTO:
-    description: Adres kryptowaluty (Bitcoin, Ethereum)
+    description: Adresse de cryptomonnaie (Bitcoin, Ethereum)
     enabled: false
     mask: '[CRYPTO]'
   DATE_TIME:
-    description: Data lub data i czas
+    description: Date ou date et heure
     enabled: true
-    mask: '[DATA]'
+    mask: '[DATE]'
   EMAIL_ADDRESS:
-    description: Adres email
+    description: Adresse e-mail
     enabled: true
     mask: '[EMAIL]'
   IBAN_CODE:
-    description: Numer rachunku bankowego IBAN
+    description: Numéro de compte bancaire IBAN
     enabled: true
     mask: '[IBAN]'
   IP_ADDRESS:
-    description: Adres IP
+    description: Adresse IP
     enabled: true
     mask: '[IP]'
   LOCATION:
-    description: Lokalizacja geograficzna
+    description: Lieu géographique
     enabled: true
-    mask: '[LOKALIZACJA]'
+    mask: '[LIEU]'
   MEDICAL_LICENSE:
-    description: Numer licencji medycznej
+    description: Numéro de licence médicale
     enabled: false
-    mask: '[LICENCJA_MED]'
+    mask: '[LICENCE_MEDICALE]'
   NRP:
     description: National Registry of Persons (UK)
     enabled: false
     mask: '[NRP]'
   PERSON:
-    description: Imię i nazwisko osoby
+    description: Nom et prénom d’une personne
     enabled: true
-    mask: '[OSOBA]'
+    mask: '[PERSONNE]'
   PHONE_NUMBER:
-    description: Numer telefonu
+    description: Numéro de téléphone
     enabled: true
-    mask: '[TELEFON]'
+    mask: '[TELEPHONE]'
   PL_ID_CARD:
-    description: Numer dowodu osobistego (polska)
+    description: Numéro de carte d’identité polonaise
     enabled: true
-    mask: '[DOWOD_PL]'
+    mask: '[CARTE_IDENTITE_PL]'
     patterns:
     - name: ID_CARD_NEW
       regex: \b[A-Z]{3}\d{6}\b
       score: 0.7
   PL_NIP:
-    description: Polski numer identyfikacji podatkowej (NIP)
+    description: Numéro d’identification fiscale polonais (NIP)
     enabled: true
     mask: '[NIP]'
     patterns:
@@ -79,9 +79,9 @@ entities:
       regex: \b\d{10}\b
       score: 0.5
   PL_PASSPORT:
-    description: Numer paszportu polskiego
+    description: Numéro de passeport polonais
     enabled: true
-    mask: '[PASZPORT_PL]'
+    mask: '[PASSEPORT_PL]'
     patterns:
     - name: PASSPORT_NEW
       regex: \b[A-Z]{2}\d{7}\b
@@ -90,7 +90,7 @@ entities:
       regex: \b[A-Z]{3}\d{6}\b
       score: 0.6
   PL_PESEL:
-    description: Polski numer PESEL
+    description: Numéro PESEL polonais
     enabled: true
     mask: '[PESEL]'
     patterns:
@@ -98,7 +98,7 @@ entities:
       regex: \b\d{11}\b
       score: 0.6
   PL_REGON:
-    description: Polski numer REGON (identyfikacja podmiotów gospodarczych)
+    description: Numéro REGON polonais (identification des entreprises)
     enabled: true
     mask: '[REGON]'
     patterns:
@@ -113,31 +113,31 @@ entities:
     enabled: false
     mask: '[NRIC_SG]'
   UK_NHS:
-    description: Numer NHS (National Health Service UK)
+    description: Numéro NHS (National Health Service du Royaume-Uni)
     enabled: false
     mask: '[NHS]'
   URL:
-    description: Adres URL
+    description: Adresse URL
     enabled: true
     mask: '[URL]'
   US_BANK_NUMBER:
-    description: Numer rachunku bankowego USA
+    description: Numéro de compte bancaire américain
     enabled: false
     mask: '[BANK_US]'
   US_DRIVER_LICENSE:
-    description: Numer prawa jazdy USA
+    description: Numéro de permis de conduire américain
     enabled: false
-    mask: '[PRAWO_JAZDY_US]'
+    mask: '[PERMIS_CONDUIRE_US]'
   US_ITIN:
     description: Individual Taxpayer Identification Number USA
     enabled: false
     mask: '[ITIN]'
   US_PASSPORT:
-    description: Numer paszportu USA
+    description: Numéro de passeport américain
     enabled: false
-    mask: '[PASZPORT_US]'
+    mask: '[PASSEPORT_US]'
   US_SSN:
-    description: Numer ubezpieczenia społecznego USA (SSN)
+    description: Numéro de sécurité sociale américain (SSN)
     enabled: false
     mask: '[SSN]'
 language: pl

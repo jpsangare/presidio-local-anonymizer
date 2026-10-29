@@ -1,6 +1,6 @@
 """
-Moduł analizatora PII wykorzystujący Presidio AnalyzerEngine.
-Konfiguruje silnik NLP dla języka polskiego i dodaje niestandardowe rozpoznawacze.
+Module d’analyse des données personnelles utilisant Presidio AnalyzerEngine.
+Configure le moteur NLP pour le polonais et ajoute des recognizers personnalisés.
 """
 
 import os
@@ -19,24 +19,24 @@ logger = logging.getLogger("app.analyzer")
 
 def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
     """
-    Buduje i konfiguruje Presidio AnalyzerEngine z polskim modelem NLP.
+    Construit et configure Presidio AnalyzerEngine avec un modèle NLP polonais.
 
     Returns:
-        tuple: (analyzer, config) - skonfigurowany analyzer i wczytana konfiguracja
+        tuple: (analyzer, config) - analyseur configuré et configuration chargée
     """
-    # Znajdź ścieżkę do pliku konfiguracyjnego
+    # Rechercher le chemin du fichier de configuration
     config_path = Path(__file__).parent.parent / "config" / "entities.yaml"
 
     if not config_path.exists():
-        raise FileNotFoundError(f"Nie znaleziono pliku konfiguracji: {config_path}")
+        raise FileNotFoundError(f"Fichier de configuration introuvable : {config_path}")
 
-    # Wczytaj konfigurację
+    # Charger la configuration
     with open(config_path, 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
 
-    logger.info(f"Wczytano konfigurację z: {config_path}")
+    logger.info(f"Configuration chargée depuis : {config_path}")
 
-    # Konfiguracja modelu SpaCy dla języka polskiego
+    # Configuration du modèle SpaCy pour le polonais
     nlp_configuration = {
         "nlp_engine_name": "spacy",
         "models": [
@@ -50,44 +50,44 @@ def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
     # Inicjalizacja silnika NLP
     try:
         nlp_engine = NlpEngineProvider(nlp_configuration=nlp_configuration).create_engine()
-        logger.info("Silnik NLP SpaCy zainicjalizowany dla języka polskiego")
+        logger.info("Moteur NLP SpaCy initialisé pour le polonais")
     except Exception as e:
-        logger.error(f"Błąd podczas inicjalizacji silnika NLP: {e}")
+        logger.error(f"Erreur lors de l’initialisation du moteur NLP : {e}")
         raise RuntimeError(
-            "Nie udało się zainicjalizować modelu SpaCy. "
-            "Upewnij się, że model pl_core_news_md jest zainstalowany: "
+            "Impossible d’initialiser le modèle SpaCy. "
+            "Vérifiez que le modèle pl_core_news_md est installé : "
             "python -m spacy download pl_core_news_md"
         ) from e
 
-    # Utworzenie AnalyzerEngine
+    # Créer AnalyzerEngine
     analyzer = AnalyzerEngine(nlp_engine=nlp_engine, supported_languages=["pl"])
 
-    # Dodanie niestandardowych rozpoznawaczy dla polskich encji
+    # Ajouter des recognizers personnalisés pour les entités polonaises
     _add_custom_recognizers(analyzer, config)
 
-    # Dodanie rozpoznawacza SpaCy dla polskich etykiet NER
+    # Ajouter le recognizer SpaCy pour les étiquettes NER polonaises
     _add_polish_spacy_recognizer(analyzer, nlp_engine)
 
-    logger.info(f"Analyzer gotowy. Obsługiwane encje: {list(config['entities'].keys())}")
+    logger.info(f"Analyseur prêt. Entités prises en charge : {list(config['entities'].keys())}")
 
     return analyzer, config
 
 
 def _add_custom_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> None:
     """
-    Dodaje niestandardowe rozpoznawacze pattern-based dla encji z konfiguracji.
+    Ajoute des recognizers personnalisés basés sur des motifs pour les entités configurées.
 
     Args:
-        analyzer: AnalyzerEngine do którego dodajemy rozpoznawacze
-        config: Słownik konfiguracji wczytany z YAML
+        analyzer: AnalyzerEngine auquel ajouter les recognizers
+        config: Dictionnaire de configuration chargé depuis YAML
     """
     for entity_name, entity_config in config['entities'].items():
         patterns = entity_config.get('patterns')
 
         if not patterns:
-            continue  # Pomiń encje bez wzorców regex
+            continue  # Ignorer les entités sans motif regex
 
-        # Przygotuj listę wzorców dla PatternRecognizer
+        # Préparer la liste de motifs pour PatternRecognizer
         pattern_list = []
         for pattern in patterns:
             pattern_list.append(Pattern(
@@ -96,41 +96,41 @@ def _add_custom_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) ->
                 score=pattern['score']
             ))
 
-        # Utwórz rozpoznawacz
+        # Créer le recognizer
         recognizer = PatternRecognizer(
             supported_entity=entity_name,
             patterns=pattern_list,
             supported_language="pl"
         )
 
-        # Dodaj do registry analyzera
+        # Ajouter au registre de l’analyseur
         analyzer.registry.add_recognizer(recognizer)
 
-        logger.info(f"Dodano niestandardowy rozpoznawacz dla: {entity_name} ({len(pattern_list)} wzorców)")
+        logger.info(f"Recognizer personnalisé ajouté pour : {entity_name} ({len(pattern_list)} motifs)")
 
 
 def _add_polish_spacy_recognizer(analyzer: AnalyzerEngine, nlp_engine) -> None:
     """
-    Dodaje niestandardowy rozpoznawacz SpaCy dla polskich etykiet NER.
-    Mapuje polskie etykiety (persName, placeName) na encje Presidio (PERSON, LOCATION).
+    Ajoute un recognizer SpaCy personnalisé pour les étiquettes NER polonaises.
+    Associe les étiquettes polonaises (persName, placeName) aux entités Presidio (PERSON, LOCATION).
 
     Args:
-        analyzer: AnalyzerEngine do którego dodajemy rozpoznawacz
-        nlp_engine: Skonfigurowany silnik NLP SpaCy
+        analyzer: AnalyzerEngine auquel ajouter le recognizer
+        nlp_engine: Moteur NLP SpaCy configuré
     """
 
     class PolishSpacyRecognizer(EntityRecognizer):
-        """Rozpoznawacz mapujący polskie etykiety SpaCy na encje Presidio"""
+        """Recognizer associant les étiquettes SpaCy polonaises aux entités Presidio."""
 
         POLISH_TO_PRESIDIO_MAPPING = {
-            "persName": "PERSON",        # Polskie imiona i nazwiska
-            "placeName": "LOCATION",      # Polskie nazwy miejscowości
-            "geogName": "LOCATION",       # Nazwy geograficzne
-            "orgName": "ORGANIZATION",    # Nazwy organizacji
+            "persName": "PERSON",        # Prénoms et noms polonais
+            "placeName": "LOCATION",      # Noms de lieux polonais
+            "geogName": "LOCATION",       # Noms géographiques
+            "orgName": "ORGANIZATION",    # Noms d’organisations
         }
 
         def __init__(self):
-            # Obsługiwane encje to wartości z mapowania
+            # Les entités prises en charge correspondent aux valeurs du mappage
             supported_entities = list(set(self.POLISH_TO_PRESIDIO_MAPPING.values()))
             super().__init__(
                 supported_entities=supported_entities,
@@ -139,58 +139,58 @@ def _add_polish_spacy_recognizer(analyzer: AnalyzerEngine, nlp_engine) -> None:
             )
 
         def load(self) -> None:
-            """Załaduj model - nie wymagane dla tego rozpoznawacza"""
+            """Charger le modèle — non requis pour ce recognizer."""
             pass
 
         def analyze(self, text: str, entities: list, nlp_artifacts=None):
             """
-            Analizuj tekst używając SpaCy i mapuj polskie etykiety na encje Presidio.
+            Analyse le texte avec SpaCy et associe les étiquettes polonaises aux entités Presidio.
 
             Args:
-                text: Tekst do analizy
-                entities: Lista encji do wykrycia
-                nlp_artifacts: Wyniki SpaCy NLP
+                text: Texte à analyser
+                entities: Liste des entités à détecter
+                nlp_artifacts: Résultats NLP de SpaCy
 
             Returns:
-                Lista RecognizerResult
+                Liste de RecognizerResult
             """
             results = []
 
             if not nlp_artifacts or not hasattr(nlp_artifacts, 'entities'):
                 return results
 
-            # Iteruj przez encje wykryte przez SpaCy
+            # Parcourir les entités détectées par SpaCy
             for ent in nlp_artifacts.entities:
-                # Sprawdź czy etykieta SpaCy ma mapowanie na encję Presidio
+                # Vérifier si l’étiquette SpaCy correspond à une entité Presidio
                 presidio_entity = self.POLISH_TO_PRESIDIO_MAPPING.get(ent.label_)
 
                 if presidio_entity and presidio_entity in entities:
-                    # Utwórz wynik rozpoznania
+                    # Créer un résultat de reconnaissance
                     result = RecognizerResult(
                         entity_type=presidio_entity,
                         start=ent.start_char,
                         end=ent.end_char,
-                        score=0.85  # Wysoki wynik pewności
+                        score=0.85  # Niveau de confiance élevé
                     )
                     results.append(result)
 
             return results
 
-    # Dodaj rozpoznawacz do analyzera
+    # Ajouter le recognizer à l’analyseur
     polish_recognizer = PolishSpacyRecognizer()
     analyzer.registry.add_recognizer(polish_recognizer)
-    logger.info("Dodano rozpoznawacz polskich etykiet SpaCy (persName->PERSON, placeName->LOCATION)")
+    logger.info("Recognizer des étiquettes SpaCy polonaises ajouté (persName->PERSON, placeName->LOCATION)")
 
 
 def get_supported_entities(config: Dict[str, Any]) -> list[str]:
     """
-    Zwraca listę nazw włączonych encji z konfiguracji.
+    Renvoie la liste des noms d’entités activées dans la configuration.
 
     Args:
-        config: Słownik konfiguracji
+        config: Dictionnaire de configuration
 
     Returns:
-        list: Lista nazw włączonych encji
+        list: Liste des noms d’entités activées
     """
     enabled_entities = []
     for entity_name, entity_config in config['entities'].items():

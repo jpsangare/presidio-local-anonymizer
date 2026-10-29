@@ -1,12 +1,16 @@
 // Content script for Presidio Browser Anonymizer
 
 let extensionEnabled = true;
+let currentLanguage = DEFAULT_UI_LANGUAGE;
 
 // Load extension state on initialization
 async function loadExtensionState() {
   try {
-    const result = await chrome.storage.local.get(['extensionEnabled']);
+    const result = await chrome.storage.local.get(['extensionEnabled', 'uiLanguage']);
     extensionEnabled = result.extensionEnabled !== false; // Default to true
+    currentLanguage = SUPPORTED_UI_LANGUAGES.includes(result.uiLanguage)
+      ? result.uiLanguage
+      : DEFAULT_UI_LANGUAGE;
     console.log('[Presidio] Extension state loaded:', extensionEnabled);
   } catch (error) {
     console.error('[Presidio] Failed to load extension state:', error);
@@ -22,14 +26,22 @@ async function loadExtensionState() {
 
 // Listen for storage changes
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === 'local' && changes.extensionEnabled) {
+  if (namespace !== 'local') return;
+
+  if (changes.uiLanguage) {
+    currentLanguage = SUPPORTED_UI_LANGUAGES.includes(changes.uiLanguage.newValue)
+      ? changes.uiLanguage.newValue
+      : DEFAULT_UI_LANGUAGE;
+  }
+
+  if (changes.extensionEnabled) {
     extensionEnabled = changes.extensionEnabled.newValue;
     console.log('[Presidio] Extension state changed:', extensionEnabled ? 'ENABLED' : 'DISABLED');
 
     if (extensionEnabled) {
-      showNotification('✅ Auto-anonimizacja WŁĄCZONA', 'success');
+      showNotification(extensionText('extensionEnabled', currentLanguage), 'success');
     } else {
-      showNotification('⛔ Auto-anonimizacja WYŁĄCZONA', 'info');
+      showNotification(extensionText('extensionDisabled', currentLanguage), 'info');
     }
   }
 });
@@ -55,7 +67,7 @@ function replaceSelectedText(anonymizedText) {
   selection.removeAllRanges();
 
   // Show notification
-  showNotification('Tekst został zanonimizowany', 'success');
+  showNotification(extensionText('textAnonymized', currentLanguage), 'success');
 }
 
 // Show notification toast
@@ -103,12 +115,12 @@ document.addEventListener('keydown', async (e) => {
     const selectedText = window.getSelection().toString().trim();
 
     if (!selectedText) {
-      showNotification('Zaznacz tekst do anonimizacji', 'info');
+      showNotification(extensionText('selectText', currentLanguage), 'info');
       return;
     }
 
     try {
-      showNotification('Anonimizowanie...', 'info');
+      showNotification(extensionText('anonymizing', currentLanguage), 'info');
 
       const response = await chrome.runtime.sendMessage({
         action: 'anonymize',
@@ -122,7 +134,7 @@ document.addEventListener('keydown', async (e) => {
       }
     } catch (error) {
       console.error('Anonymization failed:', error);
-      showNotification('Błąd anonimizacji. Sprawdź czy backend działa.', 'error');
+      showNotification(extensionText('anonymizationError', currentLanguage), 'error');
     }
   }
 });
@@ -155,7 +167,7 @@ document.addEventListener('paste', async (e) => {
 
   try {
     console.log('[Presidio] Sending anonymization request...');
-    showNotification('Anonimizowanie...', 'info');
+    showNotification(extensionText('anonymizing', currentLanguage), 'info');
 
     const response = await chrome.runtime.sendMessage({
       action: 'anonymize',
@@ -243,13 +255,13 @@ document.addEventListener('paste', async (e) => {
         }
       }
 
-      showNotification('✅ Tekst zanonimizowany!', 'success');
+      showNotification(extensionText('pasteAnonymized', currentLanguage), 'success');
     } else {
       throw new Error(response.error);
     }
   } catch (error) {
     console.error('[Presidio] Paste anonymization failed:', error);
-    showNotification('❌ Błąd anonimizacji. Wklejam oryginalny.', 'error');
+    showNotification(extensionText('pasteError', currentLanguage), 'error');
 
     // Fallback: paste original text
     const activeElement = document.activeElement;
@@ -287,7 +299,7 @@ async function anonymizeBeforeSend(textarea) {
 
   try {
     console.log('[Presidio] Starting anonymization, text length:', text.length);
-    showNotification('Anonimizowanie przed wysłaniem...', 'info');
+    showNotification(extensionText('anonymizingBeforeSend', currentLanguage), 'info');
 
     const response = await chrome.runtime.sendMessage({
       action: 'anonymize',
@@ -305,7 +317,7 @@ async function anonymizeBeforeSend(textarea) {
       }
 
       console.log('[Presidio] Text anonymized before send!');
-      showNotification('✅ Tekst zanonimizowany przed wysłaniem!', 'success');
+      showNotification(extensionText('sentAnonymized', currentLanguage), 'success');
 
       // Flash green border
       textarea.style.transition = 'border-color 0.3s';
@@ -318,7 +330,7 @@ async function anonymizeBeforeSend(textarea) {
     }
   } catch (error) {
     console.error('[Presidio] Anonymization before send failed:', error);
-    showNotification('⚠️ Błąd anonimizacji - wysyłam oryginalny tekst', 'error');
+    showNotification(extensionText('sendError', currentLanguage), 'error');
   }
 }
 

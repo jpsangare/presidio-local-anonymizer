@@ -5,14 +5,26 @@ const testBtn = document.getElementById('test-btn');
 const saveBtn = document.getElementById('save-btn');
 const resetBtn = document.getElementById('reset-btn');
 const statusMessage = document.getElementById('status-message');
+const languageSelect = document.getElementById('language-select');
+let currentLanguage = DEFAULT_UI_LANGUAGE;
 
 // Load saved configuration
 document.addEventListener('DOMContentLoaded', async () => {
+  currentLanguage = await getUiLanguage();
+  languageSelect.options[0].textContent = extensionText('french', currentLanguage);
+  languageSelect.options[1].textContent = extensionText('english', currentLanguage);
+  languageSelect.value = currentLanguage;
+  document.getElementById('language-label').textContent = extensionText('language', currentLanguage);
+  translateOptionsDocument(currentLanguage);
   await loadConfig();
   initializeTabs();
   initializeOSSelector();
   initializeInstallTestButtons();
 
+  languageSelect.addEventListener('change', async () => {
+    await chrome.storage.local.set({ uiLanguage: languageSelect.value });
+    location.reload();
+  });
   testBtn.addEventListener('click', testConnection);
   saveBtn.addEventListener('click', saveConfig);
   resetBtn.addEventListener('click', resetConfig);
@@ -109,7 +121,7 @@ async function loadConfig() {
       backendUrlInput.value = result.backendUrl;
     }
   } catch (error) {
-    showStatus('Błąd wczytywania konfiguracji: ' + error.message, 'error');
+    showStatus(extensionText('configLoadFailure', currentLanguage, { message: error.message }), 'error');
   }
 }
 
@@ -118,12 +130,12 @@ async function testConnection() {
   const url = backendUrlInput.value.trim();
 
   if (!url) {
-    showStatus('Wprowadź URL backendu', 'error');
+    showStatus(extensionText('enterBackendUrl', currentLanguage), 'error');
     return;
   }
 
   testBtn.disabled = true;
-  testBtn.textContent = '⏳ Testowanie...';
+  testBtn.textContent = extensionText('testing', currentLanguage);
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -132,15 +144,15 @@ async function testConnection() {
     });
 
     if (response.success) {
-      showStatus(`✅ Połączenie udane! Status: ${response.status}`, 'success');
+      showStatus(extensionText('connectionSuccess', currentLanguage, { status: response.status }), 'success');
     } else {
-      showStatus(`❌ Połączenie nieudane: ${response.message}`, 'error');
+      showStatus(extensionText('connectionFailure', currentLanguage, { message: response.message }), 'error');
     }
   } catch (error) {
-    showStatus('❌ Błąd testowania: ' + error.message, 'error');
+    showStatus(extensionText('testFailure', currentLanguage, { message: error.message }), 'error');
   } finally {
     testBtn.disabled = false;
-    testBtn.textContent = '🔍 Testuj Połączenie';
+    testBtn.textContent = extensionText('testConnection', currentLanguage);
   }
 }
 
@@ -149,7 +161,7 @@ async function saveConfig() {
   const url = backendUrlInput.value.trim();
 
   if (!url) {
-    showStatus('Wprowadź URL backendu', 'error');
+    showStatus(extensionText('enterBackendUrl', currentLanguage), 'error');
     return;
   }
 
@@ -157,21 +169,21 @@ async function saveConfig() {
   try {
     new URL(url);
   } catch (error) {
-    showStatus('Nieprawidłowy format URL', 'error');
+    showStatus(extensionText('invalidUrl', currentLanguage), 'error');
     return;
   }
 
   saveBtn.disabled = true;
-  saveBtn.textContent = '⏳ Zapisywanie...';
+  saveBtn.textContent = extensionText('saving', currentLanguage);
 
   try {
     await chrome.storage.sync.set({ backendUrl: url });
-    showStatus('✅ Konfiguracja zapisana pomyślnie!', 'success');
+    showStatus(extensionText('configSaved', currentLanguage), 'success');
   } catch (error) {
-    showStatus('❌ Błąd zapisu: ' + error.message, 'error');
+    showStatus(extensionText('saveFailure', currentLanguage, { message: error.message }), 'error');
   } finally {
     saveBtn.disabled = false;
-    saveBtn.textContent = '💾 Zapisz';
+    saveBtn.textContent = extensionText('save', currentLanguage);
   }
 }
 
@@ -181,9 +193,9 @@ async function resetConfig() {
   
   try {
     await chrome.storage.sync.set({ backendUrl: 'http://localhost:6677' });
-    showStatus('✅ Przywrócono ustawienia domyślne', 'success');
+    showStatus(extensionText('defaultsRestored', currentLanguage), 'success');
   } catch (error) {
-    showStatus('❌ Błąd resetowania: ' + error.message, 'error');
+    showStatus(extensionText('resetFailure', currentLanguage, { message: error.message }), 'error');
   }
 }
 

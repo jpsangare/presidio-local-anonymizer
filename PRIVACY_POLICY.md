@@ -130,7 +130,7 @@ The extension requests the following permissions:
 
 ### How to Delete Data
 
-1. **Clear logs:** Dashboard → "Wyczyść Logi" button
+1. **Clear logs:** Dashboard → « Effacer les journaux »
 2. **Clear settings:** Uninstall extension
 3. **Clear backend data:** Restart backend service
 
@@ -149,7 +149,7 @@ Uninstall the extension or clear logs in dashboard.
 
 ### Right to Audit
 Full source code available on GitHub:
-https://github.com/gacabartosz/presidio-local-anonymizer
+https://github.com/jpsangare/presidio-local-anonymizer
 
 You can inspect every line of code to verify our privacy claims.
 
@@ -193,8 +193,8 @@ We may update this Privacy Policy from time to time. We will notify users of any
 
 If you have questions about this Privacy Policy:
 
-- **GitHub Issues:** https://github.com/gacabartosz/presidio-local-anonymizer/issues
-- **GitHub Discussions:** https://github.com/gacabartosz/presidio-local-anonymizer/discussions
+- **GitHub Issues:** https://github.com/jpsangare/presidio-local-anonymizer/issues
+- **GitHub Discussions:** https://github.com/jpsangare/presidio-local-anonymizer/discussions
 - **Email:** (available on GitHub profile)
 
 ---
@@ -235,4 +235,4 @@ Your privacy is our priority. That's why we built this extension to work 100% lo
 
 **Last updated:** November 15, 2025
 **Version:** 1.3.0
-**GitHub:** https://github.com/gacabartosz/presidio-local-anonymizer
+**GitHub:** https://github.com/jpsangare/presidio-local-anonymizer

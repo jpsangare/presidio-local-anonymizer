@@ -4,13 +4,17 @@
   "version": "1.4.0",
   "description": "Auto-anonymize PII when pasting! Detects emails, phones, PESEL, NIP, credit cards, and more. Works with ChatGPT, Claude, Gmail.",
   "author": "Bartosz Gaca",
-  "homepage_url": "https://github.com/gacabartosz/presidio-local-anonymizer",
+  "homepage_url": "https://github.com/jpsangare/presidio-local-anonymizer",
   "permissions": [
     "activeTab",
     "storage",
     "contextMenus",
-    "clipboardRead"
+    "clipboardRead",
+    "sidePanel"
   ],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "host_permissions": [
     "http://localhost:6677/*",
     "http://127.0.0.1:6677/*"
@@ -20,7 +24,6 @@
     "https://*/*"
   ],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
@@ -40,7 +43,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content-script.js"],
+      "js": ["locales.js", "content-script.js"],
       "run_at": "document_idle"
     }
   ],

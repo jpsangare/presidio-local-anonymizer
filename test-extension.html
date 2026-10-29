@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,46 +84,46 @@
         <h1>🧪 Test Presidio Extension - Auto-Anonymization</h1>
 
         <div class="instructions">
-            <h3>Jak przetestować rozszerzenie:</h3>
+            <h3>Comment tester l’extension :</h3>
             <ol>
-                <li>Upewnij się, że rozszerzenie jest <strong>włączone</strong> (zielony przycisk w popup)</li>
-                <li>Otwórz <strong>DevTools</strong> (F12) i przejdź do zakładki <strong>Console</strong></li>
-                <li>Skopiuj poniższy tekst testowy (Ctrl+C)</li>
-                <li>Wklej go w pole tekstowe poniżej (Ctrl+V)</li>
-                <li>Sprawdź w konsoli czy pojawiły się logi:<br>
+                <li>Vérifiez que l’extension est <strong>activée</strong> (bouton vert dans la fenêtre contextuelle).</li>
+                <li>Ouvrez les <strong>DevTools</strong> (F12), puis accédez à l’onglet <strong>Console</strong>.</li>
+                <li>Copiez le texte de test ci-dessous (Ctrl+C).</li>
+                <li>Collez-le dans le champ de texte ci-dessous (Ctrl+V).</li>
+                <li>Vérifiez que les messages suivants apparaissent dans la console :<br>
                     <code>[Presidio] Paste event detected - extension ENABLED</code><br>
                     <code>[Presidio] Sending anonymization request...</code><br>
                     <code>[Presidio] Received response: ...</code>
                 </li>
-                <li>Tekst powinien zostać automatycznie zanonimizowany przed wklejeniem</li>
+                <li>Le texte doit être automatiquement anonymisé avant d’être collé.</li>
             </ol>
         </div>
 
         <div class="test-data">
-            <strong>Tekst testowy (skopiuj to):</strong><br>
+            <strong>Texte de test (à copier) :</strong><br>
             Jan Kowalski, email: jan.kowalski@example.com, tel: 123-456-789, PESEL: 92010212345
         </div>
 
-        <h3>Pole do testowania (Ctrl+V tutaj):</h3>
-        <textarea id="test-textarea" placeholder="Wklej tutaj tekst testowy używając Ctrl+V..."></textarea>
+        <h3>Champ de test (collez ici avec Ctrl+V) :</h3>
+        <textarea id="test-textarea" placeholder="Collez le texte de test ici avec Ctrl+V..."></textarea>
 
-        <h3>Contenteditable (test dla ChatGPT):</h3>
+        <h3>Contenteditable (test pour ChatGPT) :</h3>
         <div contenteditable="true" id="test-contenteditable" style="min-height: 100px; border: 2px solid #e5e7eb; border-radius: 8px; padding: 12px; background: white;">
-            Wklej tutaj tekst testowy używając Ctrl+V...
+            Collez le texte de test ici avec Ctrl+V...
         </div>
 
-        <button onclick="showConsoleInstructions()">📋 Jak otworzyć konsolę DevTools?</button>
+        <button onclick="showConsoleInstructions()">📋 Comment ouvrir la console DevTools ?</button>
     </div>
 
     <div class="card">
-        <h2>🔍 Debugging - Sprawdź background script</h2>
+        <h2>🔍 Débogage - Vérifier le script d’arrière-plan</h2>
         <div class="instructions">
-            <h3>Jak sprawdzić logi background script:</h3>
+            <h3>Comment consulter les journaux du script d’arrière-plan :</h3>
             <ol>
-                <li>Otwórz <code>chrome://extensions/</code></li>
-                <li>Znajdź "Presidio Browser Anonymizer"</li>
-                <li>Kliknij <strong>"Inspect views: service worker"</strong></li>
-                <li>W konsoli powinny pojawić się logi:<br>
+                <li>Ouvrez <code>chrome://extensions/</code>.</li>
+                <li>Repérez « Presidio Browser Anonymizer ».</li>
+                <li>Cliquez sur <strong>« Inspect views: service worker »</strong>.</li>
+                <li>Les messages suivants doivent apparaître dans la console :<br>
                     <code>[Presidio Background] Backend URL: http://localhost:6677</code><br>
                     <code>[Presidio Background] Sending request to: ...</code><br>
                     <code>[Presidio Background] Response status: 200</code>
@@ -134,13 +134,13 @@
 
     <script>
         function showConsoleInstructions() {
-            alert(`Jak otworzyć konsolę DevTools:\n\n1. Naciśnij F12 (lub Cmd+Option+I na Mac)\n2. Przejdź do zakładki "Console"\n3. Wklej tekst w pole powyżej używając Ctrl+V\n4. Obserwuj logi w konsoli\n\nJeśli nie widzisz logów [Presidio], rozszerzenie może nie działać poprawnie.`);
+            alert(`Comment ouvrir la console DevTools :\n\n1. Appuyez sur F12 (ou Cmd+Option+I sur Mac)\n2. Accédez à l’onglet « Console »\n3. Collez le texte dans le champ ci-dessus avec Ctrl+V\n4. Consultez les messages dans la console\n\nSi les messages [Presidio] ne s’affichent pas, l’extension ne fonctionne peut-être pas correctement.`);
         }
 
         // Log page load
         console.log('%c🧪 Presidio Test Page Loaded', 'color: #2563eb; font-weight: bold; font-size: 14px');
-        console.log('%cOtwórz popup rozszerzenia i upewnij się, że toggle jest WŁĄCZONY', 'color: #059669; font-size: 12px');
-        console.log('%cNastępnie wklej tekst testowy w pole powyżej i obserwuj logi', 'color: #059669; font-size: 12px');
+        console.log('%cOuvrez la fenêtre contextuelle de l’extension et vérifiez que le bouton est ACTIVÉ', 'color: #059669; font-size: 12px');
+        console.log('%cCollez ensuite le texte de test dans le champ ci-dessus et consultez les messages', 'color: #059669; font-size: 12px');
     </script>
 </body>
 </html>

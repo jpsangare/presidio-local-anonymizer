@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Konfiguracja Presidio Anonymizer</title>
+  <title>Configuration de Presidio Anonymizer</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -338,31 +338,54 @@
     .link-text {
       flex: 1;
     }
+    .language-setting {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin: 0 0 20px;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .language-setting select {
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>⚙️ Konfiguracja</h1>
+    <h1>⚙️ Configuration</h1>
     <div class="subtitle">Presidio Browser Anonymizer v1.3.4</div>
+    <label class="language-setting" for="language-select">
+      <span id="language-label">Langue</span>
+      <select id="language-select">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+      </select>
+    </label>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" data-tab="config">🔧 Konfiguracja</button>
-      <button class="tab-btn" data-tab="install">📦 Instalacja Backendu</button>
+      <button class="tab-btn active" data-tab="config">🔧 Configuration</button>
+      <button class="tab-btn" data-tab="install">📦 Installation du backend</button>
     </div>
 
     <!-- Tab 1: Configuration -->
     <div class="tab-content active" id="tab-config">
       <div class="section">
-        <label for="backend-url">URL Backendu</label>
+        <label for="backend-url">URL du backend</label>
         <input type="url" id="backend-url" placeholder="http://localhost:6677" value="http://localhost:6677">
-        <div class="help-text">Adres serwera Presidio Anonymizer (domyślnie: http://localhost:6677)</div>
+        <div class="help-text">Adresse du serveur Presidio Anonymizer (par défaut : http://localhost:6677)</div>
       </div>
 
       <div class="btn-group">
-        <button id="test-btn" class="btn btn-test">🔍 Testuj Połączenie</button>
-        <button id="save-btn" class="btn btn-primary">💾 Zapisz</button>
-        <button id="reset-btn" class="btn btn-secondary">🔄 Reset</button>
+        <button id="test-btn" class="btn btn-test">🔍 Tester la connexion</button>
+        <button id="save-btn" class="btn btn-primary">💾 Enregistrer</button>
+        <button id="reset-btn" class="btn btn-secondary">🔄 Réinitialiser</button>
       </div>
 
       <div id="status-message" class="status-box hidden"></div>
@@ -371,8 +394,8 @@
     <!-- Tab 2: Installation Wizard -->
     <div class="tab-content" id="tab-install">
       <div class="install-wizard">
-        <h3>🚀 Kreator Instalacji Backendu</h3>
-        <p class="wizard-subtitle">Wybierz swój system operacyjny, aby uzyskać szczegółowe instrukcje instalacji</p>
+        <h3>🚀 Assistant d’installation du backend</h3>
+        <p class="wizard-subtitle">Choisissez votre système d’exploitation pour afficher les instructions détaillées.</p>
 
         <!-- OS Selection -->
         <div class="os-selector">
@@ -392,119 +415,119 @@
 
         <!-- Windows Instructions -->
         <div class="os-instructions hidden" id="install-windows">
-          <h4>💻 Instalacja dla Windows</h4>
+          <h4>💻 Installation pour Windows</h4>
 
           <div class="install-step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h5>Sprawdź Python</h5>
-              <p>Otwórz CMD i sprawdź czy Python jest zainstalowany:</p>
+              <h5>Vérifier Python</h5>
+              <p>Ouvrez l’invite de commandes et vérifiez que Python est installé :</p>
               <div class="code-block">python --version</div>
-              <p class="help-text">Jeśli brak Pythona, pobierz z: <a href="https://www.python.org/downloads/" target="_blank">python.org</a> (Zaznacz "Add Python to PATH"!)</p>
+              <p class="help-text">Si Python n’est pas installé, téléchargez-le depuis <a href="https://www.python.org/downloads/" target="_blank">python.org</a> (cochez « Add Python to PATH » !)</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h5>Pobierz Projekt</h5>
-              <div class="code-block">git clone https://github.com/gacabartosz/presidio-local-anonymizer
+              <h5>Télécharger le projet</h5>
+              <div class="code-block">git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer</div>
-              <p class="help-text">Alternatywnie: Pobierz ZIP z <a href="https://github.com/gacabartosz/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> i rozpakuj</p>
+              <p class="help-text">Vous pouvez aussi télécharger le ZIP depuis <a href="https://github.com/jpsangare/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> et le décompresser.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">3</div>
             <div class="step-content">
-              <h5>Uruchom Instalator</h5>
+              <h5>Lancer l’installateur</h5>
               <div class="code-block">install-windows.bat</div>
-              <p class="help-text">Instalator automatycznie utworzy venv, zainstaluje zależności i uruchomi backend</p>
+              <p class="help-text">L’installateur crée automatiquement un environnement virtuel, installe les dépendances et démarre le backend.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">4</div>
             <div class="step-content">
-              <h5>Backend Gotowy!</h5>
-              <p>Backend uruchomi się na: <code>http://localhost:6677</code></p>
-              <p>Dashboard: <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
-              <button class="btn btn-test" id="test-connection-windows">🔍 Testuj Połączenie</button>
+              <h5>Backend prêt !</h5>
+              <p>Le backend démarrera sur : <code>http://localhost:6677</code></p>
+              <p>Tableau de bord : <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
+              <button class="btn btn-test" id="test-connection-windows">🔍 Tester la connexion</button>
             </div>
           </div>
 
           <div class="install-links">
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/install-windows.bat" target="_blank" class="link-btn">
-              📄 Zobacz install-windows.bat
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/install-windows.bat" target="_blank" class="link-btn">
+              📄 Voir install-windows.bat
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
-              📖 Pełna Dokumentacja
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
+              📖 Documentation complète
             </a>
           </div>
         </div>
 
         <!-- macOS Instructions -->
         <div class="os-instructions hidden" id="install-mac">
-          <h4>🍎 Instalacja dla macOS</h4>
+          <h4>🍎 Installation pour macOS</h4>
 
           <div class="install-step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h5>Sprawdź Python</h5>
-              <p>Otwórz Terminal i sprawdź czy Python3 jest zainstalowany:</p>
+              <h5>Vérifier Python</h5>
+              <p>Ouvrez le Terminal et vérifiez que Python 3 est installé :</p>
               <div class="code-block">python3 --version</div>
-              <p class="help-text">Jeśli brak Pythona, zainstaluj przez Homebrew: <code>brew install python3</code></p>
+              <p class="help-text">Si Python n’est pas installé, installez-le avec Homebrew : <code>brew install python3</code></p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h5>Pobierz Projekt</h5>
-              <div class="code-block">git clone https://github.com/gacabartosz/presidio-local-anonymizer
+              <h5>Télécharger le projet</h5>
+              <div class="code-block">git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer</div>
-              <p class="help-text">Alternatywnie: Pobierz ZIP z <a href="https://github.com/gacabartosz/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> i rozpakuj</p>
+              <p class="help-text">Vous pouvez aussi télécharger le ZIP depuis <a href="https://github.com/jpsangare/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> et le décompresser.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">3</div>
             <div class="step-content">
-              <h5>Uruchom Instalator</h5>
+              <h5>Lancer l’installateur</h5>
               <div class="code-block">chmod +x install-mac.sh
 ./install-mac.sh</div>
-              <p class="help-text">Instalator automatycznie utworzy venv, zainstaluje zależności i uruchomi backend</p>
+              <p class="help-text">L’installateur crée automatiquement un environnement virtuel, installe les dépendances et démarre le backend.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">4</div>
             <div class="step-content">
-              <h5>Backend Gotowy!</h5>
-              <p>Backend uruchomi się na: <code>http://localhost:6677</code></p>
-              <p>Dashboard: <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
-              <button class="btn btn-test" id="test-connection-mac">🔍 Testuj Połączenie</button>
+              <h5>Backend prêt !</h5>
+              <p>Le backend démarrera sur : <code>http://localhost:6677</code></p>
+              <p>Tableau de bord : <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
+              <button class="btn btn-test" id="test-connection-mac">🔍 Tester la connexion</button>
             </div>
           </div>
 
           <div class="install-links">
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/install-mac.sh" target="_blank" class="link-btn">
-              📄 Zobacz install-mac.sh
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/install-mac.sh" target="_blank" class="link-btn">
+              📄 Voir install-mac.sh
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
-              📖 Pełna Dokumentacja
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
+              📖 Documentation complète
             </a>
           </div>
         </div>
 
         <!-- Linux Instructions -->
         <div class="os-instructions hidden" id="install-linux">
-          <h4>🐧 Instalacja dla Linux</h4>
+          <h4>🐧 Installation pour Linux</h4>
 
           <div class="install-step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h5>Zainstaluj Python3 i venv</h5>
+              <h5>Installer Python 3 et venv</h5>
               <div class="code-block"># Ubuntu/Debian
 sudo apt install python3 python3-pip python3-venv
 
@@ -519,60 +542,60 @@ sudo pacman -S python python-pip</div>
           <div class="install-step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h5>Pobierz Projekt</h5>
-              <div class="code-block">git clone https://github.com/gacabartosz/presidio-local-anonymizer
+              <h5>Télécharger le projet</h5>
+              <div class="code-block">git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer</div>
-              <p class="help-text">Alternatywnie: Pobierz ZIP z <a href="https://github.com/gacabartosz/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> i rozpakuj</p>
+              <p class="help-text">Vous pouvez aussi télécharger le ZIP depuis <a href="https://github.com/jpsangare/presidio-local-anonymizer/archive/refs/heads/main.zip" target="_blank">GitHub</a> et le décompresser.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">3</div>
             <div class="step-content">
-              <h5>Uruchom Instalator</h5>
+              <h5>Lancer l’installateur</h5>
               <div class="code-block">chmod +x install-linux.sh
 ./install-linux.sh</div>
-              <p class="help-text">Instalator automatycznie utworzy venv, zainstaluje zależności i uruchomi backend</p>
+              <p class="help-text">L’installateur crée automatiquement un environnement virtuel, installe les dépendances et démarre le backend.</p>
             </div>
           </div>
 
           <div class="install-step">
             <div class="step-number">4</div>
             <div class="step-content">
-              <h5>Backend Gotowy!</h5>
-              <p>Backend uruchomi się na: <code>http://localhost:6677</code></p>
-              <p>Dashboard: <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
-              <button class="btn btn-test" id="test-connection-linux">🔍 Testuj Połączenie</button>
+              <h5>Backend prêt !</h5>
+              <p>Le backend démarrera sur : <code>http://localhost:6677</code></p>
+              <p>Tableau de bord : <a href="http://localhost:6677/dashboard" target="_blank">http://localhost:6677/dashboard</a></p>
+              <button class="btn btn-test" id="test-connection-linux">🔍 Tester la connexion</button>
             </div>
           </div>
 
           <div class="install-links">
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/install-linux.sh" target="_blank" class="link-btn">
-              📄 Zobacz install-linux.sh
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/install-linux.sh" target="_blank" class="link-btn">
+              📄 Voir install-linux.sh
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
-              📖 Pełna Dokumentacja
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/INSTALLATION.md" target="_blank" class="link-btn">
+              📖 Documentation complète
             </a>
           </div>
         </div>
 
         <!-- Quick Links -->
         <div class="quick-links">
-          <h4>📚 Dodatkowe Zasoby</h4>
+          <h4>📚 Ressources supplémentaires</h4>
           <div class="links-grid">
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer" target="_blank" class="resource-link">
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer" target="_blank" class="resource-link">
               <span class="link-icon">🔗</span>
               <span class="link-text">GitHub Repository</span>
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/README.md" target="_blank" class="resource-link">
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/README.md" target="_blank" class="resource-link">
               <span class="link-icon">📖</span>
               <span class="link-text">README</span>
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/TESTING.md" target="_blank" class="resource-link">
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/TESTING.md" target="_blank" class="resource-link">
               <span class="link-icon">🧪</span>
               <span class="link-text">Testing Guide</span>
             </a>
-            <a href="https://github.com/gacabartosz/presidio-local-anonymizer/issues" target="_blank" class="resource-link">
+            <a href="https://github.com/jpsangare/presidio-local-anonymizer/issues" target="_blank" class="resource-link">
               <span class="link-icon">🐛</span>
               <span class="link-text">Report Issue</span>
             </a>
@@ -582,6 +605,7 @@ cd presidio-local-anonymizer</div>
     </div>
   </div>
 
+  <script src="locales.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

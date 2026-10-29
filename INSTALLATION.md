@@ -1,50 +1,50 @@
-# Instalacja Presidio Browser Anonymizer
+# Installation de Presidio Browser Anonymizer
 
-Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
+Guide complet pour installer l’extension Chrome et le backend.
 
-## Wymagania
+## Prérequis
 
-- **Python 3.8+** (sprawdź: `python --version` lub `python3 --version`)
-- **Chrome/Edge/Brave** - przeglądarka oparta na Chromium
-- **2 GB RAM** - dla modelu SpaCy
-- **Połączenie internetowe** - do pobrania zależności
+- **Python 3.8+** (vérifiez avec : `python --version` ou `python3 --version`)
+- **Chrome/Edge/Brave** - navigateur basé sur Chromium
+- **2 Go de RAM** - pour le modèle SpaCy
+- **Connexion Internet** - pour télécharger les dépendances
 
 ---
 
-## Instalacja Automatyczna (Zalecana)
+## Installation automatique (recommandée)
 
 ### Windows
 
-> 🪟 **Wersja dla laika (bez gita i terminala):** [WINDOWS.md](WINDOWS.md)
+> 🪟 **Version pour les débutants (sans Git ni terminal) :** [WINDOWS.md](WINDOWS.md)
 
-1. **Pobierz projekt** (git albo zielony przycisk `Code` → `Download ZIP` + wypakuj):
+1. **Téléchargez le projet** (avec Git ou via le bouton vert `Code` → `Download ZIP`, puis extrayez l’archive) :
    ```cmd
-   git clone https://github.com/gacabartosz/presidio-local-anonymizer
+   git clone https://github.com/jpsangare/presidio-local-anonymizer
    cd presidio-local-anonymizer
    ```
 
-2. **Kliknij 2x `Uruchom-Windows.bat`** — pierwszy raz instaluje wszystko (łącznie z Pythonem, jeśli go brak), potem startuje backend i otwiera dashboard
+2. **Double-cliquez sur `Uruchom-Windows.bat`** — au premier lancement, tout est installé (y compris Python s’il est absent), puis le backend démarre et le tableau de bord s’ouvre
 
-3. **Gotowe!** Backend działa na `http://localhost:6677`. Autostart przy logowaniu: kliknij 2x `Autostart-Windows.bat`
+3. **C’est prêt !** Le backend est disponible sur `http://localhost:6677`. Pour le démarrer à l’ouverture de session, double-cliquez sur `Autostart-Windows.bat`.
 
 ### macOS
 
-1. **Pobierz projekt:**
+1. **Téléchargez le projet :**
    ```bash
-   git clone https://github.com/gacabartosz/presidio-local-anonymizer
+   git clone https://github.com/jpsangare/presidio-local-anonymizer
    cd presidio-local-anonymizer
    ```
 
-2. **Uruchom instalator:**
+2. **Lancez l’installateur :**
    ```bash
    ./install-mac.sh
    ```
 
-3. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:6677`
+3. **C’est prêt !** Le backend démarre automatiquement sur `http://localhost:6677`.
 
 ### Linux
 
-1. **Zainstaluj Python3 i venv** (jeśli jeszcze nie masz):
+1. **Installez Python 3 et venv** (si nécessaire) :
    ```bash
    # Ubuntu/Debian
    sudo apt install python3 python3-pip python3-venv
@@ -56,132 +56,132 @@ Pełna instrukcja instalacji wtyczki Chrome wraz z backendem.
    sudo pacman -S python python-pip
    ```
 
-2. **Pobierz projekt:**
+2. **Téléchargez le projet :**
    ```bash
-   git clone https://github.com/gacabartosz/presidio-local-anonymizer
+   git clone https://github.com/jpsangare/presidio-local-anonymizer
    cd presidio-local-anonymizer
    ```
 
-3. **Uruchom instalator:**
+3. **Lancez l’installateur :**
    ```bash
    ./install-linux.sh
    ```
 
-4. **Gotowe!** Backend uruchomi się automatycznie na `http://localhost:6677`
+4. **C’est prêt !** Le backend démarre automatiquement sur `http://localhost:6677`.
 
 ---
 
-## Instalacja Chrome Extension
+## Installation de l’extension Chrome
 
-### Krok 1: Zainstaluj wtyczkę
+### Étape 1 : Installer l’extension
 
-#### Opcja A: Load Unpacked (Deweloperska)
+#### Option A : Load Unpacked (développement)
 
-1. Otwórz Chrome → wpisz w pasku adresu: `chrome://extensions/`
-2. Włącz **"Tryb dewelopera"** (przełącznik w prawym górnym rogu)
-3. Kliknij **"Załaduj rozpakowane"**
-4. Wybierz folder: `/path/to/presidio-local-anonymizer/chrome-extension`
-5. Wtyczka zostanie załadowana!
+1. Ouvrez Chrome et saisissez `chrome://extensions/` dans la barre d’adresse.
+2. Activez le **« Mode développeur »** (interrupteur en haut à droite).
+3. Cliquez sur **« Charger l’extension non empaquetée »**.
+4. Sélectionnez le dossier : `/path/to/presidio-local-anonymizer/chrome-extension`
+5. L’extension est chargée !
 
-#### Opcja B: Z pliku CRX (Produkcja)
+#### Option B : À partir du fichier CRX (production)
 
-1. Pobierz plik `.crx` z [GitHub Releases](https://github.com/gacabartosz/presidio-local-anonymizer/releases)
-2. Przeciągnij plik do `chrome://extensions/`
-3. Kliknij "Dodaj rozszerzenie"
+1. Téléchargez le fichier `.crx` depuis [GitHub Releases](https://github.com/jpsangare/presidio-local-anonymizer/releases).
+2. Faites glisser le fichier dans `chrome://extensions/`.
+3. Cliquez sur « Ajouter l’extension ».
 
-### Krok 2: Skonfiguruj URL backendu
+### Étape 2 : Configurer l’URL du backend
 
-1. Kliknij **ikonę wtyczki** w pasku narzędzi Chrome
-2. Kliknij **"🔧 Konfiguracja Wtyczki"**
-3. Wpisz URL: `http://localhost:6677`
-4. Kliknij **"🔍 Testuj Połączenie"**
-5. Jeśli widzisz "✅ Połączenie udane!" → kliknij **"💾 Zapisz"**
+1. Cliquez sur l’**icône de l’extension** dans la barre d’outils Chrome.
+2. Cliquez sur **« 🔧 Paramètres de l’extension »**.
+3. Saisissez l’URL : `http://localhost:6677`
+4. Cliquez sur **« 🔍 Tester la connexion »**.
+5. Si le message « ✅ Connexion réussie ! » s’affiche, cliquez sur **« 💾 Enregistrer »**.
 
 ---
 
-## Jak używać?
+## Utilisation
 
-### 1. Auto-Anonimizacja przy Wklejaniu (Najłatwiejsza!)
+### 1. Anonymisation automatique au collage (la méthode la plus simple !)
 
-**Automatycznie anonimizuje tekst gdy go wklejasz:**
+**Le texte est anonymisé automatiquement lorsque vous le collez :**
 
 ```
-1. Skopiuj tekst z danymi osobowymi
-2. Wklej go gdziekolwiek (Ctrl+V / Cmd+V)
-3. Tekst zostanie automatycznie zanonimizowany!
+1. Copiez le texte contenant des données personnelles.
+2. Collez-le où vous le souhaitez (Ctrl+V / Cmd+V).
+3. Le texte est anonymisé automatiquement !
 ```
 
-**Działa wszędzie:**
+**Fonctionne partout :**
 - ChatGPT, Claude, Bard
 - Gmail, Outlook
-- Formularze
-- Pola tekstowe
+- Formulaires
+- Champs de texte
 
-### 2. Skrót Klawiszowy
-
-```
-1. Zaznacz tekst na stronie
-2. Naciśnij Ctrl+Shift+A (Mac: Cmd+Shift+A)
-3. Tekst zostanie zanonimizowany
-```
-
-### 3. Menu Kontekstowe
+### 2. Raccourci clavier
 
 ```
-1. Zaznacz tekst
-2. Kliknij prawym przyciskiem myszy
-3. Wybierz "Anonimizuj zaznaczony tekst"
+1. Sélectionnez le texte sur la page.
+2. Appuyez sur Ctrl+Shift+A (Cmd+Shift+A sur Mac).
+3. Le texte est anonymisé.
+```
+
+### 3. Menu contextuel
+
+```
+1. Sélectionnez le texte.
+2. Cliquez avec le bouton droit de la souris.
+3. Choisissez « Anonymiser le texte sélectionné ».
 ```
 
 ---
 
-## Przykład Użycia
+## Exemple d’utilisation
 
-**Tekst przed anonimizacją:**
+**Texte avant anonymisation :**
 ```
 Dzień dobry, jestem Jan Kowalski, mój PESEL to 44051401359,
 email: jan.kowalski@example.com, tel: +48 123 456 789.
 Mieszkam w Warszawie przy ul. Pięknej 15.
 ```
 
-**Tekst po anonimizacji:**
+**Texte après anonymisation :**
 ```
-Dzień dobry, jestem [OSOBA], mój PESEL to [PESEL],
-email: [EMAIL], tel: [TELEFON].
-Mieszkam w [LOKALIZACJA] przy ul. [LOKALIZACJA].
+Bonjour, je m’appelle [PERSONNE], mon PESEL est [PESEL],
+e-mail : [EMAIL], téléphone : [TELEPHONE].
+J’habite à [LIEU], au [LIEU].
 ```
 
 ---
 
-## Wykrywane Typy Danych
+## Types de données détectés
 
-### Polskie
-- **PESEL** - Numer PESEL
-- **NIP** - Numer identyfikacji podatkowej
-- **REGON** - Numer REGON
-- **Dowód osobisty** - Numer dowodu
-- **Paszport** - Numer paszportu
+### Données polonaises
+- **PESEL** - Numéro PESEL
+- **NIP** - Numéro d’identification fiscale
+- **REGON** - Numéro REGON
+- **Carte d’identité** - Numéro de la carte d’identité
+- **Passeport** - Numéro de passeport
 
-### Międzynarodowe
-- **Imię i nazwisko** - Dane osobowe
-- **Email** - Adres email
-- **Telefon** - Numer telefonu
-- **Karta kredytowa** - Numer karty
-- **IBAN** - Numer konta bankowego
-- **Adres IP** - Adres IP
-- **URL** - Adresy stron
-- **Data/czas** - Daty i godziny
-- **Lokalizacja** - Miasta, adresy
+### Données internationales
+- **Nom et prénom** - Données personnelles
+- **E-mail** - Adresse e-mail
+- **Téléphone** - Numéro de téléphone
+- **Carte bancaire** - Numéro de carte
+- **IBAN** - Numéro de compte bancaire
+- **Adresse IP** - Adresse IP
+- **URL** - Adresses de sites Web
+- **Date/heure** - Dates et heures
+- **Lieu** - Villes, adresses
 
 ---
 
 ## Troubleshooting
 
-### Backend nie uruchamia się
+### Le backend ne démarre pas
 
-**Problem:** Błąd "Port 6677 is already in use"
+**Problème :** erreur « Port 6677 is already in use »
 
-**Rozwiązanie:**
+**Solution :**
 ```bash
 # Windows
 netstat -ano | findstr :6677
@@ -192,37 +192,37 @@ lsof -i :6677
 kill -9 <PID>
 ```
 
-### Status wtyczki: "Offline"
+### État de l’extension : « Offline »
 
-1. **Sprawdź czy backend działa:**
+1. **Vérifiez que le backend est en cours d’exécution :**
    ```bash
    curl http://localhost:6677/api/health
    ```
-   Powinno zwrócić: `{"status":"healthy"}`
+   La réponse attendue est : `{"status":"healthy"}`
 
-2. **Sprawdź URL w konfiguracji wtyczki:**
-   - Otwórz opcje wtyczki
-   - Upewnij się że URL to `http://localhost:6677`
-   - Kliknij "Testuj Połączenie"
+2. **Vérifiez l’URL dans les paramètres de l’extension :**
+   - Ouvrez les options de l’extension.
+   - Vérifiez que l’URL est `http://localhost:6677`.
+   - Cliquez sur « Tester la connexion ».
 
-3. **Restart backendu:**
-   - Zatrzymaj backend (Ctrl+C)
-   - Uruchom ponownie: `python app.py`
+3. **Redémarrez le backend :**
+   - Arrêtez le backend (Ctrl+C).
+   - Relancez-le : `python app.py`
 
-### Python nie jest zainstalowany
+### Python n’est pas installé
 
-**Windows:**
-1. Pobierz Python z: https://www.python.org/downloads/
-2. WAŻNE: Zaznacz "Add Python to PATH"!
-3. Uruchom instalator
+**Windows :**
+1. Téléchargez Python depuis https://www.python.org/downloads/.
+2. IMPORTANT : cochez « Add Python to PATH » !
+3. Lancez l’installateur.
 
-**macOS:**
+**macOS :**
 ```bash
-# Użyj Homebrew
+# Utilisez Homebrew
 brew install python3
 ```
 
-**Linux:**
+**Linux :**
 ```bash
 # Ubuntu/Debian
 sudo apt install python3 python3-pip python3-venv
@@ -231,36 +231,36 @@ sudo apt install python3 python3-pip python3-venv
 sudo dnf install python3 python3-pip
 ```
 
-### Model SpaCy nie pobiera się
+### Le modèle SpaCy ne se télécharge pas
 
-**Problem:** Błąd podczas `python -m spacy download pl_core_news_md`
+**Problème :** erreur lors de l’exécution de `python -m spacy download pl_core_news_md`
 
-**Rozwiązanie:**
+**Solution :**
 ```bash
-# Aktywuj venv
+# Activez le venv
 source .venv/bin/activate  # macOS/Linux
 .venv\Scripts\activate.bat  # Windows
 
-# Spróbuj ponownie
+# Réessayez
 pip install https://github.com/explosion/spacy-models/releases/download/pl_core_news_md-3.7.0/pl_core_news_md-3.7.0-py3-none-any.whl
 ```
 
-### Wtyczka nie wykrywa danych
+### L’extension ne détecte pas les données
 
-1. **Sprawdź czy encje są włączone:**
-   - Kliknij ikonę wtyczki → "⚙️ Ustawienia"
-   - Upewnij się że PERSON, EMAIL_ADDRESS itp. są zaznaczone
-   - Kliknij "Zapisz"
+1. **Vérifiez que les entités sont activées :**
+   - Cliquez sur l’icône de l’extension → « ⚙️ Paramètres ».
+   - Vérifiez que PERSON, EMAIL_ADDRESS, etc. sont sélectionnés.
+   - Cliquez sur « Enregistrer ».
 
-2. **Reload wtyczki:**
+2. **Rechargez l’extension :**
    - `chrome://extensions/`
-   - Kliknij ⟳ przy wtyczce
+   - Cliquez sur ⟳ à côté de l’extension.
 
 ---
 
-## Aktualizacja
+## Mise à jour
 
-### Aktualizacja Backendu
+### Mise à jour du backend
 
 ```bash
 cd presidio-local-anonymizer
@@ -273,27 +273,27 @@ source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt --upgrade
 ```
 
-### Aktualizacja Wtyczki
+### Mise à jour de l’extension
 
-1. `chrome://extensions/`
-2. Kliknij ⟳ (reload) przy wtyczce
-3. Lub pobierz nową wersję z GitHub Releases
+1. Ouvrez `chrome://extensions/`.
+2. Cliquez sur ⟳ (recharger) à côté de l’extension.
+3. Vous pouvez aussi télécharger la nouvelle version depuis GitHub Releases.
 
 ---
 
-## Uruchamianie Backendu na Starcie Systemu
+## Démarrer le backend à l’ouverture du système
 
 ### Windows (Task Scheduler)
 
-1. Otwórz **Task Scheduler**
-2. Create Basic Task → "Presidio Backend"
-3. Trigger: "When I log on"
-4. Action: "Start a program"
-5. Program: `C:\path\to\presidio-local-anonymizer\Uruchom-Windows.bat`
+1. Ouvrez **Task Scheduler**.
+2. Sélectionnez Create Basic Task → « Presidio Backend ».
+3. Déclencheur : « When I log on ».
+4. Action : « Start a program ».
+5. Programme : `C:\path\to\presidio-local-anonymizer\Uruchom-Windows.bat`
 
 ### macOS (launchd)
 
-Utwórz plik `~/Library/LaunchAgents/com.presidio.backend.plist`:
+Créez le fichier `~/Library/LaunchAgents/com.presidio.backend.plist` :
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -312,14 +312,14 @@ Utwórz plik `~/Library/LaunchAgents/com.presidio.backend.plist`:
 </plist>
 ```
 
-Załaduj:
+Chargez-le :
 ```bash
 launchctl load ~/Library/LaunchAgents/com.presidio.backend.plist
 ```
 
 ### Linux (systemd)
 
-Utwórz plik `~/.config/systemd/user/presidio-backend.service`:
+Créez le fichier `~/.config/systemd/user/presidio-backend.service` :
 
 ```ini
 [Unit]
@@ -335,7 +335,7 @@ Restart=on-failure
 WantedBy=default.target
 ```
 
-Aktywuj:
+Activez-le :
 ```bash
 systemctl --user enable presidio-backend
 systemctl --user start presidio-backend
@@ -345,22 +345,22 @@ systemctl --user start presidio-backend
 
 ## FAQ
 
-### Czy dane są wysyłane do internetu?
+### Les données sont-elles envoyées sur Internet ?
 
-**Nie!** Wszystko działa lokalnie na Twoim komputerze. Żadne dane nie opuszczają Twojej maszyny.
+**Non !** Tout fonctionne localement sur votre ordinateur. Aucune donnée ne quitte votre machine.
 
-### Czy mogę użyć innego portu?
+### Puis-je utiliser un autre port ?
 
-Tak! Uruchom backend:
+Oui ! Lancez le backend :
 ```bash
 python app.py --port 8080
 ```
 
-Następnie zmień URL w opcjach wtyczki na `http://localhost:8080`
+Puis modifiez l’URL dans les options de l’extension en `http://localhost:8080`.
 
-### Czy działa na innych przeglądarkach?
+### L’extension fonctionne-t-elle avec d’autres navigateurs ?
 
-Tak! Wtyczka działa na wszystkich przeglądarkach opartych o Chromium:
+Oui ! Elle fonctionne avec tous les navigateurs basés sur Chromium :
 - Google Chrome
 - Microsoft Edge
 - Brave
@@ -369,14 +369,14 @@ Tak! Wtyczka działa na wszystkich przeglądarkach opartych o Chromium:
 
 ---
 
-## Pomoc i Wsparcie
+## Aide et assistance
 
-- **GitHub Issues:** https://github.com/gacabartosz/presidio-local-anonymizer/issues
-- **Dokumentacja Chrome:** chrome-extension/README.md
-- **Dokumentacja Backend:** backend/README.md
+- **Issues GitHub :** https://github.com/jpsangare/presidio-local-anonymizer/issues
+- **Documentation Chrome :** chrome-extension/README.md
+- **Documentation du backend :** backend/README.md
 
 ---
 
-## Licencja
+## Licence
 
-MIT License - zobacz plik [LICENSE](LICENSE)
+Licence MIT - consultez le fichier [LICENSE](LICENSE)

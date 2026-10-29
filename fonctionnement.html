@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presidio Browser Anonymizer – Comment ça marche</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --accent:#38bdf8; --ok:#4ade80; --warn:#fbbf24; --txt:#e2e8f0; --mute:#94a3b8; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--txt); line-height:1.6; }
+  header { text-align:center; padding:64px 20px 40px; background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 100%); }
+  header h1 { margin:0 0 12px; font-size:2.4rem; }
+  header p { margin:0 auto; max-width:640px; opacity:.95; font-size:1.15rem; }
+  .badge { display:inline-block; margin-top:20px; padding:6px 16px; border-radius:999px; background:rgba(255,255,255,.2); font-weight:600; }
+  main { max-width:960px; margin:0 auto; padding:40px 20px 80px; }
+  h2 { font-size:1.7rem; margin:56px 0 20px; }
+  h2 span { color:var(--accent); }
+  .example { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; }
+  .box { background:var(--card); border-radius:14px; padding:20px; }
+  .box h3 { margin:0 0 10px; font-size:.85rem; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); }
+  .box code { font-size:1rem; word-break:break-word; }
+  .arrow { font-size:2rem; color:var(--accent); }
+  .tag { background:rgba(74,222,128,.15); color:var(--ok); padding:1px 8px; border-radius:6px; font-weight:600; }
+  .raw { color:var(--warn); }
+  .flow { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; counter-reset:step; }
+  .step { background:var(--card); border-radius:14px; padding:24px 20px; position:relative; border-top:3px solid var(--accent); }
+  .step::before { counter-increment:step; content:counter(step); position:absolute; top:-18px; left:16px; width:34px; height:34px; border-radius:50%; background:var(--accent); color:#0f172a; font-weight:700; display:grid; place-items:center; }
+  .step h3 { margin:8px 0 8px; }
+  .step p { margin:0; color:var(--mute); font-size:.95rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .grid .box h3 { text-transform:none; letter-spacing:0; font-size:1.1rem; color:var(--txt); }
+  .grid .box p { margin:0; color:var(--mute); }
+  .privacy { background:linear-gradient(135deg,rgba(74,222,128,.15),rgba(56,189,248,.15)); border:1px solid rgba(74,222,128,.4); border-radius:16px; padding:28px; text-align:center; }
+  .privacy strong { color:var(--ok); }
+  pre { background:#0b1220; padding:16px; border-radius:10px; overflow-x:auto; }
+  footer { text-align:center; color:var(--mute); padding:30px; border-top:1px solid #1e293b; }
+  a { color:var(--accent); }
+  @media (max-width:720px) { .example { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); text-align:center; } header h1 { font-size:1.8rem; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ Presidio Browser Anonymizer</h1>
+  <p>Masquez automatiquement vos données personnelles avant de les envoyer à ChatGPT, Claude, Gmail ou tout autre site.</p>
+  <span class="badge">🔒 100 % local : rien ne quitte votre ordinateur</span>
+</header>
+
+<main>
+  <h2>✨ <span>Le principe</span> en un coup d’œil</h2>
+  <div class="example">
+    <div class="box">
+      <h3>Vous collez</h3>
+      <code class="raw">Je m’appelle Jean Dupont, e-mail : jean@example.com, tél. : 06 12 34 56 78</code>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="box">
+      <h3>Le site reçoit</h3>
+      <code>Je m’appelle <span class="tag">[PERSONNE]</span>, e-mail : <span class="tag">[EMAIL]</span>, tél. : <span class="tag">[TELEPHONE]</span></code>
+    </div>
+  </div>
+
+  <h2>⚙️ <span>Comment ça marche</span> ?</h2>
+  <div class="flow">
+    <div class="step"><h3>Vous collez</h3><p>L’extension Chrome détecte le collage ou l’envoi de texte dans une page web.</p></div>
+    <div class="step"><h3>Envoi au backend local</h3><p>Le texte est transmis à <code>localhost:6677</code>, sur votre propre machine.</p></div>
+    <div class="step"><h3>Analyse Presidio</h3><p>Microsoft Presidio et spaCy repèrent noms, e-mails, téléphones, IBAN, numéros d’identité…</p></div>
+    <div class="step"><h3>Anonymisation</h3><p>Chaque donnée sensible est remplacée par une étiquette, par exemple <code>[PERSONNE]</code>.</p></div>
+    <div class="step"><h3>Texte sécurisé</h3><p>Le texte anonymisé remplace l’original dans le champ de saisie.</p></div>
+  </div>
+
+  <h2>🧩 <span>Les composants</span></h2>
+  <div class="grid">
+    <div class="box"><h3>🌐 Extension Chrome</h3><p>Intercepte le texte dans les pages, affiche la fenêtre d’options et le popup, et gère la langue (français par défaut, anglais disponible).</p></div>
+    <div class="box"><h3>🐍 Backend Python (Flask)</h3><p>Moteur local exposé sur le port 6677 : analyse le texte avec Presidio et renvoie la version anonymisée.</p></div>
+    <div class="box"><h3>📊 Tableau de bord</h3><p>Interface web pour tester l’anonymisation, ajuster les types de données détectées et consulter les statistiques.</p></div>
+    <div class="box"><h3>📦 Installateurs</h3><p>Scripts pour Windows, macOS et Linux qui installent Python, les dépendances et le modèle linguistique.</p></div>
+  </div>
+
+  <h2>🔍 <span>Ce qui est détecté</span></h2>
+  <div class="grid">
+    <div class="box"><h3>👤 Identité</h3><p>Noms, prénoms, adresses, numéros d’identité (PESEL…), dates de naissance.</p></div>
+    <div class="box"><h3>📞 Contact</h3><p>E-mails, numéros de téléphone, URL, adresses IP.</p></div>
+    <div class="box"><h3>💳 Finance</h3><p>Cartes bancaires, IBAN, numéros de compte, identifiants fiscaux.</p></div>
+  </div>
+
+  <h2>🚀 <span>Démarrage rapide</span></h2>
+  <div class="box">
+    <p><strong>1.</strong> Téléchargez le projet et lancez l’installateur (Windows : double-clic sur <code>Uruchom-Windows.bat</code>).</p>
+    <p><strong>2.</strong> Dans Chrome, ouvrez <code>chrome://extensions/</code>, activez le mode développeur, puis « Charger l’extension non empaquetée » et choisissez le dossier <code>chrome-extension</code>.</p>
+    <p><strong>3.</strong> Vérifiez que le backend répond :</p>
+<pre>curl http://localhost:6677/health</pre>
+    <p>Collez ensuite un texte contenant des données personnelles dans ChatGPT : elles sont masquées. ✅</p>
+  </div>
+
+  <h2>🔒 <span>Confidentialité</span></h2>
+  <div class="privacy">
+    <p><strong>Aucune donnée n’est envoyée sur Internet.</strong><br>
+    L’analyse se fait intégralement sur votre ordinateur. Internet n’est nécessaire que pour le téléchargement initial.</p>
+  </div>
+</main>
+
+<footer>
+  Presidio Browser Anonymizer · <a href="https://github.com/jpsangare/presidio-local-anonymizer">GitHub</a> · Voir aussi <a href="JAK-ZACZĄĆ.md">le guide de démarrage</a>
+</footer>
+</body>
+</html>

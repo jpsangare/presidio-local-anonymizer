@@ -1,9 +1,10 @@
 @echo off
+chcp 65001 >nul
 REM ============================================================
-REM  Presidio Browser Anonymizer - Autostart dla Windows
-REM  Kliknij dwa razy: backend bedzie startowal sam (w tle)
-REM  przy kazdym wlaczeniu komputera.
-REM  Kliknij ponownie, aby autostart WYLACZYC.
+REM  Presidio Browser Anonymizer - démarrage automatique sous Windows
+REM  Double-cliquez : le backend démarrera en arrière-plan
+REM  à chaque démarrage de l’ordinateur.
+REM  Double-cliquez à nouveau pour désactiver le démarrage automatique.
 REM ============================================================
 setlocal EnableExtensions
 title Presidio Anonymizer - Autostart
@@ -16,18 +17,18 @@ if exist "%VBS%" goto :remove
 >> "%VBS%" echo sh.CurrentDirectory = "%~dp0"
 >> "%VBS%" echo sh.Run """%~dp0Uruchom-Windows.bat""", 0, False
 
-echo [OK] Autostart WLACZONY.
-echo Backend bedzie uruchamial sie automatycznie (w tle) po wlaczeniu komputera.
+echo [OK] Démarrage automatique ACTIVÉ.
+echo Le backend démarrera automatiquement en arrière-plan après le démarrage de Windows.
 echo.
-echo Aby wylaczyc autostart - kliknij ten plik jeszcze raz.
+echo Pour désactiver le démarrage automatique, cliquez à nouveau sur ce fichier.
 echo.
 pause
 exit /b 0
 
 :remove
 del "%VBS%"
-echo [OK] Autostart WYLACZONY.
-echo Od teraz backend uruchamiasz recznie plikiem Uruchom-Windows.bat.
+echo [OK] Démarrage automatique DÉSACTIVÉ.
+echo Vous pouvez maintenant démarrer le backend manuellement avec Uruchom-Windows.bat.
 echo.
 pause
 exit /b 0

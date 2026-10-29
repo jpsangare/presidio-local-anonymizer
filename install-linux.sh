@@ -1,35 +1,35 @@
 #!/bin/bash
 # Presidio Browser Anonymizer - Linux Installer
-# Automatyczna instalacja backendu dla Linux
+# Installation automatique du backend pour Linux
 
 set -e  # Exit on error
 
 echo "========================================"
 echo "Presidio Browser Anonymizer"
-echo "Instalacja Backendu dla Linux"
+echo "Installation du backend pour Linux"
 echo "========================================"
 echo ""
 
 # Check if Python is installed
 if ! command -v python3 &> /dev/null; then
-    echo "[ERROR] Python3 nie jest zainstalowany!"
+    echo "[ERROR] Python 3 n’est pas installé !"
     echo ""
-    echo "Zainstaluj Python3:"
+    echo "Installer Python 3 :"
     echo "  Ubuntu/Debian: sudo apt install python3 python3-pip python3-venv"
     echo "  Fedora/RHEL:   sudo dnf install python3 python3-pip"
     echo "  Arch:          sudo pacman -S python python-pip"
     exit 1
 fi
 
-echo "[OK] Python3 jest zainstalowany"
+echo "[OK] Python 3 est installé"
 python3 --version
 echo ""
 
 # Check if venv is available
 if ! python3 -m venv --help &> /dev/null; then
-    echo "[ERROR] python3-venv nie jest zainstalowany!"
+    echo "[ERROR] python3-venv n’est pas installé !"
     echo ""
-    echo "Zainstaluj python3-venv:"
+    echo "Installer python3-venv :"
     echo "  Ubuntu/Debian: sudo apt install python3-venv"
     echo "  Fedora/RHEL:   sudo dnf install python3-venv"
     exit 1
@@ -39,38 +39,38 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR/backend"
 
-echo "[1/5] Tworzenie wirtualnego środowiska..."
+echo "[1/5] Création de l’environnement virtuel..."
 python3 -m venv .venv
-echo "[OK] Wirtualne środowisko utworzone"
+echo "[OK] Environnement virtuel créé"
 echo ""
 
 echo "[2/5] Aktywowanie venv..."
 source .venv/bin/activate
-echo "[OK] Venv aktywowane"
+echo "[OK] Environnement virtuel activé"
 echo ""
 
-echo "[3/5] Instalowanie zależności..."
+echo "[3/5] Installation des dépendances..."
 pip install --upgrade pip
 pip install -r requirements.txt
-echo "[OK] Zależności zainstalowane"
+echo "[OK] Dépendances installées"
 echo ""
 
-echo "[4/5] Pobieranie modelu SpaCy (pl_core_news_md)..."
+echo "[4/5] Téléchargement du modèle SpaCy (pl_core_news_md)..."
 python -m spacy download pl_core_news_md
-echo "[OK] Model SpaCy pobrany"
+echo "[OK] Modèle SpaCy téléchargé"
 echo ""
 
-echo "[5/5] Uruchamianie backendu..."
+echo "[5/5] Démarrage du backend..."
 echo ""
 echo "========================================"
-echo "BACKEND URUCHOMIONY!"
+echo "BACKEND DÉMARRÉ !"
 echo "========================================"
 echo ""
 echo "Backend URL: http://localhost:6677"
 echo "Dashboard:   http://localhost:6677/dashboard"
-echo "Ustawienia:  http://localhost:6677/"
+echo "Paramètres : http://localhost:6677/"
 echo ""
-echo "Naciśnij Ctrl+C aby zatrzymać backend"
+echo "Appuyez sur Ctrl+C pour arrêter le backend"
 echo "========================================"
 echo ""
 

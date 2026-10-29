@@ -1,6 +1,6 @@
 """
-Moduł anonimizacji PII wykorzystujący Presidio AnonymizerEngine.
-Zastępuje wykryte encje odpowiednimi maskami zgodnie z konfiguracją.
+Module d’anonymisation des données personnelles utilisant Presidio AnonymizerEngine.
+Remplace les entités détectées par les masques définis dans la configuration.
 """
 
 import logging
@@ -19,51 +19,51 @@ def anonymize_text(
     config: Dict[str, Any]
 ) -> str:
     """
-    Anonimizuje tekst zastępując wykryte encje odpowiednimi maskami.
+    Anonymise le texte en remplaçant les entités détectées par les masques correspondants.
 
     Args:
-        text: Tekst do zanonimizowania
-        analyzer_results: Lista wyników z Presidio Analyzer
-        config: Słownik konfiguracji z maskami dla encji
+        text: Texte à anonymiser
+        analyzer_results: Liste de résultats de Presidio Analyzer
+        config: Dictionnaire de configuration des masques par entité
 
     Returns:
-        str: Zanonimizowany tekst
+        str: Texte anonymisé
 
     Example:
         >>> text = "Jan Kowalski, email: jan@example.com"
         >>> results = analyzer.analyze(text, ...)
         >>> anonymized = anonymize_text(text, results, config)
         >>> print(anonymized)
-        [OSOBA], email: [EMAIL]
+        [PERSONNE], email: [EMAIL]
     """
     if not analyzer_results:
-        logger.debug("Brak wykrytych encji do zanonimizowania")
+        logger.debug("Aucune entité à anonymiser n’a été détectée.")
         return text
 
-    # Utwórz engine anonimizacji
+    # Créer le moteur d’anonymisation
     anonymizer = AnonymizerEngine()
 
-    # Przygotuj mapowanie encji na operatory (maski)
+    # Associer les entités aux opérateurs (masques)
     operators = {}
     for entity_name, entity_config in config['entities'].items():
         mask = entity_config.get('mask', f"[{entity_name}]")
         operators[entity_name] = OperatorConfig("replace", {"new_value": mask})
 
-    # Loguj informacje o wykrytych encjach (bez wartości PII!)
+    # Consigner les entités détectées (sans enregistrer les valeurs personnelles)
     entity_counts = {}
     for result in analyzer_results:
         entity_counts[result.entity_type] = entity_counts.get(result.entity_type, 0) + 1
 
-    logger.info(f"Wykryto encje: {entity_counts}")
+    logger.info(f"Entités détectées : {entity_counts}")
 
-    # Wykonaj anonimizację
+    # Effectuer l’anonymisation
     anonymized_result = anonymizer.anonymize(
         text=text,
         analyzer_results=analyzer_results,
         operators=operators
     )
 
-    logger.debug(f"Anonimizacja zakończona. Długość tekstu: {len(text)} -> {len(anonymized_result.text)}")
+    logger.debug(f"Anonymisation terminée. Longueur du texte : {len(text)} -> {len(anonymized_result.text)}")
 
     return anonymized_result.text
 
@@ -73,19 +73,19 @@ def prepare_anonymization_report(
     config: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
-    Przygotowuje raport z analizy wykrytych encji (bez wartości PII).
+    Prépare un rapport sur les entités détectées (sans leurs valeurs personnelles).
 
     Args:
-        analyzer_results: Lista wyników z Presidio Analyzer
-        config: Słownik konfiguracji
+        analyzer_results: Liste de résultats de Presidio Analyzer
+        config: Dictionnaire de configuration
 
     Returns:
-        dict: Raport zawierający statystyki wykrytych encji
+        dict: Rapport contenant les statistiques des entités détectées
     """
     if not analyzer_results:
         return {"total_detections": 0, "entities": {}}
 
-    # Zlicz wykrycia według typów
+    # Compter les détections par type
     entity_stats = {}
     for result in analyzer_results:
         entity_type = result.entity_type
@@ -101,11 +101,11 @@ def prepare_anonymization_report(
         entity_stats[entity_type]["count"] += 1
         entity_stats[entity_type]["scores"].append(result.score)
 
-    # Oblicz średnie score
+    # Calculer le score moyen
     for entity_type in entity_stats:
         scores = entity_stats[entity_type]["scores"]
         entity_stats[entity_type]["avg_score"] = sum(scores) / len(scores)
-        del entity_stats[entity_type]["scores"]  # Usuń szczegółowe score z raportu
+        del entity_stats[entity_type]["scores"]  # Retirer les scores détaillés du rapport
 
     total_detections = sum(stats["count"] for stats in entity_stats.values())
 
@@ -115,6 +115,6 @@ def prepare_anonymization_report(
         "threshold_used": config.get('threshold', 0.35)
     }
 
-    logger.info(f"Wygenerowano raport: {total_detections} wykrytych encji")
+    logger.info(f"Rapport généré : {total_detections} entités détectées")
 
     return report

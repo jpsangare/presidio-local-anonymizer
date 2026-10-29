@@ -1,365 +1,365 @@
-# 🚀 Jak zacząć? - Przewodnik dla każdego
+# 🚀 Premiers pas - Guide pour tous
 
-**Prosty przewodnik instalacji Presidio Browser Anonymizer**
-*Dla osób bez wiedzy technicznej - wszystko krok po kroku!*
+**Guide simple pour installer Presidio Browser Anonymizer**
+*Pour les personnes sans connaissances techniques : tout est expliqué étape par étape !*
 
-> 🪟 **Masz Windows?** Jest jeszcze prostsza droga: [WINDOWS.md](WINDOWS.md) — pobierasz ZIP i klikasz dwa razy jeden plik. Nic więcej.
+> 🪟 **Vous utilisez Windows ?** C’est encore plus simple : [WINDOWS.md](WINDOWS.md) — téléchargez l’archive ZIP et double-cliquez sur un fichier. C’est tout.
 
 ---
 
-## 🤔 Co to w ogóle jest?
+## 🤔 De quoi s’agit-il ?
 
-To wtyczka do przeglądarki Chrome, która **automatycznie ukrywa Twoje dane osobowe** gdy wklejasz tekst do:
+Il s’agit d’une extension pour le navigateur Chrome qui **masque automatiquement vos données personnelles** lorsque vous collez du texte dans :
 - ChatGPT
 - Claude
 - Gmail
-- Formularzy internetowych
-- Wszystkiego innego!
+- des formulaires Web ;
+- tout autre site !
 
-**Przykład:**
-- **Wklejasz:** "Nazywam się Jan Kowalski, email: jan@example.com, tel: 123-456-789"
-- **Otrzymujesz:** "Nazywam się [OSOBA], email: [EMAIL], tel: [TELEFON]"
+**Exemple :**
+- **Vous collez :** "Nazywam się Jan Kowalski, email: jan@example.com, tel: 123-456-789"
+- **Vous obtenez :** "Je m’appelle [PERSONNE], e-mail : [EMAIL], téléphone : [TELEPHONE]"
 
-**Wszystko działa LOKALNIE na Twoim komputerze** - żadne dane nie wychodzą na internet! 🔒
-
----
-
-## ✅ Czego potrzebujesz?
-
-- ✅ Komputer z systemem Windows, Mac lub Linux
-- ✅ Przeglądarka Chrome (lub Edge, Brave, Opera)
-- ✅ 10 minut czasu
-- ✅ Połączenie z internetem (tylko do pobrania)
+**Tout fonctionne LOCALEMENT sur votre ordinateur** : aucune donnée n’est envoyée sur Internet ! 🔒
 
 ---
 
-## 📥 KROK 1: Pobierz program
+## ✅ Ce dont vous avez besoin
 
-### Sposób 1: Jeśli masz zainstalowane "git"
+- ✅ Un ordinateur sous Windows, macOS ou Linux.
+- ✅ Le navigateur Chrome (ou Edge, Brave, Opera).
+- ✅ 10 minutes.
+- ✅ Une connexion Internet (uniquement pour le téléchargement).
 
-**Windows:**
-1. Otwórz "Wiersz polecenia" (CMD)
-2. Wpisz:
+---
+
+## 📥 ÉTAPE 1 : Télécharger le programme
+
+### Méthode 1 : si Git est installé
+
+**Windows :**
+1. Ouvrez l’« Invite de commandes » (CMD).
+2. Saisissez :
 ```
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 ```
 
-**Mac lub Linux:**
-1. Otwórz Terminal
-2. Wpisz:
+**Mac ou Linux :**
+1. Ouvrez le Terminal.
+2. Saisissez :
 ```bash
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 ```
 
-### Sposób 2: Pobierz ZIP (jeśli nie masz "git")
+### Méthode 2 : télécharger l’archive ZIP (si Git n’est pas installé)
 
-1. Wejdź na: https://github.com/gacabartosz/presidio-local-anonymizer
-2. Kliknij zielony przycisk **"Code"**
-3. Wybierz **"Download ZIP"**
-4. Rozpakuj pobrany plik do folderu, np. `C:\presidio\` (Windows) lub `~/presidio/` (Mac/Linux)
-5. Otwórz ten folder w Wierszu polecenia (Windows) lub Terminalu (Mac/Linux)
+1. Accédez à https://github.com/jpsangare/presidio-local-anonymizer.
+2. Cliquez sur le bouton vert **« Code »**.
+3. Sélectionnez **« Download ZIP »**.
+4. Extrayez l’archive téléchargée dans un dossier, par exemple `C:\presidio\` (Windows) ou `~/presidio/` (Mac/Linux).
+5. Ouvrez ce dossier dans l’Invite de commandes (Windows) ou le Terminal (Mac/Linux).
 
 ---
 
-## 🔧 KROK 2: Zainstaluj backend (silnik anonimizacji)
+## 🔧 ÉTAPE 2 : Installer le backend (moteur d’anonymisation)
 
-Backend to program, który będzie wykrywał i ukrywał dane osobowe.
+Le backend est le programme qui détecte et masque les données personnelles.
 
 ### Windows
 
-1. **W folderze z programem kliknij 2x na: `Uruchom-Windows.bat`** — i to wszystko!
-   - Skrypt sam sprawdzi Pythona (a jeśli go nie masz — sam go zainstaluje)
-   - Pobierze biblioteki i polski model językowy (5-10 minut, ~500 MB, tylko za pierwszym razem)
-   - Uruchomi backend i sam otworzy panel w przeglądarce ✅
-2. **Opcjonalnie:** kliknij 2x `Autostart-Windows.bat`, żeby backend startował sam po włączeniu komputera
+1. **Dans le dossier du programme, double-cliquez sur `Uruchom-Windows.bat`** — c’est tout !
+   - Le script vérifie si Python est installé (et l’installe automatiquement si nécessaire).
+   - Il télécharge les bibliothèques et le modèle linguistique polonais (5 à 10 minutes, environ 500 Mo, uniquement la première fois).
+   - Il démarre le backend et ouvre automatiquement le tableau de bord dans le navigateur. ✅
+2. **Facultatif :** double-cliquez sur `Autostart-Windows.bat` pour lancer automatiquement le backend au démarrage de l’ordinateur.
 
-> Szczegółowy przewodnik z rozwiązywaniem problemów: [WINDOWS.md](WINDOWS.md)
+> Guide détaillé avec dépannage : [WINDOWS.md](WINDOWS.md)
 
 ### Mac
 
-1. **Sprawdź czy masz Pythona:**
-   - Otwórz Terminal (Aplikacje → Narzędzia → Terminal)
-   - Wpisz: `python3 --version`
-   - Jeśli widzisz wersję → **OK!**
-   - Jeśli nie:
+1. **Vérifiez que Python est installé :**
+   - Ouvrez le Terminal (Applications → Utilitaires → Terminal).
+   - Saisissez : `python3 --version`
+   - Si une version s’affiche → **C’est bon !**
+   - Sinon :
      ```bash
      brew install python3
      ```
-     (jeśli nie masz brew, wejdź na: https://brew.sh)
+     (si Homebrew n’est pas installé, consultez https://brew.sh)
 
-2. **Uruchom instalator:**
+2. **Lancez l’installateur :**
    ```bash
    chmod +x install-mac.sh
    ./install-mac.sh
    ```
-   - Poczekaj 5-10 minut
-   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:6677` → **DZIAŁA!** ✅
+   - Patientez 5 à 10 minutes.
+   - Lorsque le backend est lancé sur `http://localhost:6677`, il **FONCTIONNE !** ✅
 
 ### Linux (Ubuntu/Debian)
 
-1. **Zainstaluj Pythona:**
+1. **Installez Python :**
    ```bash
    sudo apt install python3 python3-pip python3-venv
    ```
 
-2. **Uruchom instalator:**
+2. **Lancez l’installateur :**
    ```bash
    chmod +x install-linux.sh
    ./install-linux.sh
    ```
-   - Poczekaj 5-10 minut
-   - Gdy zobaczysz: `Backend uruchomiony na http://localhost:6677` → **DZIAŁA!** ✅
+   - Patientez 5 à 10 minutes.
+   - Lorsque le backend est lancé sur `http://localhost:6677`, il **FONCTIONNE !** ✅
 
 ---
 
-## 🌐 KROK 3: Zainstaluj wtyczkę w Chrome
+## 🌐 ÉTAPE 3 : Installer l’extension dans Chrome
 
-1. **Otwórz Chrome**
+1. **Ouvrez Chrome.**
 
-2. **Wejdź na stronę rozszerzeń:**
-   - Wpisz w pasku adresu: `chrome://extensions/`
-   - Lub: Menu (⋮) → Więcej narzędzi → Rozszerzenia
+2. **Accédez à la page des extensions :**
+   - Saisissez `chrome://extensions/` dans la barre d’adresse.
+   - Ou ouvrez Menu (⋮) → Plus d’outils → Extensions.
 
-3. **Włącz tryb dewelopera:**
-   - W prawym górnym rogu znajdź przełącznik **"Tryb dewelopera"**
-   - Kliknij, aby włączyć (powinien być niebieski)
+3. **Activez le mode développeur :**
+   - Repérez le bouton **« Mode développeur »** en haut à droite.
+   - Cliquez pour l’activer (il doit devenir bleu).
 
-4. **Załaduj wtyczkę:**
-   - Kliknij przycisk **"Załaduj rozpakowane"**
-   - Wybierz folder: `presidio-local-anonymizer/chrome-extension/`
-   - Kliknij "Wybierz folder"
+4. **Chargez l’extension :**
+   - Cliquez sur **« Charger l’extension non empaquetée »**.
+   - Sélectionnez le dossier `presidio-local-anonymizer/chrome-extension/`.
+   - Cliquez sur « Sélectionner un dossier ».
 
-5. **Gotowe!** ✅
-   - Powinieneś zobaczyć kafelek "Presidio Browser Anonymizer"
-   - Jeśli pytanie o uprawnienia - kliknij "Zezwól"
+5. **C’est prêt !** ✅
+   - La fiche « Presidio Browser Anonymizer » doit apparaître.
+   - Si une demande d’autorisation s’affiche, cliquez sur « Autoriser ».
 
 ---
 
-## 🎉 KROK 4: Sprawdź czy działa!
+## 🎉 ÉTAPE 4 : Vérifier que tout fonctionne
 
-### Test 1: Sprawdź połączenie
+### Test 1 : Vérifier la connexion
 
-1. Kliknij ikonę wtyczki w pasku Chrome (puzzle 🧩)
-2. Znajdź "Presidio Browser Anonymizer"
-3. Kliknij na nią
-4. Powinieneś zobaczyć: **"Status: Online"** (zielony) ✅
-5. Jeśli widzisz "Offline" (czerwony):
-   - Sprawdź czy terminal/wiersz polecenia z backendem jest wciąż otwarty
-   - Jeśli nie, uruchom ponownie: `Uruchom-Windows.bat` (Windows) lub `./install-mac.sh` (Mac)
+1. Cliquez sur l’icône des extensions dans la barre Chrome (puzzle 🧩).
+2. Repérez « Presidio Browser Anonymizer ».
+3. Cliquez dessus.
+4. Le statut **« Status: Online »** (en vert) doit s’afficher. ✅
+5. Si le statut « Offline » (en rouge) s’affiche :
+   - Vérifiez que le terminal ou l’invite de commandes avec le backend est toujours ouvert.
+   - Sinon, relancez `Uruchom-Windows.bat` (Windows) ou `./install-mac.sh` (Mac).
 
-### Test 2: Wypróbuj na ChatGPT
+### Test 2 : Essayer avec ChatGPT
 
-1. Otwórz https://chatgpt.com (lub https://claude.ai)
+1. Ouvrez https://chatgpt.com (ou https://claude.ai).
 
-2. Skopiuj ten tekst (Ctrl+C / Cmd+C):
+2. Copiez ce texte (Ctrl+C / Cmd+C) :
    ```
    Dzień dobry, nazywam się Anna Kowalska, mój email to anna.kowalska@example.com, telefon: +48 123 456 789, PESEL: 92010212345
    ```
 
-3. Wklej go w ChatGPT (Ctrl+V / Cmd+V)
+3. Collez-le dans ChatGPT (Ctrl+V / Cmd+V).
 
-4. **Co powinieneś zobaczyć:**
+4. **Résultat attendu :**
    ```
-   Dzień dobry, nazywam się [OSOBA], mój email to [EMAIL], telefon: [TELEFON], PESEL: [PESEL]
+   Bonjour, je m’appelle [PERSONNE], mon e-mail est [EMAIL], téléphone : [TELEPHONE], PESEL : [PESEL]
    ```
 
-5. Jeśli dane zostały ukryte → **DZIAŁA!** 🎉
+5. Si les données sont masquées → **ÇA FONCTIONNE !** 🎉
 
-6. Jeśli dane **NIE zostały** ukryte:
-   - Sprawdź czy wtyczka ma status "ON" (kliknij ikonę wtyczki)
-   - Sprawdź czy backend działa (terminal/wiersz polecenia powinien być otwarty)
-   - Przeładuj wtyczkę: `chrome://extensions/` → znajdź wtyczkę → kliknij ⟳
+6. Si les données **ne sont PAS** masquées :
+   - Vérifiez que l’extension est « ON » (cliquez sur son icône).
+   - Vérifiez que le backend fonctionne (le terminal ou l’invite de commandes doit être ouvert).
+   - Rechargez l’extension : `chrome://extensions/` → repérez l’extension → cliquez sur ⟳.
 
 ---
 
-## 📊 Panel kontrolny (Dashboard)
+## 📊 Tableau de bord (Dashboard)
 
-Możesz podejrzeć co wtyczka robi:
+Vous pouvez consulter l’activité de l’extension :
 
-1. Otwórz w przeglądarce: http://localhost:6677/dashboard
+1. Ouvrez cette adresse dans le navigateur : http://localhost:6677/dashboard
 
-2. Zobaczysz:
-   - ✅ Status serwisu (online/offline)
-   - 📊 Statystyki (ile zapytań, ile wykryto danych)
-   - 🧪 Tester - możesz przetestować anonimizację bez wtyczki
-   - 📋 Logi - historia: co wklejono → co wyszło
+2. Vous y trouverez :
+   - ✅ L’état du service (en ligne/hors ligne).
+   - 📊 Les statistiques (nombre de requêtes et de données détectées).
+   - 🧪 Le testeur, pour essayer l’anonymisation sans l’extension.
+   - 📋 Les journaux, qui indiquent les textes collés et les résultats.
 
 ---
 
-## ❓ Najczęstsze problemy
+## ❓ Problèmes courants
 
-### Problem 1: "Nie mam Pythona"
+### Problème 1 : « Python n’est pas installé »
 
-**Rozwiązanie:**
-- **Windows:** Pobierz z https://www.python.org/downloads/
-  - WAŻNE: Podczas instalacji zaznacz "Add Python to PATH"!
-- **Mac:** Zainstaluj: `brew install python3`
-- **Linux:** Zainstaluj: `sudo apt install python3`
+**Solution :**
+- **Windows :** téléchargez Python depuis https://www.python.org/downloads/.
+  - IMPORTANT : cochez « Add Python to PATH » pendant l’installation !
+- **Mac :** installez-le avec `brew install python3`.
+- **Linux :** installez-le avec `sudo apt install python3`.
 
-### Problem 2: "Backend pokazuje błąd"
+### Problème 2 : « Le backend affiche une erreur »
 
-**Rozwiązanie:**
-1. Zamknij terminal/wiersz polecenia
-2. Uruchom ponownie instalator:
-   - Windows: `Uruchom-Windows.bat`
-   - Mac: `./install-mac.sh`
-   - Linux: `./install-linux.sh`
+**Solution :**
+1. Fermez le terminal ou l’invite de commandes.
+2. Relancez l’installateur :
+   - Windows : `Uruchom-Windows.bat`
+   - Mac : `./install-mac.sh`
+   - Linux : `./install-linux.sh`
 
-### Problem 3: "Wtyczka pokazuje 'Offline'"
+### Problème 3 : « L’extension affiche “Offline” »
 
-**Rozwiązanie:**
-1. Sprawdź czy terminal z backendem jest otwarty
-2. Jeśli nie, uruchom ponownie backend:
+**Solution :**
+1. Vérifiez que le terminal avec le backend est ouvert.
+2. Sinon, relancez le backend :
    ```bash
    cd presidio-local-anonymizer/backend
    python app.py
    ```
-3. Przeładuj wtyczkę w Chrome: `chrome://extensions/` → ⟳
+3. Rechargez l’extension dans Chrome : `chrome://extensions/` → ⟳.
 
-### Problem 4: "Dane nie są ukrywane"
+### Problème 4 : « Les données ne sont pas masquées »
 
-**Sprawdź:**
-1. Czy backend działa? (terminal otwarty, bez błędów)
-2. Czy wtyczka ma status ON? (kliknij ikonę wtyczki)
-3. Czy używasz WKLEJANIA (Ctrl+V)? - to najlepiej działa!
-4. Przeładuj stronę ChatGPT/Claude
-
----
-
-## 🎚️ Włączanie/wyłączanie wtyczki
-
-**Chcesz czasem wyłączyć anonimizację?**
-
-1. Kliknij ikonę wtyczki w Chrome
-2. Zobaczysz przełącznik ON/OFF
-3. Kliknij, aby włączyć/wyłączyć
-4. **ON** = anonimizacja działa ✅
-5. **OFF** = anonimizacja wyłączona ⛔
+**Vérifiez les points suivants :**
+1. Le backend fonctionne-t-il ? (terminal ouvert, sans erreur)
+2. L’extension est-elle sur ON ? (cliquez sur son icône)
+3. Utilisez-vous le COLLAGE (Ctrl+V) ? C’est la méthode la plus fiable !
+4. Actualisez la page ChatGPT/Claude.
 
 ---
 
-## 🔒 Bezpieczeństwo
+## 🎚️ Activer/désactiver l’extension
 
-**Czy moje dane są bezpieczne?**
+**Vous souhaitez parfois désactiver l’anonymisation ?**
 
-✅ **TAK!**
-- Wszystko działa **lokalnie** na Twoim komputerze
-- **Żadne dane NIE są wysyłane do internetu**
-- Backend działa tylko na Twoim komputerze (localhost)
-- Microsoft Presidio to profesjonalny silnik od Microsoftu
-
-**Co widzi wtyczka?**
-- Tylko tekst, który WKLEJASZ
-- Nie czyta haseł, cookies, historii
+1. Cliquez sur l’icône de l’extension dans Chrome.
+2. Le bouton ON/OFF apparaît.
+3. Cliquez dessus pour activer ou désactiver l’extension.
+4. **ON** = l’anonymisation est active. ✅
+5. **OFF** = l’anonymisation est désactivée. ⛔
 
 ---
 
-## 📖 Dodatkowe pomoce
+## 🔒 Sécurité
 
-**Chcesz wiedzieć więcej?**
+**Mes données sont-elles en sécurité ?**
 
-- 📄 [README.md](README.md) - Pełna dokumentacja (po angielsku)
-- 🤖 [AI-SITES-GUIDE.md](AI-SITES-GUIDE.md) - Szczegółowy przewodnik dla ChatGPT, Claude, Perplexity
-- 🧪 [TESTING.md](TESTING.md) - Jak testować wtyczkę
-- 💾 [INSTALLATION.md](INSTALLATION.md) - Zaawansowana instalacja
+✅ **OUI !**
+- Tout fonctionne **localement** sur votre ordinateur.
+- **Aucune donnée n’est envoyée sur Internet.**
+- Le backend fonctionne uniquement sur votre ordinateur (localhost).
+- Microsoft Presidio est un moteur professionnel de Microsoft.
 
----
-
-## 💬 Potrzebujesz pomocy?
-
-**Gdzie szukać pomocy?**
-
-1. **Sprawdź Dashboard:** http://localhost:6677/dashboard
-   - Zobacz logi, co się dzieje
-
-2. **GitHub Issues:** https://github.com/gacabartosz/presidio-local-anonymizer/issues
-   - Opisz problem
-   - Dodaj zrzut ekranu
-   - Napisz jaki system (Windows/Mac/Linux)
-
-3. **Email autora:** (jeśli w projekcie jest podany)
+**Que voit l’extension ?**
+- Uniquement le texte que vous COLLEZ.
+- Elle ne lit ni les mots de passe, ni les cookies, ni l’historique.
 
 ---
 
-## 🎯 Skrócona instrukcja (dla wprawionych)
+## 📖 Ressources complémentaires
+
+**Vous souhaitez en savoir plus ?**
+
+- 📄 [README.md](README.md) - Documentation complète (en anglais)
+- 🤖 [AI-SITES-GUIDE.md](AI-SITES-GUIDE.md) - Guide détaillé pour ChatGPT, Claude et Perplexity
+- 🧪 [TESTING.md](TESTING.md) - Comment tester l’extension
+- 💾 [INSTALLATION.md](INSTALLATION.md) - Installation avancée
+
+---
+
+## 💬 Besoin d’aide ?
+
+**Où trouver de l’aide ?**
+
+1. **Consultez le tableau de bord :** http://localhost:6677/dashboard
+   - Consultez les journaux pour voir ce qui se passe.
+
+2. **Issues GitHub :** https://github.com/jpsangare/presidio-local-anonymizer/issues
+   - Décrivez le problème.
+   - Ajoutez une capture d’écran.
+   - Indiquez votre système (Windows/Mac/Linux).
+
+3. **E-mail de l’auteur :** (s’il est indiqué dans le projet)
+
+---
+
+## 🎯 Instructions abrégées (pour les utilisateurs expérimentés)
 
 **Windows:**
 ```cmd
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 Uruchom-Windows.bat
 ```
 
 **Mac:**
 ```bash
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 ./install-mac.sh
 ```
 
 **Linux:**
 ```bash
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 ./install-linux.sh
 ```
 
-**Wtyczka Chrome:**
+**Extension Chrome :**
 1. `chrome://extensions/`
-2. Włącz "Tryb dewelopera"
-3. "Załaduj rozpakowane" → wybierz `chrome-extension/`
-4. Gotowe!
+2. Activez le « Mode développeur ».
+3. « Charger l’extension non empaquetée » → sélectionnez `chrome-extension/`.
+4. C’est prêt !
 
 ---
 
-## ✨ Wskazówki
+## ✨ Conseils
 
-**💡 Jak najlepiej używać?**
+**💡 Comment l’utiliser au mieux ?**
 
-1. **ZAWSZE używaj WKLEJANIA (Ctrl+V)**
-   - To najbardziej niezawodna metoda!
-   - Działa w ChatGPT, Claude, Gmail, wszędzie
+1. **Utilisez TOUJOURS le COLLAGE (Ctrl+V).**
+   - C’est la méthode la plus fiable !
+   - Elle fonctionne partout : ChatGPT, Claude, Gmail, etc.
 
-2. **Sprawdzaj status wtyczki**
-   - Kliknij ikonę → zobacz czy ON czy OFF
-   - Zielony = działa, czerwony = wyłączona
+2. **Vérifiez l’état de l’extension.**
+   - Cliquez sur l’icône pour voir si le statut est ON ou OFF.
+   - Vert = active ; rouge = désactivée.
 
-3. **Sprawdzaj logi w Dashboard**
-   - http://localhost:6677/dashboard → Logi
-   - Zobacz co zostało wykryte i ukryte
+3. **Consultez les journaux du tableau de bord.**
+   - http://localhost:6677/dashboard → Logs
+   - Découvrez ce qui a été détecté et masqué.
 
-4. **Nie zamykaj terminala!**
-   - Terminal/Wiersz polecenia z backendem musi być otwarty
-   - Możesz go zminimalizować
+4. **Ne fermez pas le terminal !**
+   - Le terminal ou l’invite de commandes avec le backend doit rester ouvert.
+   - Vous pouvez le réduire.
 
 ---
 
-## 🎊 Gotowe!
+## 🎊 C’est prêt !
 
-**Gratulacje!** Masz działającą wtyczkę do anonimizacji danych! 🎉
+**Félicitations !** Votre extension d’anonymisation des données est opérationnelle ! 🎉
 
-**Teraz możesz bezpiecznie:**
-- Wklejać teksty do ChatGPT
-- Wysyłać wiadomości przez Gmail
-- Wypełniać formularze
-- I wiele więcej!
+**Vous pouvez maintenant en toute sécurité :**
+- Coller du texte dans ChatGPT.
+- Envoyer des messages avec Gmail.
+- Remplir des formulaires.
+- Et bien plus encore !
 
-**Pamiętaj:**
-- Backend musi być włączony (terminal/wiersz polecenia otwarty)
-- Wtyczka musi mieć status ON
-- Używaj WKLEJANIA (Ctrl+V)
+**N’oubliez pas :**
+- Le backend doit être actif (terminal ou invite de commandes ouvert).
+- L’extension doit être sur ON.
+- Utilisez le COLLAGE (Ctrl+V).
 
 ---
 
 <p align="center">
-  <strong>Miłego używania! 🚀</strong><br/>
-  <sub>Jeśli masz problem - sprawdź Dashboard lub GitHub Issues</sub>
+  <strong>Bonne utilisation ! 🚀</strong><br/>
+  <sub>En cas de problème, consultez le tableau de bord ou les Issues GitHub.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">Dokumentacja techniczna</a> •
-  <a href="AI-SITES-GUIDE.md">Przewodnik AI</a> •
-  <a href="https://github.com/gacabartosz/presidio-local-anonymizer/issues">Zgłoś problem</a>
+  <a href="README.md">Documentation technique</a> •
+  <a href="AI-SITES-GUIDE.md">Guide des sites d’IA</a> •
+  <a href="https://github.com/jpsangare/presidio-local-anonymizer/issues">Signaler un problème</a>
 </p>

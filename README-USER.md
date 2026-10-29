@@ -1,271 +1,271 @@
-# ✅ CO ZOSTAŁO ZROBIONE
+# ✅ CE QUI A ÉTÉ RÉALISÉ
 
-## 🎯 Twoje Wymagania:
+## 🎯 Vos besoins :
 
-1. ✅ **Przycisk włącz/wyłącz w popup rozszerzenia**
-2. ✅ **Logi w dashboardzie** - co było, co zostało zanonimizowane
-3. ✅ **Działanie na ChatGPT, Perplexity, Claude i innych stronach AI**
-
----
-
-## 🔧 Zmiany w Kodzie:
-
-### 1. Toggle ON/OFF w Popup ✅
-
-**Pliki zmodyfikowane:**
-- `chrome-extension/popup.html` - dodano CSS i HTML toggleprzycisk
-- `chrome-extension/popup.js` - logika włącz/wyłącz z zapisem w chrome.storage
-- `chrome-extension/content-script.js` - sprawdzanie stanu przed każdą operacją
-
-**Jak działa:**
-- Kliknij ikonę rozszerzenia
-- Toggle button "Auto-anonimizacja"
-- ZIELONY = włączone, SZARY = wyłączone
-- Stan zapisuje się automatycznie
-- Działa na wszystkich kartach jednocześnie
-
-### 2. Logi w Dashboardzie ✅
-
-**Pliki zmodyfikowane:**
-- `backend/api/anonymize.py` - dodano deque(maxlen=100) dla logów
-- `backend/api/anonymize.py` - dodano endpoint GET /api/logs
-- `backend/api/anonymize.py` - dodano endpoint POST /api/logs/clear
-- `web-ui/app.html` - dodano sekcję "Logi" z UI i JavaScript
-
-**Jak działa:**
-- Backend zapisuje ostatnie 100 operacji anonimizacji
-- Dashboard wyświetla logi z:
-  - Timestamp
-  - Tekst oryginalny (czerwony)
-  - Tekst zanonimizowany (zielony)
-  - Liczba znalezionych encji
-  - Czas przetwarzania (ms)
-- Przycisk "Wyczyść Logi"
-
-**Jak zobaczyć:**
-1. Otwórz http://localhost:6677/dashboard
-2. Kliknij "Logi" w menu (ikona dokumentu)
-3. Zobacz historię anonimizacji
-
-### 3. Optymalizacja dla Stron AI ✅
-
-**Pliki zmodyfikowane:**
-- `chrome-extension/content-script.js` - wyłączono niewiarygodny Enter key handler
-- Dokumentacja: `AI-SITES-GUIDE.md` - kompleksowy przewodnik
-
-**Co działa na ChatGPT/Claude/Perplexity:**
-- ✅ **PASTE (Ctrl+V)** - 100% niezawodne! ⭐ NAJLEPSZE
-- ✅ **Skrót klawiszowy (Ctrl+Shift+A)** - backup method
-- ✅ **Menu kontekstowe** (prawy przycisk)
-
-**Co NIE działa (wyłączone):**
-- ❌ Enter key handler - nowoczesne frameworki (React) nie obsługują re-triggerowania
-- ❌ Auto-anonimizacja przed wysłaniem - wymaga lepszej implementacji
+1. ✅ **Bouton marche/arrêt dans la fenêtre contextuelle de l’extension**
+2. ✅ **Journaux dans le tableau de bord** - texte original et texte anonymisé
+3. ✅ **Fonctionnement avec ChatGPT, Perplexity, Claude et d’autres sites d’IA**
 
 ---
 
-## 📋 CO MUSISZ ZROBIĆ TERAZ:
+## 🔧 Modifications apportées au code :
 
-### Krok 1: Przeładuj Rozszerzenie ⚠️ WAŻNE!
+### 1. Bouton ON/OFF dans la fenêtre contextuelle ✅
+
+**Fichiers modifiés :**
+- `chrome-extension/popup.html` - ajout du CSS et du bouton HTML
+- `chrome-extension/popup.js` - logique d’activation/désactivation avec enregistrement dans chrome.storage
+- `chrome-extension/content-script.js` - vérification de l’état avant chaque opération
+
+**Fonctionnement :**
+- Cliquez sur l’icône de l’extension.
+- Bouton « Auto-anonymisation ».
+- VERT = activé, GRIS = désactivé.
+- L’état est enregistré automatiquement.
+- Le réglage s’applique simultanément à tous les onglets.
+
+### 2. Journaux du tableau de bord ✅
+
+**Fichiers modifiés :**
+- `backend/api/anonymize.py` - ajout de deque(maxlen=100) pour les journaux
+- `backend/api/anonymize.py` - ajout du point de terminaison GET /api/logs
+- `backend/api/anonymize.py` - ajout du point de terminaison POST /api/logs/clear
+- `web-ui/app.html` - ajout de la section « Journaux » avec l’interface et JavaScript
+
+**Fonctionnement :**
+- Le backend enregistre les 100 dernières opérations d’anonymisation.
+- Le tableau de bord affiche les journaux avec :
+  - l’horodatage ;
+  - le texte original (en rouge) ;
+  - le texte anonymisé (en vert) ;
+  - le nombre d’entités détectées ;
+  - le temps de traitement (ms).
+- Bouton « Effacer les journaux ».
+
+**Pour les consulter :**
+1. Ouvrez http://localhost:6677/dashboard.
+2. Cliquez sur « Journaux » dans le menu (icône de document).
+3. Consultez l’historique d’anonymisation.
+
+### 3. Optimisation pour les sites d’IA ✅
+
+**Fichiers modifiés :**
+- `chrome-extension/content-script.js` - désactivation du gestionnaire peu fiable de la touche Entrée
+- Documentation : `AI-SITES-GUIDE.md` - guide complet
+
+**Fonctionnalités sur ChatGPT/Claude/Perplexity :**
+- ✅ **PASTE (Ctrl+V)** - fiabilité de 100 % ! ⭐ MEILLEURE MÉTHODE
+- ✅ **Raccourci clavier (Ctrl+Shift+A)** - backup method
+- ✅ **Menu contextuel** (clic droit)
+
+**Fonctionnalités NON prises en charge (désactivées) :**
+- ❌ Gestion de la touche Entrée : les frameworks modernes (React) ne prennent pas en charge le redéclenchement.
+- ❌ Auto-anonymisation avant l’envoi : nécessite une meilleure implémentation.
+
+---
+
+## 📋 CE QUE VOUS DEVEZ FAIRE MAINTENANT :
+
+### Étape 1 : Recharger l’extension ⚠️ IMPORTANT !
 
 ```
-1. Otwórz: chrome://extensions/
-2. Znajdź "Presidio Browser Anonymizer"
-3. Kliknij ikonę odświeżenia ⟳ (lub przełącz OFF → ON)
-4. ZAMKNIJ wszystkie karty ChatGPT/Claude/Perplexity
-5. Otwórz je PONOWNIE (F5 nie wystarczy!)
+1. Ouvrez : chrome://extensions/
+2. Repérez « Presidio Browser Anonymizer ».
+3. Cliquez sur l’icône d’actualisation ⟳ (ou basculez OFF → ON).
+4. FERMEZ tous les onglets ChatGPT/Claude/Perplexity.
+5. Rouvrez-les (F5 ne suffit pas !).
 ```
 
-### Krok 2: Sprawdź Toggle
+### Étape 2 : Vérifier le bouton
 
 ```
-1. Kliknij ikonę rozszerzenia w toolbar
-2. Sprawdź czy przycisk "Auto-anonimizacja" jest ZIELONY
-3. Jeśli szary - kliknij aby włączyć
+1. Cliquez sur l’icône de l’extension dans la barre d’outils.
+2. Vérifiez que le bouton « Auto-anonymisation » est VERT.
+3. S’il est gris, cliquez dessus pour l’activer.
 ```
 
-### Krok 3: Test Lokalny
+### Étape 3 : Test local
 
 ```bash
-# Otwórz stronę testową
+# Ouvrez la page de test
 open /Users/gaca/presidio-local-anonymizer/test-extension.html
 
-# Lub w terminalu:
+# Ou dans le terminal :
 cd /Users/gaca/presidio-local-anonymizer
 open test-extension.html
 ```
 
-**W teście:**
-1. Otwórz DevTools (F12)
-2. Skopiuj tekst testowy
-3. Wklej w pole (Ctrl+V)
-4. Sprawdź czy zostaje zanonimizowany
-5. Sprawdź logi w konsoli
+**Pendant le test :**
+1. Ouvrez les DevTools (F12).
+2. Copiez le texte de test.
+3. Collez-le dans le champ (Ctrl+V).
+4. Vérifiez qu’il est anonymisé.
+5. Consultez les messages dans la console.
 
-### Krok 4: Test na ChatGPT
-
-```
-1. Otwórz https://chatgpt.com
-2. Skopiuj: "Jan Kowalski, email: jan@example.com, PESEL: 92010212345"
-3. Kliknij w pole tekstowe ChatGPT
-4. Wklej (Ctrl+V)
-5. ✅ Powinno wkleić: "[OSOBA], email: [EMAIL], PESEL: [PESEL]"
-```
-
-### Krok 5: Test na Claude
+### Étape 4 : Test sur ChatGPT
 
 ```
-1. Otwórz https://claude.ai
-2. Powtórz test jak dla ChatGPT
-3. Ctrl+V → sprawdź czy anonimizuje
+1. Ouvrez https://chatgpt.com.
+2. Copiez : "Jan Kowalski, email: jan@example.com, PESEL: 92010212345"
+3. Cliquez dans le champ de texte de ChatGPT.
+4. Collez (Ctrl+V).
+5. ✅ Le texte collé doit être : "[PERSONNE], email: [EMAIL], PESEL: [PESEL]"
 ```
 
-### Krok 6: Test na Perplexity
+### Étape 5 : Test sur Claude
 
 ```
-1. Otwórz https://www.perplexity.ai
-2. Powtórz test jak dla ChatGPT
-3. Ctrl+V → sprawdź czy anonimizuje
+1. Ouvrez https://claude.ai.
+2. Répétez le test effectué sur ChatGPT.
+3. Ctrl+V → vérifiez que le texte est anonymisé.
 ```
 
-### Krok 7: Sprawdź Logi w Dashboardzie
+### Étape 6 : Test sur Perplexity
 
 ```
-1. Otwórz http://localhost:6677/dashboard
-2. Kliknij "Logi" w menu (4. pozycja, ikona dokumentu)
-3. Sprawdź czy widzisz historię anonimizacji
-4. Zobacz tekst oryginalny → zanonimizowany
+1. Ouvrez https://www.perplexity.ai.
+2. Répétez le test effectué sur ChatGPT.
+3. Ctrl+V → vérifiez que le texte est anonymisé.
 ```
 
----
-
-## 🚀 Najlepsza Metoda Użycia (ZALECANA):
-
-### ⭐ PASTE (Ctrl+V) - 100% Niezawodne!
+### Étape 7 : Consulter les journaux du tableau de bord
 
 ```
-1. Skopiuj tekst z danymi (Ctrl+C)
-2. Wejdź na ChatGPT/Claude/Perplexity
-3. Kliknij w pole tekstowe
-4. Wklej (Ctrl+V)
-5. ✅ Tekst automatycznie zanonimizowany!
-6. Wyślij do AI
-```
-
-**Dlaczego PASTE jest najlepsze:**
-- ✅ Działa na 100% stron AI
-- ✅ Automatyczne - nie wymaga dodatkowych kliknięć
-- ✅ Natychmiastowe - anonimizacja przed wklejeniem
-- ✅ Niezawodne - nie zależy od struktury strony
-- ✅ Uniwersalne - ten sam workflow dla wszystkich AI
-
-### 🔄 Backup: Ctrl+Shift+A
-
-Jeśli PASTE nie zadziałał:
-```
-1. Wklej tekst normalnie
-2. Zaznacz cały tekst
-3. Ctrl+Shift+A (Cmd+Shift+A na Mac)
-4. ✅ Tekst zanonimizowany!
-5. Wyślij
+1. Ouvrez http://localhost:6677/dashboard.
+2. Cliquez sur « Journaux » dans le menu (4e élément, icône de document).
+3. Vérifiez que l’historique d’anonymisation s’affiche.
+4. Consultez le texte original et le texte anonymisé.
 ```
 
 ---
 
-## 📚 Dokumentacja:
+## 🚀 Meilleure méthode d’utilisation (RECOMMANDÉE) :
 
-### 1. **AI-SITES-GUIDE.md** ⭐ PRZECZYTAJ TO!
-Kompletny przewodnik po anonimizacji na stronach AI:
-- ChatGPT, Claude, Perplexity, Gemini
-- Najlepsze metody (PASTE!)
-- Co działa, co nie działa
-- Troubleshooting
+### ⭐ PASTE (Ctrl+V) - fiabilité de 100 % !
+
+```
+1. Copiez le texte contenant des données (Ctrl+C).
+2. Accédez à ChatGPT/Claude/Perplexity.
+3. Cliquez dans le champ de texte.
+4. Collez le texte (Ctrl+V).
+5. ✅ Le texte est anonymisé automatiquement !
+6. Envoyez-le au site d’IA.
+```
+
+**Pourquoi PASTE est-il la meilleure méthode ?**
+- ✅ Fonctionne sur 100 % des sites d’IA.
+- ✅ Automatique : aucun clic supplémentaire nécessaire.
+- ✅ Instantané : anonymisation avant le collage.
+- ✅ Fiable : indépendant de la structure du site.
+- ✅ Universel : même flux de travail pour tous les sites d’IA.
+
+### 🔄 Backup : Ctrl+Shift+A
+
+Si PASTE échoue :
+```
+1. Collez le texte normalement.
+2. Sélectionnez tout le texte.
+3. Ctrl+Shift+A (Cmd+Shift+A sur Mac).
+4. ✅ Le texte est anonymisé !
+5. Envoyez-le.
+```
+
+---
+
+## 📚 Documentation :
+
+### 1. **AI-SITES-GUIDE.md** ⭐ À LIRE !
+Guide complet sur l’anonymisation sur les sites d’IA :
+- ChatGPT, Claude, Perplexity, Gemini.
+- Meilleures méthodes (PASTE !).
+- Fonctionnalités prises en charge ou non.
+- Troubleshooting.
 
 ```bash
 cat /Users/gaca/presidio-local-anonymizer/AI-SITES-GUIDE.md
 ```
 
 ### 2. **TESTING.md**
-Szczegółowe instrukcje testowania:
-- Jak przeładować rozszerzenie
-- Jak sprawdzić logi
-- Jak debugować problemy
+Instructions détaillées pour les tests :
+- Recharger l’extension.
+- Consulter les journaux.
+- Déboguer les problèmes.
 
 ```bash
 cat /Users/gaca/presidio-local-anonymizer/TESTING.md
 ```
 
 ### 3. **test-extension.html**
-Lokalna strona testowa:
+Page de test locale :
 ```bash
 open /Users/gaca/presidio-local-anonymizer/test-extension.html
 ```
 
 ---
 
-## 🔍 Debugging:
+## 🔍 Débogage :
 
-### Jeśli widzisz: "Błąd anonimizacji. Wklejam oryginalny tekst."
+### Si le message suivant s’affiche : « Erreur d’anonymisation. Je colle le texte original. »
 
-**1. Sprawdź backend:**
+**1. Vérifiez le backend :**
 ```bash
 curl http://localhost:6677/api/health
 ```
 
-Jeśli nie działa:
+S’il ne fonctionne pas :
 ```bash
 cd /Users/gaca/presidio-local-anonymizer/backend
 source .venv/bin/activate
 python app.py
 ```
 
-**2. Sprawdź logi:**
+**2. Consultez les journaux :**
 
-**Content Script** (strona WWW):
-- F12 → Console
-- Szukaj logów: `[Presidio]`
+**Content Script** (page Web) :
+- F12 → Console.
+- Recherchez les messages : `[Presidio]`.
 
-**Background Service Worker**:
+**Background Service Worker :**
 - chrome://extensions/
 - "Presidio" → "Inspect views: service worker"
-- Szukaj logów: `[Presidio Background]`
+- Recherchez les messages : `[Presidio Background]`.
 
-**Backend**:
-- Terminal gdzie uruchomiony backend
-- Szukaj: `POST /api/anonymize` z status 200
+**Backend :**
+- Terminal dans lequel le backend est lancé.
+- Recherchez `POST /api/anonymize` avec le statut 200.
 
 ---
 
-## ✅ Podsumowanie Zmian:
+## ✅ Récapitulatif des modifications :
 
-| Funkcja | Status | Pliki |
+| Fonctionnalité | État | Fichiers |
 |---------|--------|-------|
-| Toggle ON/OFF | ✅ Gotowe | popup.html, popup.js, content-script.js |
-| Logi w Dashboard | ✅ Gotowe | anonymize.py, app.html |
-| ChatGPT support | ✅ Działa | content-script.js (PASTE) |
-| Claude support | ✅ Działa | content-script.js (PASTE) |
-| Perplexity support | ✅ Działa | content-script.js (PASTE) |
-| Dokumentacja | ✅ Gotowa | AI-SITES-GUIDE.md, TESTING.md |
-| Test page | ✅ Gotowa | test-extension.html |
+| Bouton ON/OFF | ✅ Prêt | popup.html, popup.js, content-script.js |
+| Journaux du tableau de bord | ✅ Prêt | anonymize.py, app.html |
+| Compatibilité ChatGPT | ✅ Fonctionnelle | content-script.js (PASTE) |
+| Compatibilité Claude | ✅ Fonctionnelle | content-script.js (PASTE) |
+| Compatibilité Perplexity | ✅ Fonctionnelle | content-script.js (PASTE) |
+| Documentation | ✅ Prête | AI-SITES-GUIDE.md, TESTING.md |
+| Page de test | ✅ Prête | test-extension.html |
 
 ---
 
-## 🎯 Następne Kroki:
+## 🎯 Étapes suivantes :
 
-1. ✅ Przeładuj rozszerzenie (chrome://extensions/)
-2. ✅ Zamknij i otwórz ponownie karty AI
-3. ✅ Sprawdź toggle (ikona rozszerzenia)
-4. ✅ Test lokalny (test-extension.html)
-5. ✅ Test na ChatGPT (Ctrl+V)
-6. ✅ Test na Claude (Ctrl+V)
-7. ✅ Test na Perplexity (Ctrl+V)
-8. ✅ Sprawdź logi (http://localhost:6677/dashboard → Logi)
+1. ✅ Rechargez l’extension (chrome://extensions/).
+2. ✅ Fermez et rouvrez les onglets des sites d’IA.
+3. ✅ Vérifiez le bouton (icône de l’extension).
+4. ✅ Effectuez un test local (test-extension.html).
+5. ✅ Testez sur ChatGPT (Ctrl+V).
+6. ✅ Testez sur Claude (Ctrl+V).
+7. ✅ Testez sur Perplexity (Ctrl+V).
+8. ✅ Consultez les journaux (http://localhost:6677/dashboard → Logs).
 
 ---
 
-## 📊 Statystyki Backendu:
+## 📊 Statistiques du backend :
 
-Z logów backendu widzę że rozszerzenie **JUŻ DZIAŁAŁO** wcześniej:
+Les journaux du backend indiquent que l’extension **FONCTIONNAIT DÉJÀ** :
 ```
 2025-11-15 15:01:56 - api.anonymize - INFO - Anonymized text: 9 entities found, 445ms
 2025-11-15 15:13:47 - api.anonymize - INFO - Anonymized text: 9 entities found, 487ms
@@ -274,45 +274,45 @@ Z logów backendu widzę że rozszerzenie **JUŻ DZIAŁAŁO** wcześniej:
 2025-11-15 15:18:02 - api.anonymize - INFO - Anonymized text: 9 entities found, 116ms
 ```
 
-Backend działa poprawnie! ✅
+Le backend fonctionne correctement ! ✅
 
 ---
 
-## 💡 Najważniejsze:
+## 💡 À retenir :
 
-### ⭐ Używaj PASTE (Ctrl+V) - to najlepszy sposób!
+### ⭐ Utilisez PASTE (Ctrl+V) : c’est la meilleure méthode !
 
 ```
-Skopiuj → Ctrl+V na stronie AI → ✅ Automatycznie zanonimizowane!
+Copiez → Ctrl+V sur le site d’IA → ✅ anonymisation automatique !
 ```
 
-**Nie próbuj:**
-- ~~Pisać i wysyłać Enterem~~ (nie działa)
-- ~~Klikać "Send" i czekać na auto-anonimizację~~ (wyłączone)
+**À ne pas faire :**
+- ~~Saisir du texte et l’envoyer avec Entrée~~ (non pris en charge).
+- ~~Cliquer sur « Send » et attendre l’auto-anonymisation~~ (désactivée).
 
-**Zamiast tego:**
-- ✅ PASTE (Ctrl+V) - zawsze działa!
-- ✅ Ctrl+Shift+A - backup
-
----
-
-## 📞 Pytania?
-
-Przeczytaj:
-1. **AI-SITES-GUIDE.md** - jak używać na różnych stronach AI
-2. **TESTING.md** - jak testować i debugować
-3. Sprawdź logi w DevTools (F12)
-4. Sprawdź backend health: `curl http://localhost:6677/api/health`
+**À faire à la place :**
+- ✅ PASTE (Ctrl+V) - fonctionne toujours !
+- ✅ Ctrl+Shift+A - solution de secours.
 
 ---
 
-**Powodzenia! 🚀**
+## 📞 Des questions ?
 
-Rozszerzenie jest gotowe do użycia na:
+Consultez :
+1. **AI-SITES-GUIDE.md** - utilisation sur les différents sites d’IA.
+2. **TESTING.md** - tests et débogage.
+3. Les journaux dans les DevTools (F12).
+4. L’état du backend : `curl http://localhost:6677/api/health`
+
+---
+
+**Bonne utilisation ! 🚀**
+
+L’extension est prête à être utilisée sur :
 - ✅ ChatGPT
 - ✅ Claude
 - ✅ Perplexity
 - ✅ Gemini
-- ✅ I WSZYSTKICH innych stronach!
+- ✅ Et sur tous les autres sites !
 
-**Pamiętaj: PASTE (Ctrl+V) = Najlepsza metoda! ⭐**
+**À retenir : PASTE (Ctrl+V) = meilleure méthode ! ⭐**

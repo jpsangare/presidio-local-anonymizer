@@ -1,78 +1,77 @@
-# 🪟 Windows — instalacja dla każdego (bez wiedzy technicznej)
+# 🪟 Windows — installation pour tous (sans connaissances techniques)
 
-Ten przewodnik jest dla osób, które **nie są programistami**. Nie potrzebujesz gita, terminala ani żadnej wiedzy technicznej. Całość to **3 kroki i około 10 minut** (tylko za pierwszym razem — potem uruchomienie zajmuje kilka sekund).
-
----
-
-## Co będziesz mieć na końcu?
-
-Gdy wkleisz do ChatGPT, Claude albo Gmaila tekst z danymi osobowymi (PESEL, e-mail, telefon, numer karty…), wtyczka **automatycznie je zamaskuje**, zanim trafią do internetu. Wszystko dzieje się na Twoim komputerze — żadne dane nie wychodzą na zewnątrz.
+Ce guide s’adresse aux personnes qui **ne sont pas développeuses**. Vous n’avez besoin ni de Git, ni d’un terminal, ni de connaissances techniques. L’installation se fait en **3 étapes et prend environ 10 minutes** (uniquement la première fois ; les lancements suivants ne prennent que quelques secondes).
 
 ---
 
-## Krok 1: Pobierz program (2 minuty)
+## Que trouverez-vous à la fin ?
 
-1. Wejdź na stronę: **https://github.com/gacabartosz/presidio-local-anonymizer**
-2. Kliknij zielony przycisk **„Code"**, a potem **„Download ZIP"**
-3. Otwórz folder **Pobrane** i kliknij prawym przyciskiem na pobrany plik → **„Wyodrębnij wszystkie…"** → **„Wyodrębnij"**
-4. Otworzy się folder `presidio-local-anonymizer-main` — zostaw go otwarty
+Lorsque vous collez dans ChatGPT, Claude ou Gmail un texte contenant des données personnelles (PESEL, e-mail, téléphone, numéro de carte…), l’extension les **masque automatiquement** avant leur envoi sur Internet. Tout se passe sur votre ordinateur : aucune donnée ne sort de votre appareil.
 
-> 💡 **Wskazówka:** przenieś ten folder np. do `Dokumenty`, żeby przypadkiem go nie skasować. Program działa z tego folderu.
+---
 
-## Krok 2: Uruchom program (pierwszy raz: 5–10 minut)
+## Étape 1 : Télécharger le programme (2 minutes)
 
-1. W folderze znajdź plik **`Uruchom-Windows`** (typ: plik wsadowy Windows) i **kliknij go dwa razy**
-2. Jeśli Windows pokaże niebieskie okno „System Windows ochronił ten komputer":
-   kliknij **„Więcej informacji"** → **„Uruchom mimo to"** (program jest bezpieczny — cały kod jest publiczny na GitHub)
-3. Czarne okno zrobi wszystko samo:
-   - sprawdzi, czy masz Pythona (jeśli nie — zainstaluje go automatycznie; czasem poprosi, żeby kliknąć plik jeszcze raz)
-   - pobierze potrzebne biblioteki i polski model językowy
-   - uruchomi program i **samo otworzy panel w przeglądarce**
-4. Gdy zobaczysz w przeglądarce panel (Dashboard) — działa! ✅
+1. Accédez à **https://github.com/jpsangare/presidio-local-anonymizer**.
+2. Cliquez sur le bouton vert **« Code »**, puis sur **« Download ZIP »**.
+3. Ouvrez le dossier **Téléchargements**, faites un clic droit sur l’archive téléchargée, puis choisissez **« Extraire tout… »** → **« Extraire »**.
+4. Le dossier `presidio-local-anonymizer-main` s’ouvre. Laissez-le ouvert.
 
-> ⚠️ **Nie zamykaj czarnego okna**, gdy korzystasz z anonimizacji. Możesz je zminimalizować.
+> 💡 **Conseil :** déplacez ce dossier, par exemple dans `Documents`, pour éviter de le supprimer par inadvertance. Le programme s’exécute depuis ce dossier.
+
+## Étape 2 : Lancer le programme (5 à 10 minutes la première fois)
+
+1. Dans le dossier, repérez le fichier **`Uruchom-Windows`** (type : fichier de commandes Windows) et **double-cliquez dessus**.
+2. Si Windows affiche la fenêtre bleue « Windows a protégé votre ordinateur », cliquez sur **« Informations complémentaires »** → **« Exécuter quand même »** (le programme est sûr : son code est public sur GitHub).
+3. La fenêtre noire s’occupe de tout :
+   - elle vérifie si Python est installé (sinon, elle l’installe automatiquement ; il peut arriver qu’elle vous demande de cliquer une nouvelle fois sur le fichier) ;
+   - elle télécharge les bibliothèques nécessaires et le modèle linguistique polonais ;
+   - elle lance le programme et **ouvre automatiquement le tableau de bord dans le navigateur**.
+4. Lorsque le tableau de bord s’affiche dans le navigateur, tout fonctionne ! ✅
+
+> ⚠️ **Ne fermez pas la fenêtre noire** pendant que vous utilisez l’anonymisation. Vous pouvez la réduire.
 >
-> Przy **kolejnych** uruchomieniach ten sam plik startuje program w kilka sekund (nic już nie instaluje).
+> Lors des **lancements suivants**, le même fichier démarre le programme en quelques secondes (aucune installation supplémentaire n’est nécessaire).
 
-## Krok 3: Zainstaluj wtyczkę w Chrome (2 minuty)
+## Étape 3 : Installer l’extension dans Chrome (2 minutes)
 
-1. Otwórz Chrome i wpisz w pasku adresu: `chrome://extensions/`
-2. Włącz przełącznik **„Tryb dewelopera"** (prawy górny róg)
-3. Kliknij **„Załaduj rozpakowane"**
-4. Wskaż folder **`chrome-extension`** (jest w folderze programu z Kroku 1)
-5. Gotowe! Ikona wtyczki pojawi się obok paska adresu
+1. Ouvrez Chrome et saisissez `chrome://extensions/` dans la barre d’adresse.
+2. Activez le bouton **« Mode développeur »** (en haut à droite).
+3. Cliquez sur **« Charger l’extension non empaquetée »**.
+4. Sélectionnez le dossier **`chrome-extension`** (dans le dossier du programme téléchargé à l’étape 1).
+5. C’est prêt ! L’icône de l’extension apparaît à côté de la barre d’adresse.
 
 ---
 
-## Sprawdź, czy działa (30 sekund)
+## Vérifier que tout fonctionne (30 secondes)
 
-1. Skopiuj ten tekst:
+1. Copiez ce texte :
    ```
    Jan Kowalski, PESEL: 92010212345, email: jan@example.com, tel: +48 123 456 789
    ```
-2. Wejdź na https://chatgpt.com i wklej go (Ctrl+V) w okno rozmowy
-3. Powinno pojawić się: `Jan Kowalski, PESEL: [PESEL], email: [EMAIL], tel: [TELEFON]` ✅
+2. Accédez à https://chatgpt.com et collez-le (Ctrl+V) dans la fenêtre de conversation.
+3. Le résultat attendu est : `Jan Kowalski, PESEL: [PESEL], email: [EMAIL], tel: [TELEPHONE]` ✅
 
 ---
 
-## Autostart (opcjonalnie)
+## Démarrage automatique (facultatif)
 
-Chcesz, żeby program włączał się sam po uruchomieniu komputera (w tle, bez czarnego okna)?
+Vous souhaitez que le programme démarre automatiquement à l’ouverture de votre session (en arrière-plan, sans fenêtre noire) ?
 
-- Kliknij dwa razy plik **`Autostart-Windows`** → autostart WŁĄCZONY
-- Kliknij go ponownie → autostart WYŁĄCZONY
+- Double-cliquez sur **`Autostart-Windows`** → démarrage automatique ACTIVÉ.
+- Cliquez de nouveau dessus → démarrage automatique DÉSACTIVÉ.
 
 ---
 
-## Najczęstsze problemy
+## Problèmes courants
 
-| Problem | Rozwiązanie |
+| Problème | Solution |
 |---|---|
-| Wtyczka pokazuje „Offline" | Program nie jest uruchomiony — kliknij `Uruchom-Windows` |
-| „System Windows ochronił ten komputer" | „Więcej informacji" → „Uruchom mimo to" |
-| Okno mignęło i zniknęło | Kliknij plik jeszcze raz; jeśli się powtarza, uruchom ponownie komputer i spróbuj znowu |
-| Instalacja Pythona się nie udała | Wejdź na https://www.python.org/downloads/, pobierz Pythona, **zaznacz „Add Python to PATH"** przy instalacji, potem kliknij `Uruchom-Windows` jeszcze raz |
-| Tekst się nie maskuje | Kliknij ikonę wtyczki i sprawdź, czy przełącznik jest WŁĄCZONY; odśwież stronę (F5) |
-| Chcę zobaczyć, co zostało zamaskowane | Otwórz http://localhost:6677/dashboard → zakładka „Logi" |
+| L’extension affiche « Offline » | Le programme n’est pas lancé : cliquez sur `Uruchom-Windows`. |
+| « Windows a protégé votre ordinateur » | « Informations complémentaires » → « Exécuter quand même ». |
+| La fenêtre apparaît puis disparaît | Cliquez une nouvelle fois sur le fichier. Si le problème persiste, redémarrez l’ordinateur et réessayez. |
+| L’installation de Python a échoué | Accédez à https://www.python.org/downloads/, téléchargez Python et **cochez « Add Python to PATH »** lors de l’installation, puis relancez `Uruchom-Windows`. |
+| Le texte n’est pas masqué | Cliquez sur l’icône de l’extension et vérifiez que le bouton est ACTIVÉ ; actualisez la page (F5). |
+| Je veux voir ce qui a été masqué | Ouvrez http://localhost:6677/dashboard → onglet « Logs ». |
 
-Więcej pomocy: [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) • [INSTALLATION.md](INSTALLATION.md)
+Pour obtenir davantage d’aide : [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) • [INSTALLATION.md](INSTALLATION.md)

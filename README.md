@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/gacabartosz/presidio-local-anonymizer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python"></a>
   <img src="https://img.shields.io/badge/chrome-extension-brightgreen.svg" alt="Chrome Extension">
   <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="JAK-ZACZĄĆ.md">🇵🇱 Polski przewodnik dla każdego</a> •
+  <a href="JAK-ZACZĄĆ.md">🇫🇷 Guide en français pour tous</a> •
   <a href="#-features">Features</a> •
   <a href="#-quick-installation">Installation</a> •
   <a href="#-how-it-works">How It Works</a> •
@@ -52,6 +52,7 @@
 - 🏆 **Microsoft Presidio** - Professional PII detection engine
 - 📋 **28 entity types** - PESEL, NIP, REGON, emails, phones, credit cards, passports, IDs
 - 🇵🇱 **Polish language optimized** - Native support for Polish PII
+- 🇫🇷 **French by default** - French and English interface, selectable from the extension popup
 - 🌐 **Works everywhere** - ChatGPT, Claude, Gmail, forms, content-editable fields
 - 📊 **Web Dashboard** - Real-time monitoring, testing, and logs
 
@@ -59,7 +60,7 @@
 
 ## 🚀 Quick Installation
 
-> **🇵🇱 PROSTY PRZEWODNIK PO POLSKU:** [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) - Instrukcja krok po kroku dla każdego!
+> **🇫🇷 GUIDE SIMPLE EN FRANÇAIS :** [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) - Instructions pas à pas pour tous !
 >
 > **📖 Full Documentation:** [INSTALLATION.md](INSTALLATION.md) - Complete step-by-step guide with troubleshooting
 
@@ -67,7 +68,7 @@
 
 #### Windows (no technical knowledge needed!)
 
-> 🪟 **Nie znasz się na komputerach? Zobacz [WINDOWS.md](WINDOWS.md)** — instalacja w 3 krokach, bez gita i terminala.
+> 🪟 **Vous n’êtes pas à l’aise avec l’informatique ? Consultez [WINDOWS.md](WINDOWS.md)** — installation en 3 étapes, sans Git ni terminal.
 
 1. **Download ZIP:** green `Code` button → `Download ZIP` → extract
 2. **Double-click `Uruchom-Windows.bat`** — first run installs everything (auto-installs Python if missing), then starts the backend and opens the dashboard
@@ -75,14 +76,14 @@
 
 Or via git:
 ```cmd
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 Uruchom-Windows.bat
 ```
 
 #### macOS
 ```bash
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 chmod +x install-mac.sh
 ./install-mac.sh
@@ -90,7 +91,7 @@ chmod +x install-mac.sh
 
 #### Linux
 ```bash
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer
 chmod +x install-linux.sh
 ./install-linux.sh
@@ -133,14 +134,14 @@ Backend runs at: **http://localhost:6677**
 
 3. **Text automatically anonymized:**
    ```
-   [OSOBA], email: [EMAIL], PESEL: [PESEL]
+   [PERSONNE], email: [EMAIL], PESEL: [PESEL]
    ```
 
 ### Alternative Methods
 
 **Keyboard Shortcut:** Select text → Press `Ctrl+Shift+A` (Mac: `Cmd+Shift+A`)
 
-**Context Menu:** Select text → Right-click → "Anonimizuj zaznaczony tekst"
+**Context Menu:** Select text → Right-click → « Anonymiser le texte sélectionné »
 
 **Extension Toggle:** Click extension icon → Toggle ON/OFF
 
@@ -173,24 +174,24 @@ Dashboard features:
 | **PL_PESEL** | 92010212345 | `[PESEL]` | 95-100% |
 | **PL_NIP** | 123-456-78-90 | `[NIP]` | 90-100% |
 | **PL_REGON** | 123456789 | `[REGON]` | 85-95% |
-| **PL_PASSPORT** | AB1234567 | `[PASZPORT_PL]` | 90-100% |
-| **PL_ID_CARD** | ABC123456 | `[DOWOD_PL]` | 90-100% |
-| **PHONE_NUMBER** | +48 123 456 789 | `[TELEFON]` | 85-100% |
-| **CREDIT_CARD** | 4532-1234-5678-9010 | `[KARTA]` | 95-100% |
+| **PL_PASSPORT** | AB1234567 | `[PASSEPORT_PL]` | 90-100% |
+| **PL_ID_CARD** | ABC123456 | `[CARTE_IDENTITE_PL]` | 90-100% |
+| **PHONE_NUMBER** | +48 123 456 789 | `[TELEPHONE]` | 85-100% |
+| **CREDIT_CARD** | 4532-1234-5678-9010 | `[CARTE]` | 95-100% |
 | **IBAN_CODE** | PL61109010140000071219812874 | `[IBAN]` | 100% |
 | **IP_ADDRESS** | 192.168.1.1 | `[IP]` | 100% |
 | **URL** | https://example.com | `[URL]` | 90-100% |
-| **DATE_TIME** | 2024-12-10 | `[DATA]` | 80-95% |
-| **LOCATION** | Warsaw | `[LOKALIZACJA]` | 70-90% |
+| **DATE_TIME** | 2024-12-10 | `[DATE]` | 80-95% |
+| **LOCATION** | Warsaw | `[LIEU]` | 70-90% |
 
 ### 🌍 International Data (Default: Disabled):
 
 | Type | Example | Mask | Country |
 |------|---------|------|---------|
 | **US_SSN** | 123-45-6789 | `[SSN]` | 🇺🇸 USA |
-| **US_PASSPORT** | 123456789 | `[PASZPORT_US]` | 🇺🇸 USA |
+| **US_PASSPORT** | 123456789 | `[PASSEPORT_US]` | 🇺🇸 USA |
 | **US_BANK_NUMBER** | 123456789 | `[BANK_US]` | 🇺🇸 USA |
-| **US_DRIVER_LICENSE** | D1234567 | `[PRAWO_JAZDY_US]` | 🇺🇸 USA |
+| **US_DRIVER_LICENSE** | D1234567 | `[PERMIS_CONDUIRE_US]` | 🇺🇸 USA |
 | **UK_NHS** | 123 456 7890 | `[NHS]` | 🇬🇧 UK |
 | **AU_ABN** | 12 345 678 901 | `[ABN]` | 🇦🇺 Australia |
 | **SG_NRIC_FIN** | S1234567D | `[NRIC_SG]` | 🇸🇬 Singapore |
@@ -199,13 +200,13 @@ Dashboard features:
 
 | Type | Example | Mask | Default |
 |------|---------|------|---------|
-| **PERSON** | Jan Kowalski | `[OSOBA]` | ❌ OFF |
+| **PERSON** | Jan Kowalski | `[PERSONNE]` | ❌ OFF |
 | **CRYPTO** | 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa | `[CRYPTO]` | ❌ OFF |
-| **MEDICAL_LICENSE** | MD123456 | `[LICENCJA_MED]` | ❌ OFF |
+| **MEDICAL_LICENSE** | MD123456 | `[LICENCE_MEDICALE]` | ❌ OFF |
 
 **Total: 28 PII entity types!**
 
-Configure in Dashboard: http://localhost:6677/dashboard → Ustawienia
+Configure in Dashboard: http://localhost:6677/dashboard → Paramètres
 
 ---
 
@@ -219,7 +220,7 @@ Configure in Dashboard: http://localhost:6677/dashboard → Ustawienia
    Jan Kowalski, PESEL: 92010212345, email: jan@example.com, tel: +48 123 456 789
    ```
 3. **Paste (Ctrl+V)** into ChatGPT
-4. ✅ **See result:** `[OSOBA], PESEL: [PESEL], email: [EMAIL], tel: [TELEFON]`
+4. ✅ **See result:** `[PERSONNE], PESEL: [PESEL], email: [EMAIL], tel: [TELEPHONE]`
 
 ### Test on Dashboard:
 
@@ -231,7 +232,7 @@ Configure in Dashboard: http://localhost:6677/dashboard → Ustawienia
 ### Check Logs:
 
 1. Open http://localhost:6677/dashboard
-2. Click "Logi" in navigation
+2. Click « Journaux » in navigation
 3. See history: original → anonymized (last 100 entries)
 
 **More testing guides:** [TESTING.md](TESTING.md)
@@ -241,7 +242,7 @@ Configure in Dashboard: http://localhost:6677/dashboard → Ustawienia
 ## 📚 Documentation
 
 ### User Guides:
-- 📖 **[README-USER.md](README-USER.md)** - Quick start guide for users (co zostało zrobione)
+- 📖 **[README-USER.md](README-USER.md)** - Quick start guide for users (ce qui a été fait)
 - 🤖 **[AI-SITES-GUIDE.md](AI-SITES-GUIDE.md)** - Complete guide for ChatGPT, Claude, Perplexity
 - 🧪 **[TESTING.md](TESTING.md)** - Comprehensive testing and debugging instructions
 - 💾 **[INSTALLATION.md](INSTALLATION.md)** - Detailed installation guide with troubleshooting
@@ -497,8 +498,8 @@ For sensitive data, consider additional security measures.
 
 **Need help?**
 - 📖 [Documentation](INSTALLATION.md) - Start here
-- 🐛 [GitHub Issues](https://github.com/gacabartosz/presidio-local-anonymizer/issues) - Report bugs
-- 💬 [GitHub Discussions](https://github.com/gacabartosz/presidio-local-anonymizer/discussions) - Ask questions
+- 🐛 [GitHub Issues](https://github.com/jpsangare/presidio-local-anonymizer/issues) - Report bugs
+- 💬 [GitHub Discussions](https://github.com/jpsangare/presidio-local-anonymizer/discussions) - Ask questions
 - 📊 [Dashboard](http://localhost:6677/dashboard) - Service status and logs
 
 **Star this repo** if you find it useful! ⭐

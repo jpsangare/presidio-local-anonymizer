@@ -56,7 +56,7 @@ async function testBackendConnection(url) {
     return {
       success: true,
       status: data.status || 'unknown',
-      message: 'Backend połączony'
+      message: 'Backend connecté'
     };
   } catch (error) {
     return {

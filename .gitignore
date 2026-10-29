@@ -67,7 +67,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# SpaCy models (są instalowane przez skrypt)
+# Modèles SpaCy (installés par le script)
 .spacy/
 
 # Jupyter Notebook

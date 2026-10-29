@@ -100,9 +100,9 @@ def main():
     try:
         s6 = make_server('::1', port, app, threaded=True)
     except OSError:
-        # System bez IPv6 loopback - działamy tylko na IPv4
+        # Système sans loopback IPv6 : fonctionnement en IPv4 uniquement
         s6 = None
-        logger.warning("IPv6 loopback niedostępny, backend działa tylko na 127.0.0.1")
+        logger.warning("Loopback IPv6 indisponible ; le backend fonctionne uniquement sur 127.0.0.1")
 
     if s6 is not None:
         threading.Thread(target=s4.serve_forever, daemon=True).start()

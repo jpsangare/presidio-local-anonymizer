@@ -5,8 +5,9 @@ Chrome extension for real-time PII anonymization powered by Microsoft Presidio.
 ## Features
 
 - **Real-time Anonymization**: Anonymize selected text with Ctrl+Shift+A
-- **Context Menu**: Right-click selected text → "Anonimizuj zaznaczony tekst"
+- **Context Menu**: Right-click selected text → "Anonymize selected text" (label follows the selected UI language)
 - **Configurable Backend**: Connect to any Presidio backend instance
+- **French and English UI**: French is the default; choose the interface language in the popup or extension settings. This changes the interface only; backend entity detection remains configured for Polish.
 - **Polish Language Support**: Optimized for Polish PII (PESEL, NIP, names, locations)
 - **28 Entity Types**: Emails, phones, credit cards, IDs, and more
 
@@ -16,7 +17,7 @@ Chrome extension for real-time PII anonymization powered by Microsoft Presidio.
 
 ```bash
 # Clone repository
-git clone https://github.com/gacabartosz/presidio-local-anonymizer
+git clone https://github.com/jpsangare/presidio-local-anonymizer
 cd presidio-local-anonymizer/backend
 
 # Create virtual environment
@@ -46,7 +47,7 @@ Backend will start on `http://localhost:6677`
 
 #### Option B: From GitHub Releases
 
-1. Download latest `.crx` or `.zip` from [Releases](https://github.com/gacabartosz/presidio-local-anonymizer/releases)
+1. Download latest `.crx` or `.zip` from [Releases](https://github.com/jpsangare/presidio-local-anonymizer/releases)
 2. Drag & drop into `chrome://extensions/`
 
 ## Configuration
@@ -54,10 +55,11 @@ Backend will start on `http://localhost:6677`
 ### Setting Backend URL
 
 1. Click extension icon
-2. Click "🔧 Konfiguracja Wtyczki"
-3. Enter backend URL (e.g., `http://localhost:6677`)
-4. Click "🔍 Testuj Połączenie" to verify
-5. Click "💾 Zapisz" to save
+2. Click "🔧 Extension settings"
+3. Choose French or English from the language selector (French is the default)
+4. Enter backend URL (e.g., `http://localhost:6677`)
+5. Click "🔍 Test connection" to verify
+6. Click "💾 Save" to save
 
 ### Custom Port or Host
 
@@ -98,12 +100,12 @@ Works everywhere:
 
 1. Select text
 2. Right-click
-3. Choose "Anonimizuj zaznaczony tekst"
+3. Choose "Anonymize selected text"
 
 ### Dashboard
 
-- Click extension icon → "⚙️ Ustawienia" - Configure entity detection
-- Click extension icon → "📊 Dashboard" - Test anonymization
+- Click extension icon → "⚙️ Settings" - Configure entity detection
+- Click extension icon → "📊 Dashboard" - Test anonymization and choose among French, English, or German
 
 ## Detected Entities
 
@@ -204,6 +206,6 @@ MIT
 
 ## Links
 
-- **Repository**: https://github.com/gacabartosz/presidio-local-anonymizer
-- **Issues**: https://github.com/gacabartosz/presidio-local-anonymizer/issues
+- **Repository**: https://github.com/jpsangare/presidio-local-anonymizer
+- **Issues**: https://github.com/jpsangare/presidio-local-anonymizer/issues
 - **Presidio**: https://github.com/microsoft/presidio

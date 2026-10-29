@@ -1,9 +1,10 @@
 @echo off
+chcp 65001 >nul
 REM ============================================================
-REM  Presidio Browser Anonymizer - Windows (wszystko w jednym)
-REM  Pierwsze uruchomienie: instaluje wszystko automatycznie.
-REM  Kolejne uruchomienia: od razu startuje backend.
-REM  Wystarczy KLIKNAC DWA RAZY ten plik.
+REM  Presidio Browser Anonymizer - tout-en-un pour Windows
+REM  Au premier lancement : installation automatique.
+REM  Aux lancements suivants : le backend démarre directement.
+REM  Il suffit de DOUBLE-CLIQUER sur ce fichier.
 REM ============================================================
 setlocal EnableExtensions
 title Presidio Anonymizer
@@ -18,7 +19,7 @@ echo  Presidio Browser Anonymizer
 echo ============================================================
 echo.
 
-REM ---------- 1. Znajdz Pythona (py launcher lub python) ----------
+REM ---------- 1. Rechercher Python (lanceur py ou commande python) ----------
 set "PY_CMD="
 py -3 --version >nul 2>&1 && set "PY_CMD=py -3"
 if not defined PY_CMD (
@@ -27,98 +28,98 @@ if not defined PY_CMD (
 
 if defined PY_CMD goto :python_ok
 
-echo [INFO] Python nie jest zainstalowany. Probuje zainstalowac automatycznie...
+echo [INFO] Python n’est pas installé. Tentative d’installation automatique...
 winget --version >nul 2>&1
 if %errorlevel% neq 0 goto :python_manual
 
-echo [INFO] Instaluje Python przez winget (moze potrwac kilka minut)...
+echo [INFO] Installation de Python avec winget (cela peut prendre quelques minutes)...
 winget install -e --id Python.Python.3.12 --scope user --accept-package-agreements --accept-source-agreements
 if %errorlevel% neq 0 goto :python_manual
 
 echo.
-echo [OK] Python zainstalowany!
-echo [WAZNE] Zamknij to okno i kliknij plik Uruchom-Windows.bat JESZCZE RAZ.
-echo         (Windows musi odswiezyc ustawienia po instalacji Pythona)
+echo [OK] Python a été installé !
+echo [IMPORTANT] Fermez cette fenêtre et double-cliquez ENCORE sur Uruchom-Windows.bat.
+echo             Windows doit actualiser sa configuration après l’installation de Python.
 echo.
 pause
 exit /b 0
 
 :python_manual
 echo.
-echo [BLAD] Nie udalo sie zainstalowac Pythona automatycznie.
+echo [ERREUR] L’installation automatique de Python a échoué.
 echo.
-echo Zrob to recznie (2 minuty):
-echo   1. Otworzy sie strona www.python.org - kliknij zolty przycisk "Download Python"
-echo   2. Uruchom pobrany plik
-echo   3. WAZNE: zaznacz na dole "Add Python to PATH", potem "Install Now"
-echo   4. Po instalacji kliknij Uruchom-Windows.bat jeszcze raz
+echo Installez-le manuellement (2 minutes) :
+echo   1. La page www.python.org s’ouvrira : cliquez sur le bouton jaune "Download Python"
+echo   2. Lancez le fichier téléchargé
+echo   3. IMPORTANT : cochez "Add Python to PATH", puis cliquez sur "Install Now"
+echo   4. Après l’installation, relancez Uruchom-Windows.bat
 echo.
 start "" https://www.python.org/downloads/
 pause
 exit /b 1
 
 :python_ok
-echo [OK] Python znaleziony:
+echo [OK] Python détecté :
 %PY_CMD% --version
 echo.
 
-REM ---------- 2. Pierwsza instalacja (tylko raz) ----------
+REM ---------- 2. Première installation (une seule fois) ----------
 if exist "%MARKER%" goto :run_backend
 
 echo ============================================================
-echo  PIERWSZE URUCHOMIENIE - instaluje wszystko automatycznie.
-echo  To potrwa 5-10 minut i wymaga internetu. Nie zamykaj okna!
+echo  PREMIER LANCEMENT - installation automatique.
+echo  Cette étape dure 5 à 10 minutes et nécessite Internet. Ne fermez pas la fenêtre !
 echo ============================================================
 echo.
 
 if not exist "%VENV_PY%" (
-    echo [1/3] Tworze srodowisko Pythona...
+    echo [1/3] Création de l’environnement Python...
     %PY_CMD% -m venv "%~dp0backend\.venv"
     if errorlevel 1 (
-        echo [BLAD] Nie udalo sie utworzyc srodowiska. Sprobuj ponownie.
+        echo [ERREUR] Impossible de créer l’environnement. Réessayez.
         pause
         exit /b 1
     )
 )
-echo [OK] Srodowisko gotowe
+echo [OK] Environnement prêt
 echo.
 
-echo [2/3] Pobieram biblioteki (Presidio, Flask, spaCy)...
+echo [2/3] Téléchargement des bibliothèques (Presidio, Flask, spaCy)...
 "%VENV_PY%" -m pip install --upgrade pip --quiet
 "%VENV_PY%" -m pip install -r "%~dp0backend\requirements.txt"
 if errorlevel 1 (
-    echo [BLAD] Instalacja bibliotek nie powiodla sie. Sprawdz internet i sprobuj ponownie.
+    echo [ERREUR] L’installation des bibliothèques a échoué. Vérifiez votre connexion Internet et réessayez.
     pause
     exit /b 1
 )
-echo [OK] Biblioteki zainstalowane
+echo [OK] Bibliothèques installées
 echo.
 
-echo [3/3] Pobieram polski model jezykowy (ok. 80 MB)...
+echo [3/3] Téléchargement du modèle linguistique polonais (environ 80 Mo)...
 "%VENV_PY%" -m spacy download pl_core_news_md
 if errorlevel 1 (
-    echo [BLAD] Nie udalo sie pobrac modelu. Sprawdz internet i sprobuj ponownie.
+    echo [ERREUR] Impossible de télécharger le modèle. Vérifiez votre connexion Internet et réessayez.
     pause
     exit /b 1
 )
-echo [OK] Model pobrany
+echo [OK] Modèle téléchargé
 echo.
 
 echo instalacja-zakonczona> "%MARKER%"
 echo ============================================================
-echo  INSTALACJA ZAKONCZONA! Uruchamiam program...
+echo  INSTALLATION TERMINÉE ! Démarrage du programme...
 echo ============================================================
 echo.
 
-REM ---------- 3. Start backendu + otwarcie dashboardu ----------
+REM ---------- 3. Démarrage du backend et ouverture du tableau de bord ----------
 :run_backend
 echo ============================================================
-echo  BACKEND STARTUJE na http://localhost:%PORT%
-echo  Dashboard otworzy sie sam w przegladarce za chwile.
+echo  DÉMARRAGE DU BACKEND sur http://localhost:%PORT%
+echo  Le tableau de bord va s’ouvrir automatiquement dans le navigateur.
 echo.
-echo  NIE ZAMYKAJ TEGO OKNA gdy korzystasz z anonimizacji!
-echo  (mozesz je zminimalizowac)
-echo  Aby zatrzymac: zamknij okno lub nacisnij Ctrl+C
+echo  NE FERMEZ PAS CETTE FENÊTRE pendant l’utilisation de l’anonymisation !
+echo  (Vous pouvez la réduire.)
+echo  Pour arrêter le backend : fermez la fenêtre ou appuyez sur Ctrl+C
 echo ============================================================
 echo.
 

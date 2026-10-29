@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,8 @@
     }
 
     body {
-      width: 320px;
+      width: 100%;
+      min-height: 100vh;
       padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f9fafb;
@@ -138,6 +139,23 @@
       text-decoration: none;
     }
 
+    .language-setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .language-setting select {
+      padding: 4px 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      color: #374151;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -213,50 +231,59 @@
       <rect x="30.5" y="44" width="3" height="8" rx="1.5" fill="#2563eb"/>
     </svg>
     <h1>Presidio Anonymizer</h1>
-    <div class="subtitle">Ochrona Danych Osobowych</div>
+    <div class="subtitle" id="popup-subtitle">Protection des données personnelles</div>
   </div>
 
   <!-- Extension Toggle -->
   <div class="toggle-container">
-    <div class="toggle-label">Auto-anonimizacja</div>
-    <div class="switch active" id="extension-toggle">
+    <div class="toggle-label" id="toggle-label">Anonymisation automatique</div>
+    <div class="switch active" id="extension-toggle" role="button" tabindex="0" aria-pressed="true">
       <div class="switch-knob"></div>
     </div>
   </div>
 
   <div class="status">
-    <div class="status-label">Status Serwisu</div>
+    <div class="status-label" id="service-status-label">État du service</div>
     <div class="status-badge offline" id="status-badge">
       <div class="status-dot offline" id="status-dot"></div>
-      <span id="status-text">Sprawdzanie...</span>
+      <span id="status-text">Vérification...</span>
     </div>
   </div>
 
   <!-- Offline warning (hidden by default) -->
   <div id="offline-warning" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444; color: #dc2626; padding: 16px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center;">
-    ⚠️ Backend nie działa<br>
-    <span style="font-size: 12px; opacity: 0.8;">Uruchom backend lub zainstaluj</span>
+    <span id="offline-warning-title">⚠️ Le backend ne répond pas</span><br>
+    <span id="offline-warning-help" style="font-size: 12px; opacity: 0.8;">Démarrez ou installez le backend</span>
   </div>
 
   <!-- Setup button (shown when offline) -->
   <a href="#" id="setup-btn" target="_blank" class="btn btn-primary hidden" style="background: linear-gradient(135deg, #10b981, #059669);">
-    🚀 Zainstaluj Backend
+    🚀 Installer le backend
   </a>
 
   <a href="#" id="settings-btn" target="_blank" class="btn btn-primary">
-    ⚙️ Ustawienia
+    ⚙️ Paramètres
   </a>
   <a href="#" id="dashboard-btn" target="_blank" class="btn btn-secondary">
-    📊 Dashboard
+    📊 Tableau de bord
   </a>
   <button id="options-btn" class="btn btn-secondary">
-    🔧 Konfiguracja Wtyczki
+    🔧 Configuration de l’extension
   </button>
 
+  <label class="language-setting" for="language-select">
+    <span id="language-label">Langue</span>
+    <select id="language-select">
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+    </select>
+  </label>
+
   <div class="footer">
-    v1.3.0 • <a href="https://github.com/gacabartosz" target="_blank">gacabartosz</a>
+    v1.3.0 • <a href="https://github.com/jpsangare" target="_blank">jpsangare</a>
   </div>
 
+  <script src="locales.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

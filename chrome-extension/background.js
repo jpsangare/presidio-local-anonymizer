@@ -1,5 +1,6 @@
 // Background service worker for Presidio Browser Anonymizer
 // Import config functions
+importScripts('locales.js');
 importScripts('config.js');
 
 // Listen for messages from content scripts
@@ -54,14 +55,52 @@ async function anonymizeText(text) {
   }
 }
 
+// Open the side panel (right side) when the toolbar icon is clicked
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch(error => console.error('Failed to set side panel behavior:', error));
+
 // Context menu for anonymizing selected text
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: 'anonymize-selection',
-    title: 'Anonimizuj zaznaczony tekst',
-    contexts: ['selection']
-  });
+  getUiLanguage().then(language => {
+    chrome.contextMenus.removeAll(() => {
+      if (chrome.runtime.lastError) {
+        console.error('Failed to reset context menu:', chrome.runtime.lastError.message);
+        return;
+      }
+
+      chrome.contextMenus.create({
+        id: 'anonymize-selection',
+        title: extensionText('contextMenu', language),
+        contexts: ['selection']
+      }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('Failed to create context menu:', chrome.runtime.lastError.message);
+        }
+      });
+    });
+  }).catch(error => console.error('Failed to initialize context menu language:', error));
 });
+
+chrome.runtime.onStartup.addListener(() => {
+  updateContextMenuLanguage().catch(error => console.error('Failed to update context menu language:', error));
+});
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes.uiLanguage) {
+    updateContextMenuLanguage().catch(error => console.error('Failed to update context menu language:', error));
+  }
+});
+
+async function updateContextMenuLanguage() {
+  const language = await getUiLanguage();
+  chrome.contextMenus.update('anonymize-selection', {
+    title: extensionText('contextMenu', language)
+  }, () => {
+    if (chrome.runtime.lastError) {
+      console.error('Failed to update context menu language:', chrome.runtime.lastError.message);
+    }
+  });
+}
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'anonymize-selection') {

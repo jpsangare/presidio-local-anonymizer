@@ -1,110 +1,110 @@
-# 🧪 Testowanie Rozszerzenia Presidio
+# 🧪 Tester l’extension Presidio
 
-## Przygotowanie (WAŻNE!)
+## Préparation (IMPORTANT !)
 
-### 1. Przeładuj rozszerzenie po zmianach
+### 1. Rechargez l’extension après toute modification
 ```
-1. Otwórz chrome://extensions/
-2. Znajdź "Presidio Browser Anonymizer"
-3. Kliknij ikonę odświeżenia (⟳) lub przełącz OFF/ON
-4. ZAMKNIJ wszystkie otwarte karty z AI (ChatGPT, Claude, Perplexity)
-5. Otwórz je ponownie (F5 nie wystarczy!)
-```
-
-### 2. Sprawdź czy rozszerzenie jest włączone
-```
-1. Kliknij ikonę rozszerzenia w pasku narzędzi
-2. Sprawdź czy przycisk "Auto-anonimizacja" jest ZIELONY
-3. Jeśli jest szary - kliknij aby włączyć
+1. Ouvrez chrome://extensions/
+2. Repérez « Presidio Browser Anonymizer ».
+3. Cliquez sur l’icône d’actualisation (⟳) ou basculez OFF/ON.
+4. FERMEZ tous les onglets ouverts avec des sites d’IA (ChatGPT, Claude, Perplexity).
+5. Rouvrez-les (F5 ne suffit pas !)
 ```
 
-### 3. Sprawdź czy backend działa
+### 2. Vérifiez que l’extension est activée
+```
+1. Cliquez sur l’icône de l’extension dans la barre d’outils.
+2. Vérifiez que le bouton « Auto-anonymisation » est VERT.
+3. S’il est gris, cliquez dessus pour l’activer.
+```
+
+### 3. Vérifiez que le backend fonctionne
 ```bash
 # Test 1: Health check
 curl http://localhost:6677/api/health
 
-# Test 2: Anonimizacja
+# Test 2 : anonymisation
 curl -X POST http://localhost:6677/api/anonymize \
   -H "Content-Type: application/json" \
   -d '{"text":"Jan Kowalski, email: jan@example.com, tel: 123456789"}'
 ```
 
-## Test 1: Strona Testowa (Najszybszy test)
+## Test 1 : Page de test (le test le plus rapide)
 
 ```bash
-# Otwórz test-extension.html
+# Ouvrez test-extension.html
 open /Users/gaca/presidio-local-anonymizer/test-extension.html
 ```
 
-### Kroki testowe:
-1. Otwórz **DevTools** (F12) → zakładka **Console**
-2. Skopiuj tekst testowy:
+### Étapes du test :
+1. Ouvrez les **DevTools** (F12) → onglet **Console**.
+2. Copiez le texte de test :
    ```
    Jan Kowalski, email: jan.kowalski@example.com, tel: 123-456-789, PESEL: 92010212345
    ```
-3. Wklej w pole tekstowe (Ctrl+V)
-4. **Sprawdź w konsoli czy widzisz:**
+3. Collez-le dans le champ de texte (Ctrl+V).
+4. **Vérifiez que les messages suivants apparaissent dans la console :**
    ```
    [Presidio] Paste event detected - extension ENABLED
    [Presidio] Sending anonymization request...
    [Presidio] Received response: ...
    ```
-5. **Tekst powinien być zanonimizowany:**
+5. **Le texte doit être anonymisé :**
    ```
-   [OSOBA], email: [EMAIL], tel: [REGON], PESEL: [PESEL]
+   [PERSONNE], email: [EMAIL], tel: [TELEPHONE], PESEL: [PESEL]
    ```
 
-### Jeśli nie widzisz logów:
-1. Rozszerzenie nie jest załadowane → Przeładuj (krok 1 powyżej)
-2. Rozszerzenie jest wyłączone → Włącz toggle w popup
-3. Content script nie działa → Sprawdź czy nie ma błędów w konsoli
+### Si les messages n’apparaissent pas :
+1. L’extension n’est pas chargée → rechargez-la (étape 1 ci-dessus).
+2. L’extension est désactivée → activez le bouton dans la fenêtre contextuelle.
+3. Le content script ne fonctionne pas → vérifiez l’absence d’erreurs dans la console.
 
-### Jeśli widzisz błąd:
-1. Sprawdź **background service worker console**:
+### Si une erreur apparaît :
+1. Consultez la **background service worker console** :
    - chrome://extensions/
    - "Presidio Browser Anonymizer" → "Inspect views: service worker"
-   - Zobacz czy jest błąd w komunikacji z backendem
+   - Vérifiez si une erreur de communication avec le backend est affichée.
 
-## Test 2: ChatGPT (https://chatgpt.com)
+## Test 2 : ChatGPT (https://chatgpt.com)
 
-### Przygotowanie:
-1. Zamknij wszystkie karty ChatGPT
-2. Otwórz nową kartę: https://chatgpt.com
-3. Otwórz DevTools (F12)
+### Préparation :
+1. Fermez tous les onglets ChatGPT.
+2. Ouvrez un nouvel onglet : https://chatgpt.com
+3. Ouvrez les DevTools (F12).
 
-### Test A: Wklejanie (Ctrl+V)
-1. Skopiuj: `Jan Kowalski, email: jan@example.com, PESEL: 92010212345`
-2. Kliknij w pole tekstowe ChatGPT
-3. Naciśnij Ctrl+V
-4. **Sprawdź:** Tekst powinien być zanonimizowany PRZED wklejeniem
+### Test A : Collage (Ctrl+V)
+1. Copiez : `Jan Kowalski, email: jan@example.com, PESEL: 92010212345`
+2. Cliquez dans le champ de texte de ChatGPT.
+3. Appuyez sur Ctrl+V.
+4. **Vérifiez :** le texte doit être anonymisé AVANT d’être collé.
 
-### Test B: Skrót klawiszowy (Ctrl+Shift+A)
-1. Wpisz tekst z danymi osobowymi
-2. Zaznacz tekst
-3. Naciśnij Ctrl+Shift+A (Cmd+Shift+A na Mac)
-4. **Sprawdź:** Tekst zostanie zanonimizowany w miejscu
+### Test B : Raccourci clavier (Ctrl+Shift+A)
+1. Saisissez un texte contenant des données personnelles.
+2. Sélectionnez le texte.
+3. Appuyez sur Ctrl+Shift+A (Cmd+Shift+A sur Mac).
+4. **Vérifiez :** le texte est anonymisé sur place.
 
-### Test C: Prawy przycisk myszy
-1. Wpisz tekst z danymi osobowymi
-2. Zaznacz tekst
-3. Prawy przycisk myszy → "Anonimizuj zaznaczony tekst"
-4. **Sprawdź:** Tekst zostanie zanonimizowany
+### Test C : Clic droit
+1. Saisissez un texte contenant des données personnelles.
+2. Sélectionnez le texte.
+3. Cliquez avec le bouton droit → « Anonymiser le texte sélectionné ».
+4. **Vérifiez :** le texte est anonymisé.
 
-## Test 3: Claude (https://claude.ai)
+## Test 3 : Claude (https://claude.ai)
 
-Powtórz wszystkie testy jak dla ChatGPT.
+Répétez les mêmes tests que pour ChatGPT.
 
-**Uwaga:** Claude używa contenteditable, podobnie jak ChatGPT - rozszerzenie powinno działać identycznie.
+**Remarque :** Claude utilise contenteditable, comme ChatGPT ; l’extension devrait donc fonctionner de la même manière.
 
-## Test 4: Perplexity (https://www.perplexity.ai)
+## Test 4 : Perplexity (https://www.perplexity.ai)
 
-Powtórz wszystkie testy jak dla ChatGPT.
+Répétez les mêmes tests que pour ChatGPT.
 
-**Uwaga:** Perplexity może używać textarea lub contenteditable - rozszerzenie obsługuje oba.
+**Remarque :** Perplexity peut utiliser textarea ou contenteditable ; l’extension prend en charge les deux.
 
-## Test 5: Inne strony AI
+## Test 5 : Autres sites d’IA
 
-Rozszerzenie powinno działać na WSZYSTKICH stronach (<all_urls>), w tym:
+L’extension devrait fonctionner sur TOUS les sites (<all_urls>), notamment :
 
 - Gemini (gemini.google.com)
 - Microsoft Copilot
@@ -116,55 +116,55 @@ Rozszerzenie powinno działać na WSZYSTKICH stronach (<all_urls>), w tym:
 - Facebook
 - Twitter/X
 - LinkedIn
-- **Każdy formularz w internecie!**
+- **Tous les formulaires sur Internet !**
 
-## Debugowanie Problemów
+## Dépannage
 
-### Problem: "Błąd anonimizacji. Wklejam oryginalny tekst."
+### Problème : « Erreur d’anonymisation. Je colle le texte original. »
 
-**Możliwe przyczyny:**
+**Causes possibles :**
 
-1. **Backend nie działa:**
+1. **Le backend ne fonctionne pas :**
    ```bash
    curl http://localhost:6677/api/health
-   # Jeśli nie działa: uruchom backend
+   # S’il ne fonctionne pas : démarrez le backend
    cd /Users/gaca/presidio-local-anonymizer/backend
    source .venv/bin/activate
    python app.py
    ```
 
-2. **Błędny URL backendu:**
-   - Otwórz popup rozszerzenia
-   - Kliknij "Ustawienia"
-   - Sprawdź czy URL to: `http://localhost:6677`
+2. **URL du backend incorrecte :**
+   - Ouvrez la fenêtre contextuelle de l’extension.
+   - Cliquez sur « Paramètres ».
+   - Vérifiez que l’URL est `http://localhost:6677`.
 
-3. **CORS błąd:**
-   - Sprawdź background service worker console
-   - Jeśli widzisz błąd CORS - backend nie ma prawidłowej konfiguracji
+3. **Erreur CORS :**
+   - Consultez la background service worker console.
+   - Si une erreur CORS apparaît, la configuration CORS du backend est incorrecte.
 
-4. **Rozszerzenie nieaktualnepo ładowaniu:**
-   - Przeładuj rozszerzenie: chrome://extensions/ → ⟳
-   - Zamknij i otwórz ponownie strony AI
+4. **L’extension n’a pas été actualisée après son chargement :**
+   - Rechargez l’extension : chrome://extensions/ → ⟳
+   - Fermez les pages d’IA, puis rouvrez-les.
 
-### Problem: Brak logów w konsoli
+### Problème : aucun message dans la console
 
-**Rozwiązanie:**
+**Solution :**
 
-1. Sprawdź czy rozszerzenie jest zainstalowane:
+1. Vérifiez que l’extension est installée :
    - chrome://extensions/
-   - "Presidio Browser Anonymizer" - WŁĄCZONE
+   - « Presidio Browser Anonymizer » - ACTIVÉ
 
-2. Sprawdź czy content script jest załadowany:
-   - DevTools → zakładka "Sources"
-   - W drzewie po lewej: "Content scripts" → powinien być "content-script.js"
+2. Vérifiez que le content script est chargé :
+   - DevTools → onglet « Sources »
+   - Dans l’arborescence à gauche : « Content scripts » → « content-script.js » doit être présent.
 
-3. Przeładuj stronę (F5) po przeładowaniu rozszerzenia
+3. Actualisez la page (F5) après avoir rechargé l’extension.
 
-### Problem: Rozszerzenie wyłącza się automatycznie
+### Problème : l’extension se désactive automatiquement
 
-**Rozwiązanie:**
+**Solution :**
 
-Stan rozszerzenia jest zapisywany w `chrome.storage.local`. Sprawdź w background service worker console:
+L’état de l’extension est enregistré dans `chrome.storage.local`. Vérifiez-le dans la background service worker console :
 
 ```javascript
 chrome.storage.local.get(['extensionEnabled'], (result) => {
@@ -172,28 +172,28 @@ chrome.storage.local.get(['extensionEnabled'], (result) => {
 });
 ```
 
-## Sprawdzanie Logów
+## Consulter les journaux
 
-### 1. Content Script Console (strona WWW)
-- Otwórz DevTools (F12) na stronie WWW
-- Zakładka "Console"
-- Logi zaczynające się od `[Presidio]`
+### 1. Content Script Console (page Web)
+- Ouvrez les DevTools (F12) sur la page Web.
+- Onglet « Console ».
+- Repérez les messages commençant par `[Presidio]`.
 
 ### 2. Background Service Worker Console
 - chrome://extensions/
 - "Presidio Browser Anonymizer" → "Inspect views: service worker"
-- Logi zaczynające się od `[Presidio Background]`
+- Repérez les messages commençant par `[Presidio Background]`.
 
 ### 3. Backend Logs
-- Terminal gdzie uruchomiony jest backend
-- Logi Flask pokazują wszystkie requesty:
+- Terminal dans lequel le backend est lancé.
+- Les journaux Flask affichent toutes les requêtes :
   ```
   127.0.0.1 - - [15/Nov/2025 15:18:02] "POST /api/anonymize HTTP/1.1" 200 -
   ```
 
-## Czego Szukać w Logach
+## Éléments à rechercher dans les journaux
 
-### ✅ Prawidłowe działanie:
+### ✅ Fonctionnement normal :
 
 **Content Script:**
 ```
@@ -208,65 +208,65 @@ chrome.storage.local.get(['extensionEnabled'], (result) => {
 [Presidio Background] Backend URL: http://localhost:6677
 [Presidio Background] Sending request to: http://localhost:6677/api/anonymize
 [Presidio Background] Response status: 200
-[Presidio Background] Anonymization successful: [OSOBA] tel [REGON]
+[Presidio Background] Anonymization successful: [PERSONNE] tel [TELEPHONE]
 ```
 
 **Backend:**
 ```
 2025-11-15 15:18:02 - api.anonymize - INFO - Analyzing with entities: [...]
-2025-11-15 15:18:02 - app.anonymizer - INFO - Wykryto encje: {'PERSON': 1, 'PHONE_NUMBER': 1}
+2025-11-15 15:18:02 - app.anonymizer - INFO - Entités détectées : {'PERSON': 1, 'PHONE_NUMBER': 1}
 2025-11-15 15:18:02 - api.anonymize - INFO - Anonymized text: 2 entities found, 116ms
 2025-11-15 15:18:02 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 15:18:02] "POST /api/anonymize HTTP/1.1" 200 -
 ```
 
-### ❌ Problemy:
+### ❌ Problèmes :
 
 **Extension disabled:**
 ```
 [Presidio] Paste event - extension DISABLED, skipping
 ```
-→ Włącz toggle w popup
+→ Activez le bouton dans la fenêtre contextuelle.
 
 **Backend offline:**
 ```
 [Presidio Background] Anonymization error: Failed to fetch
 ```
-→ Uruchom backend
+→ Démarrez le backend.
 
 **CORS error:**
 ```
 Access to fetch at 'http://localhost:6677/api/anonymize' from origin 'chrome-extension://...' has been blocked by CORS policy
 ```
-→ Sprawdź czy backend ma prawidłową konfigurację CORS
+→ Vérifiez que la configuration CORS du backend est correcte.
 
-## Porady
+## Conseils
 
-### 1. Zawsze przeładowuj rozszerzenie po zmianach w kodzie
+### 1. Rechargez toujours l’extension après une modification du code
 ```
-chrome://extensions/ → ⟳ → Zamknij karty → Otwórz ponownie
+chrome://extensions/ → ⟳ → Fermez les onglets → Rouvrez-les
 ```
 
-### 2. Używaj test-extension.html do szybkich testów
+### 2. Utilisez test-extension.html pour effectuer rapidement des tests
 ```bash
 open /Users/gaca/presidio-local-anonymizer/test-extension.html
 ```
 
-### 3. Sprawdzaj wszystkie 3 logi (content, background, backend)
+### 3. Consultez les trois journaux (content, background, backend)
 
-### 4. Test na prostej stronie przed testowaniem na AI
-- test-extension.html najpierw
-- Potem dopiero ChatGPT/Claude/Perplexity
+### 4. Faites un test sur une page simple avant de tester des sites d’IA
+- Commencez par test-extension.html.
+- Passez ensuite à ChatGPT/Claude/Perplexity.
 
-### 5. Używaj skrótu Ctrl+Shift+A jako backup
-- Jeśli auto-paste nie działa
-- Zawsze możesz zaznaczekst i użyć skrótu
+### 5. Utilisez le raccourci Ctrl+Shift+A comme backup
+- Si l’auto-paste ne fonctionne pas.
+- Vous pouvez toujours sélectionner le texte et utiliser le raccourci.
 
-## Sukces!
+## C’est réussi !
 
-Jeśli wszystkie testy przechodzą, rozszerzenie działa poprawnie na WSZYSTKICH stronach AI:
+Si tous les tests sont réussis, l’extension fonctionne correctement sur TOUS les sites d’IA :
 - ✅ ChatGPT
 - ✅ Claude
 - ✅ Perplexity
 - ✅ Gemini
 - ✅ Copilot
-- ✅ I każda inna strona z formularzami!
+- ✅ Et tout autre site comportant des formulaires !
