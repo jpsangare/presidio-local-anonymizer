@@ -55,6 +55,9 @@ async function anonymizeText(text) {
 
     const data = await response.json();
     console.log('[Presidio Background] Anonymization successful, entities:', data.stats?.total_entities);
+    if (data.session_id) {
+      chrome.storage.local.set({ lastSessionId: data.session_id });
+    }
     return data;
   } catch (error) {
     console.error('[Presidio Background] Anonymization error:', error);

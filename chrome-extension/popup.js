@@ -3,6 +3,7 @@
 let currentBackendUrl = '';
 let extensionEnabled = true;
 let currentLanguage = DEFAULT_UI_LANGUAGE;
+let currentSessionId = null;
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadBackendUrl();
   await loadExtensionState();
   await checkBackendStatus();
+  await loadLastSession();
 
   // Add event listeners for buttons
   document.getElementById('settings-btn')?.addEventListener('click', openSettings);
@@ -19,10 +21,56 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('options-btn')?.addEventListener('click', openOptions);
   document.getElementById('extension-toggle')?.addEventListener('click', toggleExtension);
   document.getElementById('language-select')?.addEventListener('change', changeLanguage);
+  document.getElementById('deanon-btn')?.addEventListener('click', deanonymizeResponse);
+  document.getElementById('deanon-clear')?.addEventListener('click', clearDeanon);
 
   // Auto-refresh status every 5 seconds
   setInterval(checkBackendStatus, 5000);
 });
+
+async function loadLastSession() {
+  const result = await chrome.storage.local.get(['lastSessionId']);
+  if (result.lastSessionId) {
+    currentSessionId = result.lastSessionId;
+    document.getElementById('deanon-panel')?.classList.remove('hidden');
+  }
+}
+
+async function deanonymizeResponse() {
+  const text = document.getElementById('deanon-input').value.trim();
+  if (!text) return;
+  if (!currentSessionId) {
+    alert(extensionText('noSession', currentLanguage));
+    return;
+  }
+  const btn = document.getElementById('deanon-btn');
+  const label = document.getElementById('deanon-btn-label');
+  label.textContent = extensionText('deanonymizing', currentLanguage);
+  btn.disabled = true;
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: 'deanonymize',
+      sessionId: currentSessionId,
+      text
+    });
+    if (response.success) {
+      document.getElementById('deanon-text').textContent = response.data.deanonymized_text;
+      document.getElementById('deanon-count').textContent =
+        `${response.data.replacements} token(s) restauré(s)`;
+      document.getElementById('deanon-result').classList.remove('hidden');
+    } else {
+      alert(response.error || 'Erreur de désanonymisation');
+    }
+  } finally {
+    label.textContent = extensionText('textDeanonymized', currentLanguage).replace('🔓 ', '') || 'Désanonymiser';
+    btn.disabled = false;
+  }
+}
+
+function clearDeanon() {
+  document.getElementById('deanon-input').value = '';
+  document.getElementById('deanon-result').classList.add('hidden');
+}
 
 function applyPopupLanguage() {
   document.documentElement.lang = currentLanguage;
