@@ -139,6 +139,7 @@ document.addEventListener('keydown', async (e) => {
         throw new Error(response.error);
       }
     } catch (error) {
+      if (error.message?.includes('Extension context invalidated')) return;
       console.error('Deanonymization failed:', error);
       showNotification(extensionText('anonymizationError', currentLanguage), 'error');
     }
@@ -171,6 +172,7 @@ document.addEventListener('keydown', async (e) => {
         throw new Error(response.error);
       }
     } catch (error) {
+      if (error.message?.includes('Extension context invalidated')) return;
       console.error('Anonymization failed:', error);
       showNotification(extensionText('anonymizationError', currentLanguage), 'error');
     }
@@ -299,6 +301,7 @@ document.addEventListener('paste', async (e) => {
       throw new Error(response.error);
     }
   } catch (error) {
+    if (error.message?.includes('Extension context invalidated')) return;
     console.error('[Presidio] Paste anonymization failed:', error);
     showNotification(extensionText('pasteError', currentLanguage), 'error');
 
@@ -368,6 +371,10 @@ async function anonymizeBeforeSend(textarea) {
       throw new Error(response.error);
     }
   } catch (error) {
+    if (error.message?.includes('Extension context invalidated')) {
+      // Extension was reloaded — page refresh needed, nothing to do
+      return;
+    }
     console.error('[Presidio] Anonymization before send failed:', error);
     showNotification(extensionText('sendError', currentLanguage), 'error');
   }
