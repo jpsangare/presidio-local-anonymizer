@@ -91,11 +91,8 @@ async function loadBackendUrl() {
 }
 
 function updateButtonLinks() {
-  const l = currentLanguage;
-  document.getElementById('settings-btn').href  = `${currentBackendUrl}/?lang=${l}`;
-  document.getElementById('dashboard-btn').href = `${currentBackendUrl}/dashboard?lang=${l}`;
-  const sb = document.getElementById('setup-btn');
-  if (sb) sb.href = `${currentBackendUrl}/setup?lang=${l}`;
+  // URLs are built dynamically in openSettings/openDashboard/openSetup
+  // Nothing to update on <button> elements
 }
 
 // ── Backend status ────────────────────────────────────────────────────────────
@@ -144,10 +141,10 @@ function updateToggleUI() {
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
-function openSettings(e)  { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` }); }
-function openDashboard(e) { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` }); }
-function openSetup(e)     { e.preventDefault(); chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` }); }
-function openOptions(e)   { if (e) e.preventDefault(); chrome.runtime.openOptionsPage(); }
+function openSettings()  { chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` }); }
+function openDashboard() { chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` }); }
+function openSetup()     { chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` }); }
+function openOptions()   { chrome.runtime.openOptionsPage(); }
 
 // ── Session ───────────────────────────────────────────────────────────────────
 async function loadLastSession() {
