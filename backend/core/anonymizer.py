@@ -27,6 +27,7 @@ def anonymize_text(
     analyzer_results: List[RecognizerResult],
     config: Dict[str, Any],
     mapping: Optional[Dict[str, str]] = None,
+    ts: Optional[str] = None,
 ) -> str:
     """
     Anonymise le texte en remplaçant les entités détectées par les masques correspondants.
@@ -55,7 +56,7 @@ def anonymize_text(
         return text
 
     if mapping is not None:
-        return _anonymize_with_mapping(text, analyzer_results, config, mapping)
+        return _anonymize_with_mapping(text, analyzer_results, config, mapping, ts)
 
     # Mode simple sans mapping (rétrocompatible)
     anonymizer = AnonymizerEngine()
@@ -83,14 +84,12 @@ def _anonymize_with_mapping(
     analyzer_results: List[RecognizerResult],
     config: Dict[str, Any],
     mapping: Dict[str, str],
+    ts: Optional[str] = None,
 ) -> str:
-    """Anonymise avec tokens numérotés stables et remplit la table de correspondance."""
-    # Trier par position décroissante pour remplacer de la fin vers le début
+    """Anonymise avec tokens horodatés [TYPE_N_TS] et remplit la table de correspondance."""
     sorted_results = sorted(analyzer_results, key=lambda r: r.start, reverse=True)
 
-    # Counters par type de masque (label)
     counters: Dict[str, int] = {}
-    # Cache valeur → token (même valeur = même token)
     value_to_token: Dict[str, str] = {}
 
     result_text = text
@@ -100,16 +99,18 @@ def _anonymize_with_mapping(
             token = value_to_token[original_value]
         else:
             label = _label_for(result.entity_type, config)
-            # Strip brackets for counter key: "[PERSONNE]" → "PERSONNE"
             counter_key = label.strip(‘[]’)
             counters[counter_key] = counters.get(counter_key, 0) + 1
-            token = f"[{counter_key}_{counters[counter_key]}]"
+            if ts:
+                token = f"[{counter_key}_{counters[counter_key]}_{ts}]"
+            else:
+                token = f"[{counter_key}_{counters[counter_key]}]"
             value_to_token[original_value] = token
             mapping[token] = original_value
 
         result_text = result_text[:result.start] + token + result_text[result.end:]
 
-    logger.info(f"Anonymisation avec mapping : {len(mapping)} tokens créés")
+    logger.info(f"Anonymisation avec mapping : {len(mapping)} tokens créés (ts={ts})")
     return result_text
 
 

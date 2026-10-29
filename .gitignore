@@ -1,3 +1,6 @@
+# Données PII persistées localement (ne pas versionner)
+backend/data/mappings.json
+
 # Python
 __pycache__/
 *.py[cod]

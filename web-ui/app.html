@@ -1243,17 +1243,20 @@
         });
         const data = await res.json();
 
-        document.getElementById('anonymized-text').textContent = data.anonymized_text;
+        const tsLabel = (data.ts || data.session_id)
+          ? `[SESSION:${data.ts || data.session_id}]\n` : '';
+        document.getElementById('anonymized-text').textContent = tsLabel + data.anonymized_text;
         document.getElementById('test-result').classList.remove('hidden');
 
         // Activer le panneau de désanonymisation si on a un session_id
-        if (data.session_id) {
-          currentSessionId = data.session_id;
+        const ts = data.ts || data.session_id;
+        if (ts) {
+          currentSessionId = ts;
           document.getElementById('deanon-panel').style.display = '';
           document.getElementById('deanon-result').classList.add('hidden');
           document.getElementById('deanon-input').value = '';
           const sid = document.getElementById('session-id-value');
-          if (sid) sid.textContent = data.session_id;
+          if (sid) sid.textContent = ts;
         }
 
         const count = parseInt(document.getElementById('request-count').textContent);

@@ -149,8 +149,8 @@ function openOptions()   { chrome.runtime.openOptionsPage(); }
 
 // ── Session ───────────────────────────────────────────────────────────────────
 async function loadLastSession() {
-  const r = await chrome.storage.local.get(['lastSessionId']);
-  setSession(r.lastSessionId || null);
+  const r = await chrome.storage.local.get(['lastSessionId', 'lastTs']);
+  setSession(r.lastTs || r.lastSessionId || null);
 }
 
 function setSession(id) {
@@ -174,7 +174,7 @@ function applyManualSession() {
   const id = input?.value.trim();
   if (!id) return;
   setSession(id);
-  chrome.storage.local.set({ lastSessionId: id });
+  chrome.storage.local.set({ lastTs: id, lastSessionId: id });
 }
 
 // ── Deanonymization ───────────────────────────────────────────────────────────

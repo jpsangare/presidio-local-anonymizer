@@ -4,8 +4,11 @@ Anonymization endpoint - core functionality
 
 from flask import Blueprint, jsonify, request
 import logging
-import uuid
-from datetime import datetime
+import json
+import os
+import time
+import threading
+from datetime import datetime, timedelta
 from collections import deque
 from core.analyzer import build_analyzer, get_supported_entities, SUPPORTED_LANGUAGES
 from core.anonymizer import anonymize_text, deanonymize_text
@@ -13,13 +16,66 @@ from core.anonymizer import anonymize_text, deanonymize_text
 logger = logging.getLogger(__name__)
 anonymize_bp = Blueprint('anonymize', __name__)
 
-
 NER_ENTITIES = {"PERSON", "LOCATION", "ORGANIZATION"}
+
+# Fichier de persistance des mappings (survit aux redémarrages)
+_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+_MAPPINGS_FILE = os.path.join(_DATA_DIR, 'mappings.json')
+_MAPPINGS_LOCK = threading.Lock()
+_RETENTION_DAYS = 30  # purge auto après 30 jours
+
+
+def _load_mappings() -> dict:
+    try:
+        with open(_MAPPINGS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def _save_mappings(data: dict):
+    os.makedirs(_DATA_DIR, exist_ok=True)
+    with open(_MAPPINGS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _purge_old_mappings(data: dict) -> dict:
+    """Supprime les entrées de plus de _RETENTION_DAYS jours."""
+    cutoff = datetime.now() - timedelta(days=_RETENTION_DAYS)
+    to_delete = []
+    for ts_key in data:
+        try:
+            # Format: YY_MM_DD_HH_MM_SS
+            dt = datetime.strptime(ts_key, "%y_%m_%d_%H_%M_%S")
+            if dt < cutoff:
+                to_delete.append(ts_key)
+        except ValueError:
+            pass
+    for k in to_delete:
+        del data[k]
+    return data
+
+
+def _add_mapping(ts: str, mapping: dict):
+    with _MAPPINGS_LOCK:
+        data = _load_mappings()
+        data = _purge_old_mappings(data)
+        data[ts] = mapping
+        _save_mappings(data)
+
+
+def _get_mapping(ts: str) -> dict:
+    with _MAPPINGS_LOCK:
+        data = _load_mappings()
+        return data.get(ts, {})
+
+
+def _make_ts() -> str:
+    """Génère un timestamp unique YY_MM_DD_HH_MM_SS (+ micro si collision)."""
+    return datetime.now().strftime("%y_%m_%d_%H_%M_%S")
 
 
 def _merge_results(results):
-    """Merge results from several languages: on overlap, structured (pattern-based)
-    entities win over NER ones, then the highest score."""
     kept = []
     ordered = sorted(results, key=lambda r: (r.entity_type in NER_ENTITIES, -r.score, r.start))
     for result in ordered:
@@ -29,9 +85,7 @@ def _merge_results(results):
 
 
 def _analyze_all_languages(text, entities, requested_language=None, threshold=0.0):
-    """Analyze text with the detected (or requested) language model, or all of them."""
     from core.language_detector import detect_language
-
     language = requested_language if requested_language in SUPPORTED_LANGUAGES else detect_language(text)
     languages = [language] if language else SUPPORTED_LANGUAGES
     results = []
@@ -43,11 +97,6 @@ def _analyze_all_languages(text, entities, requested_language=None, threshold=0.
 
 # In-memory logs storage (max 100 entries)
 anonymization_logs = deque(maxlen=100)
-
-# Session store: session_id → {mapping, anonymized_text, created_at}
-# Max 50 sessions to bound memory usage
-_sessions: dict = {}
-_SESSION_LIMIT = 50
 
 # Initialize analyzer once at startup (expensive operation)
 try:
@@ -147,22 +196,16 @@ def anonymize():
             threshold = float(config.get('threshold', 0.35))
             results = _analyze_all_languages(text, entities_to_use, data.get('language'), threshold)
 
-        # Anonymize text — build reversible mapping when entities found
-        mapping: dict = {}
-        anonymized_text = anonymize_text(text, results, config, mapping if results else None)
+        # Générer timestamp horodatant tous les tokens de ce prompt
+        ts = _make_ts()
 
-        # Store session if we have a mapping to reverse
-        session_id = None
+        # Anonymize text — build reversible mapping with timestamped tokens
+        mapping: dict = {}
+        anonymized_text = anonymize_text(text, results, config, mapping if results else None, ts)
+
+        # Persister le mapping dans le fichier JSON
         if mapping:
-            session_id = str(uuid.uuid4())
-            if len(_sessions) >= _SESSION_LIMIT:
-                oldest = next(iter(_sessions))
-                del _sessions[oldest]
-            _sessions[session_id] = {
-                'mapping': mapping,
-                'anonymized_text': anonymized_text,
-                'created_at': datetime.now().isoformat(),
-            }
+            _add_mapping(ts, mapping)
 
         # Calculate processing time
         processing_time = int((time.time() - start_time) * 1000)  # milliseconds
@@ -183,7 +226,8 @@ def anonymize():
             'original_text': text,
             'anonymized_text': anonymized_text,
             'entities_found': entities_found,
-            'session_id': session_id,
+            'session_id': ts if mapping else None,  # rétrocompat extension
+            'ts': ts if mapping else None,
             'stats': {
                 'total_entities': len(results),
                 'processing_time_ms': processing_time
@@ -295,23 +339,25 @@ def deanonymize():
         }
     """
     data = request.get_json()
-    if not data or 'session_id' not in data or 'text' not in data:
-        return jsonify({'error': 'Champs requis : session_id et text'}), 400
+    if not data or 'text' not in data:
+        return jsonify({'error': 'Champ requis : text'}), 400
+    if 'session_id' not in data and 'ts' not in data:
+        return jsonify({'error': 'Champ requis : ts (ou session_id)'}), 400
 
-    session_id = data['session_id']
+    ts = data.get('ts') or data.get('session_id')
     text = data['text']
 
-    session = _sessions.get(session_id)
-    if not session:
-        return jsonify({'error': 'Session introuvable ou expirée'}), 404
+    mapping = _get_mapping(ts)
+    if not mapping:
+        return jsonify({'error': f'Aucun mapping pour le timestamp {ts}. Session expirée ou texte sans entités.'}), 404
 
-    mapping = session['mapping']
     deanonymized = deanonymize_text(text, mapping)
     replacements = sum(1 for token in mapping if token in text)
 
     return jsonify({
         'deanonymized_text': deanonymized,
         'replacements': replacements,
+        'ts': ts,
     }), 200
 
 
