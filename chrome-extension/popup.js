@@ -180,42 +180,64 @@ function applyManualSession() {
 // ── Deanonymization ───────────────────────────────────────────────────────────
 async function deanonymizeResponse() {
   const editor = document.getElementById('deanon-editor');
-  const text = editor.innerText.trim();
-  if (!text) return;
+  const text = (editor.innerText || editor.textContent || '').trim();
+  const errorEl = document.getElementById('deanon-error');
+
+  if (errorEl) errorEl.classList.add('hidden');
+
+  if (!text) {
+    showError('Collez d\'abord la réponse de l\'IA.');
+    return;
+  }
 
   if (!currentSessionId) {
-    alert(extensionText('noSession', currentLanguage));
-    showTab('main');
+    showError('Aucune session. Anonymisez un texte via l\'extension ou collez un ID de session.');
     return;
   }
 
   const btn   = document.getElementById('deanon-btn');
   const label = document.getElementById('deanon-btn-label');
   btn.disabled = true;
-  label.textContent = extensionText('deanonymizing', currentLanguage);
+  label.textContent = '…';
 
   try {
-    const r = await chrome.runtime.sendMessage({
-      action: 'deanonymize',
-      sessionId: currentSessionId,
-      text
+    // Appel direct au backend (plus fiable que le message passing)
+    const res = await fetch(`${currentBackendUrl}/api/deanonymize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: currentSessionId, text })
     });
 
-    if (r.success) {
-      const resultEl = document.getElementById('deanon-result');
-      document.getElementById('deanon-text').textContent = r.data.deanonymized_text;
-      document.getElementById('deanon-count').textContent =
-        `${r.data.replacements} token(s) restauré(s)`;
-      resultEl.classList.remove('hidden');
-    } else {
-      alert(r.error || 'Erreur de désanonymisation');
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || `Erreur ${res.status}`);
+      return;
     }
+
+    document.getElementById('deanon-text').textContent = data.deanonymized_text;
+    document.getElementById('deanon-count').textContent =
+      `${data.replacements} token(s) restauré(s)`;
+    document.getElementById('deanon-result').classList.remove('hidden');
+
   } catch (err) {
-    alert('Erreur : ' + err.message);
+    showError('Backend inaccessible : ' + err.message);
   } finally {
     btn.disabled = false;
     label.textContent = 'Désanonymiser';
   }
+}
+
+function showError(msg) {
+  let el = document.getElementById('deanon-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'deanon-error';
+    el.style.cssText = 'padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:12px;color:#b91c1c;';
+    document.getElementById('deanon-btn').insertAdjacentElement('afterend', el);
+  }
+  el.textContent = msg;
+  el.classList.remove('hidden');
 }
 
 async function copyResult() {
