@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Presidio Browser Anonymizer",
-  "version": "1.4.0",
-  "description": "Auto-anonymize PII when pasting! Detects emails, phones, PESEL, NIP, credit cards, and more. Works with ChatGPT, Claude, Gmail.",
-  "author": "Bartosz Gaca",
+  "name": "MasqueIA",
+  "version": "1.0.0",
+  "description": "Anonymise automatiquement vos données personnelles avant de les coller dans une IA. Détecte e-mails, téléphones, NIR, IBAN, cartes bancaires et plus. Fonctionne avec ChatGPT, Claude, Gmail.",
+  "author": "jpmsangare",
   "homepage_url": "https://github.com/jpsangare/presidio-local-anonymizer",
   "permissions": [
     "activeTab",

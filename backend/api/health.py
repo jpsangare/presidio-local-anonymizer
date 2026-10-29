@@ -20,8 +20,8 @@ def health_check():
 
     return jsonify({
         'status': 'healthy',
-        'service': 'presidio-browser-anonymizer',
-        'version': '1.4.0',
+        'service': 'masqueia',
+        'version': '1.0.0',
         'analyzer_ready': anonymize.analyzer is not None,
         'analyzer_error': anonymize.analyzer_error
     }), 200
