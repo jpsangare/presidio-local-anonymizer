@@ -200,6 +200,9 @@ document.addEventListener('paste', async (e) => {
 
   console.log('[Presidio] Clipboard text length:', pastedText.length);
 
+  // Capturer l'élément cible AVANT l'await (le focus peut changer après)
+  const targetElement = document.activeElement;
+
   // CRITICAL: Prevent default AND stop propagation
   e.preventDefault();
   e.stopPropagation();
@@ -217,9 +220,12 @@ document.addEventListener('paste', async (e) => {
     console.log('[Presidio] Anonymization response:', response.success);
 
     if (response.success) {
-      if (response.data.session_id) lastSessionId = response.data.session_id;
+      const ts = response.data.ts || response.data.session_id;
+      if (ts) lastSessionId = ts;
       const anonymizedText = response.data.anonymized_text;
-      const activeElement = document.activeElement;
+      // Remettre le focus sur l'élément cible original
+      targetElement?.focus();
+      const activeElement = targetElement;
 
       console.log('[Presidio] Inserting anonymized text into:', activeElement?.tagName);
 
@@ -245,7 +251,7 @@ document.addEventListener('paste', async (e) => {
       }
       // METHOD 2: ContentEditable (ChatGPT, Claude, Gmail)
       else if (activeElement && (activeElement.isContentEditable || activeElement.contentEditable === 'true')) {
-        // Use execCommand for better compatibility
+        activeElement.focus();
         const success = document.execCommand('insertText', false, anonymizedText);
 
         if (!success) {
