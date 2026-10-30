@@ -31,11 +31,13 @@ def nir_ok(value: str) -> bool:
     """
     Clé du numéro de sécurité sociale français (NIR) : clé = 97 - (N mod 97).
 
-    Limite connue : les numéros de Corse avec 2A/2B (lettres) ne sont pas
-    capturés par le motif, qui n'accepte que des chiffres.
+    Corse : 2A et 2B valent respectivement 19 et 18 pour le calcul de la clé.
     """
-    digits = "".join(c for c in value if c.isdigit())
-    if len(digits) != 15:
+    compact = "".join(c for c in value if c.isalnum()).upper()
+    if len(compact) != 15:
+        return False
+    digits = compact[:5] + compact[5:7].replace("2A", "19").replace("2B", "18") + compact[7:]
+    if not digits.isdigit():
         return False
     number, key = int(digits[:13]), int(digits[13:])
     return 97 - (number % 97) == key

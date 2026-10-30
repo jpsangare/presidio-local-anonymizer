@@ -60,6 +60,37 @@ entities:
     - name: PLATE_SPACES
       regex: \b[A-Z]{2} \d{3} [A-Z]{2}\b
       score: 0.6
+  FR_ADRESSE:
+    description: Adresse postale française (numéro + type de voie, code postal et ville optionnels)
+    enabled: true
+    mask: '[ADRESSE]'
+    context:
+    - adresse
+    - domicile
+    - habite
+    - demeurant
+    - domicilié
+    patterns:
+    - name: ADRESSE_VOIE
+      regex: \b\d{1,4}(?:\s?(?:bis|ter|quater))?,?\s+(?:rue|avenue|av\.|boulevard|bd|place|allée|impasse|chemin|route|quai|cours|square|passage|faubourg|rond-point|résidence|lotissement)(?:\s+(?:(?:de|du|des|la|le|les)\s+|[dl]['’])?(?-i:[A-ZÀ-Ý][\wÀ-ÿ'’\-]*)){1,4}(?:,?\s+\d{5}(?:\s+(?-i:[A-ZÀ-Ý][\wÀ-ÿ\-]*)(?:\s+(?:cedex|\d{1,2}))?)?)?
+      score: 0.75
+  FR_CODE_POSTAL:
+    description: Code postal français (5 chiffres)
+    enabled: true
+    mask: '[CODE_POSTAL]'
+    context:
+    - postal
+    - cp
+    - cedex
+    - adresse
+    - ville
+    patterns:
+    - name: CODE_POSTAL
+      regex: \b(?:0[1-9]|[1-8]\d|9[0-8])\d{3}\b
+      score: 0.3
+    - name: CODE_POSTAL_VILLE
+      regex: \b(?:0[1-9]|[1-8]\d|9[0-8])\d{3}(?=\s+(?-i:[A-ZÀ-Ý][a-zà-ÿ]))
+      score: 0.6
   FR_SECU:
     description: Numéro de sécurité sociale français (NIR, 15 chiffres)
     enabled: true
@@ -72,11 +103,8 @@ entities:
     - immatriculé
     - assuré
     patterns:
-    - name: NIR_SPACED
-      regex: \b[12]\s\d{2}\s\d{2}\s\d{2}\s\d{3}\s\d{3}\s\d{2}\b
-      score: 0.7
-    - name: NIR_PLAIN
-      regex: \b[12]\d{14}\b
+    - name: NIR
+      regex: \b[12]\s?\d{2}\s?(?:0[1-9]|1[0-2]|[2-9]\d)\s?(?:\d{2}|2[AB])\s?\d{3}\s?\d{3}\s?\d{2}\b
       score: 0.5
   FR_SIREN:
     description: Numéro SIREN français (9 chiffres, entreprises)
@@ -132,6 +160,10 @@ entities:
     description: National Registry of Persons (UK)
     enabled: false
     mask: '[NRP]'
+  ORGANIZATION:
+    description: Organisation, entreprise ou employeur
+    enabled: true
+    mask: '[ORGANISATION]'
   PERSON:
     description: Nom et prénom d’une personne
     enabled: true

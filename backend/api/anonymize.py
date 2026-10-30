@@ -77,7 +77,7 @@ def _make_ts() -> str:
 
 def _merge_results(results):
     kept = []
-    ordered = sorted(results, key=lambda r: (r.entity_type in NER_ENTITIES, -r.score, r.start))
+    ordered = sorted(results, key=lambda r: (r.entity_type in NER_ENTITIES, -r.score, r.start - r.end))
     for result in ordered:
         if all(result.end <= k.start or result.start >= k.end for k in kept):
             kept.append(result)
