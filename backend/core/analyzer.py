@@ -4,6 +4,7 @@ Configure les moteurs NLP pour le français et l'anglais et ajoute des recognize
 """
 
 import os
+import re
 import yaml
 from pathlib import Path
 from typing import Dict, Any
@@ -80,6 +81,8 @@ def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
 
     # Créer AnalyzerEngine
     analyzer = AnalyzerEngine(nlp_engine=nlp_engine, supported_languages=SUPPORTED_LANGUAGES)
+    # Le NER passe uniquement par SpacyLabelRecognizer (filtré), pas par le recognizer intégré
+    analyzer.registry.remove_recognizer("SpacyRecognizer")
 
     # Presidio n'enregistre la détection des cartes bancaires que pour l'anglais
     analyzer.registry.add_recognizer(CreditCardRecognizer(supported_language="fr"))
@@ -88,7 +91,7 @@ def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
     _add_custom_recognizers(analyzer, config)
 
     # Ajouter le recognizer SpaCy pour les étiquettes NER de chaque langue
-    _add_spacy_recognizers(analyzer)
+    _add_spacy_recognizers(analyzer, config)
 
     logger.info(f"Analyseur prêt. Entités prises en charge : {list(config['entities'].keys())}")
 
@@ -131,13 +134,16 @@ def _add_custom_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) ->
         if validator_name and validator is None:
             logger.warning(f"Validateur inconnu « {validator_name} » pour {entity_name}, ignoré")
 
+        strict = entity_config.get('strict_validation', True)
+
         for language in SUPPORTED_LANGUAGES:
             recognizer = ValidatedPatternRecognizer(
                 supported_entity=entity_name,
                 patterns=pattern_list,
                 supported_language=language,
                 context=context,
-                validator=validator
+                validator=validator,
+                strict=strict
             )
             analyzer.registry.add_recognizer(recognizer)
 
@@ -145,17 +151,24 @@ def _add_custom_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) ->
 
 
 class ValidatedPatternRecognizer(PatternRecognizer):
-    """PatternRecognizer avec validation par somme de contrôle optionnelle."""
+    """
+    PatternRecognizer avec validation par somme de contrôle optionnelle.
 
-    def __init__(self, *args, validator=None, **kwargs):
+    strict=False : une clé invalide garde le score du motif au lieu de 0
+    (une saisie erronée reste une donnée personnelle à masquer).
+    """
+
+    def __init__(self, *args, validator=None, strict=True, **kwargs):
         super().__init__(*args, **kwargs)
         self._validator = validator
+        self._strict = strict
 
     def validate_result(self, pattern_text: str):
-        """Renvoie True/False pour ajuster le score, None s'il n'y a pas de validateur."""
         if self._validator is None:
             return None
-        return self._validator(pattern_text)
+        if self._validator(pattern_text):
+            return True
+        return False if self._strict else None
 
 
 SPACY_LABEL_MAPPINGS = {
@@ -174,14 +187,25 @@ SPACY_LABEL_MAPPINGS = {
 }
 
 
-def _add_spacy_recognizers(analyzer: AnalyzerEngine) -> None:
+JOB_TITLE_PREFIX = re.compile(
+    r"(?:\b(?:poste|fonction|métier|emploi|titre)\s+(?:de|d['’])|\ben\s+tant\s+que|\bjob\s+title:?|\bas\s+an?)\s*$",
+    re.IGNORECASE,
+)
+
+
+def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> None:
     """
     Ajoute, pour chaque langue prise en charge, un recognizer associant les étiquettes NER
     de SpaCy aux entités Presidio (PERSON, LOCATION, ORGANIZATION).
 
-    Args:
-        analyzer: AnalyzerEngine auquel ajouter les recognizers
+    Faux positifs écartés : les mots de contexte des identifiants (« SIRET » lu comme
+    organisation) et les intitulés de poste lus comme lieux (« poste de … »).
     """
+    keywords = {
+        word.casefold()
+        for entity_config in config['entities'].values()
+        for word in entity_config.get('context') or []
+    }
 
     class SpacyLabelRecognizer(EntityRecognizer):
         """Recognizer associant les étiquettes SpaCy d'une langue aux entités Presidio."""
@@ -205,15 +229,23 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine) -> None:
                 return results
 
             for ent in nlp_artifacts.entities:
-                presidio_entity = self.mapping.get(ent.label_)
+                # Presidio peut avoir déjà converti l'étiquette (PER → PERSON)
+                presidio_entity = self.mapping.get(ent.label_) or (
+                    ent.label_ if ent.label_ in self.supported_entities else None
+                )
 
-                if presidio_entity and presidio_entity in entities:
-                    results.append(RecognizerResult(
-                        entity_type=presidio_entity,
-                        start=ent.start_char,
-                        end=ent.end_char,
-                        score=0.85
-                    ))
+                if not presidio_entity or presidio_entity not in entities:
+                    continue
+                if ent.text.strip().casefold() in keywords:
+                    continue
+                if presidio_entity in ("LOCATION", "ORGANIZATION") and JOB_TITLE_PREFIX.search(text[max(0, ent.start_char - 30):ent.start_char]):
+                    continue
+                results.append(RecognizerResult(
+                    entity_type=presidio_entity,
+                    start=ent.start_char,
+                    end=ent.end_char,
+                    score=0.85
+                ))
 
             return results
 

@@ -96,6 +96,7 @@ entities:
     enabled: true
     mask: '[SECU]'
     validator: nir
+    strict_validation: false
     context:
     - sécurité sociale
     - sécu
@@ -111,6 +112,7 @@ entities:
     enabled: true
     mask: '[SIREN]'
     validator: luhn
+    strict_validation: false
     context:
     - siren
     - siret
@@ -122,12 +124,13 @@ entities:
       score: 0.5
     - name: SIREN_PLAIN
       regex: \b\d{9}\b
-      score: 0.4
+      score: 0.3
   FR_SIRET:
     description: Numéro SIRET français (14 chiffres, établissements)
     enabled: true
     mask: '[SIRET]'
     validator: luhn
+    strict_validation: false
     context:
     - siret
     - siren
@@ -139,7 +142,7 @@ entities:
       score: 0.6
     - name: SIRET_PLAIN
       regex: \b\d{14}\b
-      score: 0.4
+      score: 0.3
   IBAN_CODE:
     description: Numéro de compte bancaire IBAN
     enabled: true
