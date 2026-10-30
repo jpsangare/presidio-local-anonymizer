@@ -103,7 +103,7 @@ def update_config():
                     if not _re.fullmatch(r'[A-Z][A-Z0-9_]*', entity_name):
                         return jsonify({
                             'error': 'Invalid entity name',
-                            'message': f"Nom d’entité invalide : {entity_name} "
+                            'message': f"Nom d'entité invalide : {entity_name} "
                                        "(majuscules, chiffres et _ uniquement)"
                         }), 400
                     if not isinstance(entity_cfg, dict):

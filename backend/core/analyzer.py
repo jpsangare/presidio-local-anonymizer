@@ -1,6 +1,6 @@
 """
-Module d’analyse des données personnelles utilisant Presidio AnalyzerEngine.
-Configure les moteurs NLP pour le français et l’anglais et ajoute des recognizers personnalisés.
+Module d'analyse des données personnelles utilisant Presidio AnalyzerEngine.
+Configure les moteurs NLP pour le français et l'anglais et ajoute des recognizers personnalisés.
 """
 
 import os
@@ -51,7 +51,7 @@ def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
 
     logger.info(f"Configuration chargée depuis : {config_path}")
 
-    # Configuration des modèles SpaCy pour le français et l’anglais
+    # Configuration des modèles SpaCy pour le français et l'anglais
     nlp_configuration = {
         "nlp_engine_name": "spacy",
         "models": [
@@ -71,11 +71,11 @@ def build_analyzer() -> tuple[AnalyzerEngine, Dict[str, Any]]:
         nlp_engine = NlpEngineProvider(nlp_configuration=nlp_configuration).create_engine()
         logger.info("Moteur NLP SpaCy initialisé pour : %s", ", ".join(SUPPORTED_LANGUAGES))
     except Exception as e:
-        logger.error(f"Erreur lors de l’initialisation du moteur NLP : {e}")
+        logger.error(f"Erreur lors de l'initialisation du moteur NLP : {e}")
         commands = " && ".join(f"python -m spacy download {m}" for m in SPACY_MODELS.values())
         raise RuntimeError(
-            "Impossible d’initialiser les modèles SpaCy. "
-            f"Vérifiez qu’ils sont installés : {commands}"
+            "Impossible d'initialiser les modèles SpaCy. "
+            f"Vérifiez qu'ils sont installés : {commands}"
         ) from e
 
     # Créer AnalyzerEngine
@@ -102,7 +102,7 @@ def _add_custom_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) ->
     Options YAML par entité :
         patterns: liste de {name, regex, score}
         context: mots de contexte qui renforcent le score (optionnel)
-        validator: nom d’un validateur de core.validators (optionnel)
+        validator: nom d'un validateur de core.validators (optionnel)
 
     Args:
         analyzer: AnalyzerEngine auquel ajouter les recognizers
@@ -152,7 +152,7 @@ class ValidatedPatternRecognizer(PatternRecognizer):
         self._validator = validator
 
     def validate_result(self, pattern_text: str):
-        """Renvoie True/False pour ajuster le score, None s’il n’y a pas de validateur."""
+        """Renvoie True/False pour ajuster le score, None s'il n'y a pas de validateur."""
         if self._validator is None:
             return None
         return self._validator(pattern_text)
@@ -184,7 +184,7 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine) -> None:
     """
 
     class SpacyLabelRecognizer(EntityRecognizer):
-        """Recognizer associant les étiquettes SpaCy d’une langue aux entités Presidio."""
+        """Recognizer associant les étiquettes SpaCy d'une langue aux entités Presidio."""
 
         def __init__(self, language: str, mapping: Dict[str, str]):
             self.mapping = mapping
@@ -223,13 +223,13 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine) -> None:
 
 def get_supported_entities(config: Dict[str, Any]) -> list[str]:
     """
-    Renvoie la liste des noms d’entités activées dans la configuration.
+    Renvoie la liste des noms d'entités activées dans la configuration.
 
     Args:
         config: Dictionnaire de configuration
 
     Returns:
-        list: Liste des noms d’entités activées
+        list: Liste des noms d'entités activées
     """
     enabled_entities = []
     for entity_name, entity_config in config['entities'].items():

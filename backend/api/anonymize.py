@@ -367,7 +367,7 @@ def reload_analyzer():
     global analyzer, config, analyzer_error
 
     try:
-        logger.info("Rechargement de l’analyseur demandé...")
+        logger.info("Rechargement de l'analyseur demandé...")
         analyzer, config = build_analyzer()
         analyzer_error = None
         logger.info("Analyseur rechargé avec succès")
@@ -379,7 +379,7 @@ def reload_analyzer():
         analyzer = None
         config = None
         analyzer_error = str(e)
-        logger.error(f"Échec du rechargement de l’analyseur : {e}", exc_info=True)
+        logger.error(f"Échec du rechargement de l'analyseur : {e}", exc_info=True)
         return jsonify({
             'error': 'Reload failed',
             'message': analyzer_error

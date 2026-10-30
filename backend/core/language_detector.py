@@ -14,7 +14,7 @@ from core.analyzer import SUPPORTED_LANGUAGES
 
 logger = logging.getLogger("app.language_detector")
 
-# Résultats déterministes d’une exécution à l’autre
+# Résultats déterministes d'une exécution à l'autre
 DetectorFactory.seed = 0
 
 # En dessous de cette longueur, seule une confiance très élevée est acceptée

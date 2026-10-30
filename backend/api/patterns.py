@@ -1,6 +1,6 @@
 """
 Test de motifs regex en direct — utilisé par le panneau « Ajouter une donnée »
-du tableau de bord pour valider une expression avant de l’enregistrer.
+du tableau de bord pour valider une expression avant de l'enregistrer.
 """
 
 import logging
@@ -19,7 +19,7 @@ patterns_bp = Blueprint('patterns', __name__)
 @patterns_bp.route('/test-pattern', methods=['POST'])
 def test_pattern():
     """
-    Teste un motif regex sur un texte d’exemple, sans rien enregistrer.
+    Teste un motif regex sur un texte d'exemple, sans rien enregistrer.
 
     Request JSON:
         {"regex": "...", "text": "...", "score": 0.5,

@@ -1,5 +1,5 @@
 """
-Module d’anonymisation des données personnelles utilisant Presidio AnonymizerEngine.
+Module d'anonymisation des données personnelles utilisant Presidio AnonymizerEngine.
 Remplace les entités détectées par les masques définis dans la configuration.
 """
 
@@ -18,8 +18,8 @@ _ENTITY_LABEL_MAP: Dict[str, str] = {}
 
 
 def _label_for(entity_type: str, config: Dict[str, Any]) -> str:
-    """Return the mask string for an entity type, e.g. ‘[PERSONNE]’."""
-    return config[‘entities’].get(entity_type, {}).get(‘mask’, f’[{entity_type}]’)
+    """Return the mask string for an entity type, e.g. '[PERSONNE]'."""
+    return config['entities'].get(entity_type, {}).get('mask', f'[{entity_type}]')
 
 
 def anonymize_text(
@@ -52,7 +52,7 @@ def anonymize_text(
              sinon masques génériques.
     """
     if not analyzer_results:
-        logger.debug("Aucune entité à anonymiser n’a été détectée.")
+        logger.debug("Aucune entité à anonymiser n'a été détectée.")
         return text
 
     if mapping is not None:
@@ -61,8 +61,8 @@ def anonymize_text(
     # Mode simple sans mapping (rétrocompatible)
     anonymizer = AnonymizerEngine()
     operators = {}
-    for entity_name, entity_config in config[‘entities’].items():
-        mask = entity_config.get(‘mask’, f"[{entity_name}]")
+    for entity_name, entity_config in config['entities'].items():
+        mask = entity_config.get('mask', f"[{entity_name}]")
         operators[entity_name] = OperatorConfig("replace", {"new_value": mask})
 
     entity_counts = {}
@@ -99,7 +99,7 @@ def _anonymize_with_mapping(
             token = value_to_token[original_value]
         else:
             label = _label_for(result.entity_type, config)
-            counter_key = label.strip(‘[]’)
+            counter_key = label.strip('[]')
             counters[counter_key] = counters.get(counter_key, 0) + 1
             if ts:
                 token = f"[{counter_key}_{counters[counter_key]}_{ts}]"
