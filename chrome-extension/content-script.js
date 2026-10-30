@@ -187,6 +187,16 @@ document.addEventListener('paste', async (e) => {
     return;
   }
 
+  // Skip if user just copied a deanonymized result (flag set by popup)
+  try {
+    const skipResult = await chrome.storage.local.get(['skipNextPaste']);
+    if (skipResult.skipNextPaste) {
+      chrome.storage.local.remove('skipNextPaste');
+      console.log('[Presidio] Skipping anonymization - deanonymized result paste');
+      return;
+    }
+  } catch (_) { /* ignore if extension context invalid */ }
+
   console.log('[Presidio] Paste event detected - extension ENABLED');
   console.log('[Presidio] Active element:', document.activeElement?.tagName, document.activeElement?.className);
 

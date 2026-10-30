@@ -243,6 +243,14 @@ function showError(msg) {
 async function copyResult() {
   const txt = document.getElementById('deanon-text').textContent;
   await navigator.clipboard.writeText(txt);
+  // Signal content-script to let the next paste through unmodified
+  chrome.storage.local.set({ skipNextPaste: true });
+  const btn = document.getElementById('copy-result-btn');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copié';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
 }
 
 // ── Rich-text toolbar helpers ─────────────────────────────────────────────────
