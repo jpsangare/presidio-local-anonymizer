@@ -178,6 +178,17 @@ function applyManualSession() {
 }
 
 // ── Deanonymization ───────────────────────────────────────────────────────────
+
+/**
+ * Extract the timestamp from the first token found in text.
+ * Token format: [TYPE_COUNTER_YY_MM_DD_HH_MM_SS]
+ * e.g. [PERSONNE_1_26_10_30_06_19_59] → "26_10_30_06_19_59"
+ */
+function extractTsFromText(text) {
+  const m = text.match(/\[[A-Z_]+_\d+_(\d{2}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\]/);
+  return m ? m[1] : null;
+}
+
 async function deanonymizeResponse() {
   const editor = document.getElementById('deanon-editor');
   const text = (editor.innerText || editor.textContent || '').trim();
@@ -188,6 +199,12 @@ async function deanonymizeResponse() {
   if (!text) {
     showError('Collez d\'abord la réponse de l\'IA.');
     return;
+  }
+
+  // Auto-detect session timestamp from tokens if not already set
+  const detectedTs = extractTsFromText(text);
+  if (detectedTs && detectedTs !== currentSessionId) {
+    setSession(detectedTs);
   }
 
   if (!currentSessionId) {
