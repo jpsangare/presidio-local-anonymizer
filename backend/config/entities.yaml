@@ -72,7 +72,7 @@ entities:
     - domicilié
     patterns:
     - name: ADRESSE_VOIE
-      regex: \b\d{1,4}(?:\s?(?:bis|ter|quater))?,?\s+(?:rue|avenue|av\.|boulevard|bd|place|allée|impasse|chemin|route|quai|cours|square|passage|faubourg|rond-point|résidence|lotissement)(?:\s+(?:(?:de|du|des|la|le|les)\s+|[dl]['’])?(?-i:[A-ZÀ-Ý][\wÀ-ÿ'’\-]*)){1,4}(?:,?\s+\d{5}(?:\s+(?-i:[A-ZÀ-Ý][\wÀ-ÿ\-]*)(?:\s+(?:cedex|\d{1,2}))?)?)?
+      regex: \b\d{1,4}(?:\s?(?:bis|ter|quater))?,?\s+(?:rue|avenue|av\.|boulevard|bd|place|allée|impasse|chemin|route|quai|cours|square|passage|faubourg|rond-point|résidence|lotissement)(?:\s+(?:(?:de|du|des|la|le|les)\s+)?(?:[dl]['’])?(?-i:[A-ZÀ-Ý][\wÀ-ÿ'’\-]*)){1,4}(?:,?\s+\d{5}(?:\s+(?-i:[A-ZÀ-Ý][\wÀ-ÿ\-]*)(?:\s+(?:cedex|\d{1,2}))?)?)?
       score: 0.75
   FR_CODE_POSTAL:
     description: Code postal français (5 chiffres)
@@ -175,6 +175,10 @@ entities:
     description: Numéro de téléphone
     enabled: true
     mask: '[TELEPHONE]'
+    patterns:
+    - name: PHONE_FR
+      regex: (?<![\d.])(?:(?:\+|00)\s?33\s?(?:\(0\)\s?)?[1-9]|0[1-9])(?:[\s.-]?\d{2}){4}(?![\d.]*\d)
+      score: 0.7
   PL_ID_CARD:
     description: Numéro de carte d’identité polonaise
     enabled: true

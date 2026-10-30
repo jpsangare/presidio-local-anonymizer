@@ -193,6 +193,10 @@ JOB_TITLE_PREFIX = re.compile(
 )
 
 
+# Suite d'un nom en capitales que spaCy coupe souvent (« Jean-Pierre DE | LA FONTAINE »)
+UPPERCASE_NAME_TAIL = re.compile(r"(?:[ \t]+(?:[DL]['’])?[A-ZÀ-Ý][A-ZÀ-Ý\-]+)+")
+
+
 def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> None:
     """
     Ajoute, pour chaque langue prise en charge, un recognizer associant les étiquettes NER
@@ -205,6 +209,9 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> 
         word.casefold()
         for entity_config in config['entities'].values()
         for word in entity_config.get('context') or []
+    } | {
+        entity_config.get('mask', '').strip('[]').casefold()
+        for entity_config in config['entities'].values()
     }
 
     class SpacyLabelRecognizer(EntityRecognizer):
@@ -238,12 +245,20 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> 
                     continue
                 if ent.text.strip().casefold() in keywords:
                     continue
-                if presidio_entity in ("LOCATION", "ORGANIZATION") and JOB_TITLE_PREFIX.search(text[max(0, ent.start_char - 30):ent.start_char]):
-                    continue
+                if presidio_entity in ("LOCATION", "ORGANIZATION"):
+                    if JOB_TITLE_PREFIX.search(text[max(0, ent.start_char - 30):ent.start_char]):
+                        continue
+                    if ent.text.islower() and " " not in ent.text.strip():
+                        continue
+                end = ent.end_char
+                if presidio_entity == "PERSON":
+                    tail = UPPERCASE_NAME_TAIL.match(text, end)
+                    if tail:
+                        end = tail.end()
                 results.append(RecognizerResult(
                     entity_type=presidio_entity,
                     start=ent.start_char,
-                    end=ent.end_char,
+                    end=end,
                     score=0.85
                 ))
 
