@@ -41,18 +41,14 @@ EXTENSION_ORIGIN = f'chrome-extension://{_extension_id()}'
 LOCAL_HOSTS = {f'localhost:{PORT}', f'127.0.0.1:{PORT}', f'[::1]:{PORT}'}
 LOCAL_ORIGINS = {f'http://{host}' for host in LOCAL_HOSTS}
 
-from api.health import health_bp
-from api.anonymize import anonymize_bp
-from api.files import files_bp
-from api.config import config_bp
-from api.patterns import patterns_bp
-from api.setup import setup_bp
-
-# Configure logging (fichier si lancé sans console, p. ex. par pythonw au démarrage de session)
+# Configure logging (fichier si lancé sans console, p. ex. par pythonw au démarrage de session).
+# À faire avant d'importer les modules : certaines bibliothèques remplacent sys.stderr
+# (absent sous pythonw) par un flux cp1252, qui ferait échouer le premier message accentué.
 _log_file = None
 if sys.stderr is None:
     (backend_dir / 'logs').mkdir(exist_ok=True)
     _log_file = backend_dir / 'logs' / 'backend.log'
+    sys.stdout = sys.stderr = open(os.devnull, 'w', encoding='utf-8')
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -60,6 +56,13 @@ logging.basicConfig(
     encoding='utf-8',
 )
 logger = logging.getLogger(__name__)
+
+from api.health import health_bp
+from api.anonymize import anonymize_bp
+from api.files import files_bp
+from api.config import config_bp
+from api.patterns import patterns_bp
+from api.setup import setup_bp
 
 # Initialize Flask app
 # Mode développement : sert l'interface de l'extension (app.html, app.js, api.js) en HTTP
