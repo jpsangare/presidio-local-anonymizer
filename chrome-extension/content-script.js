@@ -187,16 +187,6 @@ document.addEventListener('paste', async (e) => {
     return;
   }
 
-  // Skip if user just copied a deanonymized result (flag set by popup)
-  try {
-    const skipResult = await chrome.storage.local.get(['skipNextPaste']);
-    if (skipResult.skipNextPaste) {
-      chrome.storage.local.remove('skipNextPaste');
-      console.log('[Presidio] Skipping anonymization - deanonymized result paste');
-      return;
-    }
-  } catch (_) { /* ignore if extension context invalid */ }
-
   console.log('[Presidio] Paste event detected - extension ENABLED');
   console.log('[Presidio] Active element:', document.activeElement?.tagName, document.activeElement?.className);
 
@@ -219,6 +209,28 @@ document.addEventListener('paste', async (e) => {
   e.stopImmediatePropagation();
 
   try {
+    // Check skip flag AFTER preventDefault (flag check is async but paste is already blocked)
+    try {
+      const skipResult = await chrome.storage.local.get(['skipNextPaste']);
+      if (skipResult.skipNextPaste) {
+        chrome.storage.local.remove('skipNextPaste');
+        console.log('[Presidio] Skipping anonymization - deanonymized result paste');
+        // Insert original text as-is
+        const activeElement = targetElement;
+        if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
+          const start = activeElement.selectionStart || 0;
+          const end = activeElement.selectionEnd || 0;
+          activeElement.value = activeElement.value.substring(0, start) + pastedText + activeElement.value.substring(end);
+          activeElement.selectionStart = activeElement.selectionEnd = start + pastedText.length;
+          activeElement.dispatchEvent(new Event('input', { bubbles: true }));
+        } else if (activeElement && (activeElement.isContentEditable || activeElement.contentEditable === 'true')) {
+          activeElement.focus();
+          document.execCommand('insertText', false, pastedText);
+        }
+        return;
+      }
+    } catch (_) { /* ignore */ }
+
     console.log('[Presidio] Sending anonymization request...');
     showNotification(extensionText('anonymizing', currentLanguage), 'info');
 
