@@ -171,8 +171,11 @@ function setSession(id) {
 
 function applyManualSession() {
   const input = document.getElementById('session-id-input');
-  const id = input?.value.trim();
+  let id = input?.value.trim();
   if (!id) return;
+  // Normalize: if user pasted a full token counter prefix (e.g. "1_26_10_30_06_19_59"), strip it
+  const parts = id.split('_');
+  if (parts.length > 6) id = parts.slice(-6).join('_');
   setSession(id);
   chrome.storage.local.set({ lastTs: id, lastSessionId: id });
 }

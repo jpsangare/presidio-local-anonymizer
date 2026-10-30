@@ -200,8 +200,12 @@ document.addEventListener('paste', async (e) => {
 
   console.log('[Presidio] Clipboard text length:', pastedText.length);
 
-  // Capturer l'élément cible AVANT l'await (le focus peut changer après)
+  // Capturer l'élément cible ET la position du curseur AVANT tout await
   const targetElement = document.activeElement;
+  const savedRange = (() => {
+    const sel = window.getSelection();
+    return sel && sel.rangeCount > 0 ? sel.getRangeAt(0).cloneRange() : null;
+  })();
 
   // CRITICAL: Prevent default AND stop propagation
   e.preventDefault();
@@ -215,7 +219,13 @@ document.addEventListener('paste', async (e) => {
       if (skipResult.skipNextPaste) {
         chrome.storage.local.remove('skipNextPaste');
         console.log('[Presidio] Skipping anonymization - deanonymized result paste');
-        // Insert original text as-is
+        // Restore focus and cursor before inserting
+        targetElement?.focus();
+        if (savedRange && (targetElement?.isContentEditable || targetElement?.contentEditable === 'true')) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedRange);
+        }
         const activeElement = targetElement;
         if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
           const start = activeElement.selectionStart || 0;
@@ -245,8 +255,13 @@ document.addEventListener('paste', async (e) => {
       const ts = response.data.ts || response.data.session_id;
       if (ts) lastSessionId = ts;
       const anonymizedText = response.data.anonymized_text;
-      // Remettre le focus sur l'élément cible original
+      // Remettre le focus et restaurer la position du curseur
       targetElement?.focus();
+      if (savedRange && (targetElement?.isContentEditable || targetElement?.contentEditable === 'true')) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+      }
       const activeElement = targetElement;
 
       console.log('[Presidio] Inserting anonymized text into:', activeElement?.tagName);
@@ -333,17 +348,17 @@ document.addEventListener('paste', async (e) => {
     console.error('[Presidio] Paste anonymization failed:', error);
     showNotification(extensionText('pasteError', currentLanguage), 'error');
 
-    // Fallback: paste original text
-    const activeElement = document.activeElement;
-    if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
-      const start = activeElement.selectionStart || 0;
-      const end = activeElement.selectionEnd || 0;
-      const before = activeElement.value.substring(0, start);
-      const after = activeElement.value.substring(end);
-      activeElement.value = before + pastedText + after;
-      activeElement.selectionStart = activeElement.selectionEnd = start + pastedText.length;
-      activeElement.dispatchEvent(new Event('input', { bubbles: true }));
-    } else if (activeElement && (activeElement.isContentEditable || activeElement.contentEditable === 'true')) {
+    // Fallback: paste original text using captured targetElement
+    targetElement?.focus();
+    if (targetElement && (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT')) {
+      const start = targetElement.selectionStart || 0;
+      const end = targetElement.selectionEnd || 0;
+      const before = targetElement.value.substring(0, start);
+      const after = targetElement.value.substring(end);
+      targetElement.value = before + pastedText + after;
+      targetElement.selectionStart = targetElement.selectionEnd = start + pastedText.length;
+      targetElement.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (targetElement && (targetElement.isContentEditable || targetElement.contentEditable === 'true')) {
       document.execCommand('insertText', false, pastedText);
     }
   }
