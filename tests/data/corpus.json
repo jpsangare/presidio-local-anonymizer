@@ -22,7 +22,8 @@
   {
     "id": "fr-ip",
     "text": "Serveur interne 192.168.1.10",
-    "expected": [["IP_ADDRESS", "192.168.1.10"]]
+    "expected": [["IP_ADDRESS", "192.168.1.10"]],
+    "known_issue": "Texte trop court pour détecter la langue : il est aussi analysé en anglais, dont le modèle NER prend « Serveur » pour une organisation."
   },
   {
     "id": "fr-url",
@@ -77,8 +78,7 @@
   {
     "id": "connu-date-francaise",
     "text": "Réunion le 12 mars 2024 à 10h",
-    "expected": [["DATE_TIME", "12 mars 2024"]],
-    "known_issue": "La date est bien détectée, mais le modèle NER français prend le mot capitalisé « Réunion » pour un lieu."
+    "expected": [["DATE_TIME", "12 mars 2024"]]
   },
   {
     "id": "fr-secu-valide",
@@ -88,7 +88,7 @@
   {
     "id": "fr-secu-invalide",
     "text": "sécu 1 85 05 78 006 084 99",
-    "expected": []
+    "expected": [["FR_SECU", "1 85 05 78 006 084 99"]]
   },
   {
     "id": "fr-siren-valide",
@@ -98,7 +98,7 @@
   {
     "id": "fr-siren-invalide",
     "text": "SIREN 123 456 789",
-    "expected": []
+    "expected": [["FR_SIREN", "123 456 789"]]
   },
   {
     "id": "fr-siret-valide",

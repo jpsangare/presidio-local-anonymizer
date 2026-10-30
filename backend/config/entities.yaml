@@ -15,6 +15,50 @@ entities:
     description: Australian Tax File Number
     enabled: false
     mask: '[TFN]'
+  CARD_SECURITY:
+    description: Cryptogramme (CVV) et date d’expiration d’une carte bancaire
+    enabled: true
+    mask: '[CARTE_SECURITE]'
+    context:
+    - cvv
+    - cvc
+    - cryptogramme
+    - exp
+    - expiration
+    - expire
+    patterns:
+    - name: CVV_LABELLED
+      regex: '(?<=CVV )\d{3,4}\b|(?<=CVC )\d{3,4}\b|(?<=CVV: )\d{3,4}\b|(?<=CVV : )\d{3,4}\b'
+      score: 0.8
+    - name: CARD_EXPIRY
+      regex: \b(?:0[1-9]|1[0-2])/\d{2}\b(?!/)
+      score: 0.1
+  CH_AVS:
+    description: Numéro AVS suisse (assurance sociale, 756.XXXX.XXXX.XX)
+    enabled: true
+    mask: '[AVS]'
+    context:
+    - avs
+    - ahv
+    - assurance
+    patterns:
+    - name: AVS
+      regex: \b756[.\s]?\d{4}[.\s]?\d{4}[.\s]?\d{2}\b
+      score: 0.85
+  CREDENTIALS:
+    description: Identifiant de connexion et mot de passe (commandes, journaux)
+    enabled: true
+    mask: '[IDENTIFIANTS_CONNEXION]'
+    patterns:
+    - name: CURL_USER
+      regex: (?<=-u )\S+|(?<=--user )\S+
+      score: 0.8
+    - name: JSON_LOGIN_FIELD
+      regex: '(?<="user": ")[^"\n]+|(?<="username": ")[^"\n]+|(?<="login": ")[^"\n]+|(?<="password": ")[^"\n]+|(?<="pwd": ")[^"\n]+'
+      score: 0.7
+    - name: PASSWORD_LABELLED
+      regex: '(?<=mot de passe : )\S+|(?<=password: )\S+|(?<=mdp : )\S+'
+      score: 0.7
   CREDIT_CARD:
     description: Numéro de carte bancaire
     enabled: true
@@ -44,8 +88,23 @@ entities:
     description: Adresse e-mail
     enabled: true
     mask: '[EMAIL]'
+    patterns:
+    - name: EMAIL_OBFUSCATED
+      regex: '[\w.+-]+\s*[\[(]\s*(?:at|arobase)\s*[\])]\s*[\w-]+(?:\s*[\[(]\s*(?:dot|point)\s*[\])]\s*[\w-]+)+'
+      score: 0.8
+  FR_PASSPORT:
+    description: Numéro de passeport français (2 chiffres, 2 lettres, 5 chiffres)
+    enabled: true
+    mask: '[PASSEPORT]'
+    context:
+    - passeport
+    - passport
+    patterns:
+    - name: PASSPORT_FR
+      regex: \b\d{2}(?-i:[A-Z]{2})\d{5}\b
+      score: 0.5
   FR_PLATE:
-    description: Plaque d’immatriculation française (format AA-123-AA)
+    description: Plaque d’immatriculation (France AA-123-AA, Suisse GE 123 456)
     enabled: true
     mask: '[PLAQUE]'
     context:
@@ -60,6 +119,9 @@ entities:
     - name: PLATE_SPACES
       regex: \b[A-Z]{2} \d{3} [A-Z]{2}\b
       score: 0.6
+    - name: PLATE_CH
+      regex: \b(?-i:AG|AI|AR|BE|BL|BS|FR|GE|GL|GR|JU|LU|NE|NW|OW|SG|SH|SO|SZ|TG|TI|UR|VD|VS|ZG|ZH)[ -]?\d{1,3}[ ']?\d{3}\b
+      score: 0.3
   FR_ADRESSE:
     description: Adresse postale française (numéro + type de voie, code postal et ville optionnels)
     enabled: true
@@ -74,6 +136,12 @@ entities:
     - name: ADRESSE_VOIE
       regex: \b\d{1,4}(?:\s?(?:bis|ter|quater))?,?\s+(?:rue|avenue|av\.|boulevard|bd|place|allée|impasse|chemin|route|quai|cours|square|passage|faubourg|rond-point|résidence|lotissement)(?:\s+(?:(?:de|du|des|la|le|les)\s+)?(?:[dl]['’])?(?-i:[A-ZÀ-Ý][\wÀ-ÿ'’\-]*)){1,4}(?:,?\s+\d{5}(?:\s+(?-i:[A-ZÀ-Ý][\wÀ-ÿ\-]*)(?:\s+(?:cedex|\d{1,2}))?)?)?
       score: 0.75
+    - name: ADRESSE_VOIE_NUMERO_APRES
+      regex: \b(?:rue|avenue|av\.|boulevard|bd|place|allée|impasse|chemin|route|quai|cours|square|passage|faubourg|rond-point|résidence|lotissement)(?:\s+(?:(?:de|du|des|la|le|les)\s+)?(?:[dl]['’])?(?-i:[A-ZÀ-Ý][\wÀ-ÿ'’\-]*)){1,4}\s+\d{1,4}(?:\s?(?:bis|ter|[a-z])\b)?(?:,\s*(?:app?t\.?|appartement)\s*\w+)?(?:,\s*\d{4,5}\s+(?-i:[A-ZÀ-Ý][\wÀ-ÿ\-]*))?
+      score: 0.75
+    - name: ADRESSE_COMPLEMENT
+      regex: \b(?:lot|îlot|app?t\.?|appartement|bâtiment|bât\.)\s*(?-i:[A-Z]?\d+[A-Z]?)\b
+      score: 0.5
   FR_CODE_POSTAL:
     description: Code postal français (5 chiffres)
     enabled: true
@@ -147,10 +215,54 @@ entities:
     description: Numéro de compte bancaire IBAN
     enabled: true
     mask: '[IBAN]'
+  GPS_COORDINATES:
+    description: Coordonnées GPS (latitude, longitude)
+    enabled: true
+    mask: '[GPS]'
+    patterns:
+    - name: LAT_LON
+      regex: (?<![\d.])-?\d{1,2}\.\d{3,},\s?-?\d{1,3}\.\d{3,}\b
+      score: 0.6
   IP_ADDRESS:
     description: Adresse IP
     enabled: true
     mask: '[IP]'
+  MAC_ADDRESS:
+    description: Adresse MAC d’un appareil
+    enabled: true
+    mask: '[MAC]'
+    patterns:
+    - name: MAC
+      regex: \b[0-9A-F]{2}(?:[:-][0-9A-F]{2}){5}\b
+      score: 0.8
+  REFERENCE_ID:
+    description: Référence interne (matricule, n° client, dossier, pièce d’identité)
+    enabled: true
+    mask: '[IDENTIFIANT]'
+    context:
+    - matricule
+    - client
+    - dossier
+    - cni
+    - identité
+    - identifiant
+    - patient
+    - contrat
+    patterns:
+    - name: REF_HYPHENATED
+      regex: \b(?-i:[A-Z]{2,5})(?:-(?-i:[A-Z0-9]{2,6}))*-\d{3,}\b
+      score: 0.5
+    - name: REF_LETTERS_DIGITS
+      regex: \b(?-i:[A-Z]{1,3})\d{6,12}\b
+      score: 0.2
+  SECRET_TOKEN:
+    description: Jeton de session ou d’API (JWT, clés)
+    enabled: true
+    mask: '[JETON]'
+    patterns:
+    - name: JWT
+      regex: \beyJ[\w-]+\.[\w-]+\.[\w-]+
+      score: 0.9
   LOCATION:
     description: Lieu géographique
     enabled: true
@@ -179,6 +291,9 @@ entities:
     - name: PHONE_FR
       regex: (?<![\d.])(?:(?:\+|00)\s?33\s?(?:\(0\)\s?)?[1-9]|0[1-9])(?:[\s.-]?\d{2}){4}(?![\d.]*\d)
       score: 0.7
+    - name: PHONE_INTL
+      regex: (?<![\w+])(?:\+|00)[1-9]\d{0,2}(?:[\s.-]?\(?\d{1,4}\)?){2,6}(?!\d)
+      score: 0.75
   PL_ID_CARD:
     description: Numéro de carte d’identité polonaise
     enabled: true

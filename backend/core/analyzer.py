@@ -196,6 +196,46 @@ JOB_TITLE_PREFIX = re.compile(
 # Suite d'un nom en capitales que spaCy coupe souvent (« Jean-Pierre DE | LA FONTAINE »)
 UPPERCASE_NAME_TAIL = re.compile(r"(?:[ \t]+(?:[DL]['’])?[A-ZÀ-Ý][A-ZÀ-Ý\-]+)+")
 
+# Début de ligne, éventuellement après une puce ou un séparateur (« - », « --- », « • »)
+LINE_START = re.compile(r"(?:^|\n)[ \t]*(?:[-–—•*]+[ \t]*)*$")
+
+# Caractères absents des noms de personnes, lieux et organisations (« Mozilla/5.0 », « FB:9A »)
+NON_NAME_CHARS = re.compile(r"[/:@_=]")
+
+
+def _ner_span(text: str, ent, entity: str):
+    """
+    Bornes (début, fin) d'une entité NER après nettoyage, ou None si c'est un faux positif.
+
+    - spaCy déborde parfois sur la ligne suivante (« CI002847561\\n- IBAN ») :
+      l'entité est coupée au premier saut de ligne ;
+    - les mots en minuscules en tête de lieu ou d'organisation sont retirés
+      (« ville de Genève » → « Genève », « rue de » → rien) ;
+    - un nom commun seul, en début de ligne ou en capitales, n'est pas un nom propre
+      (« Identifiants : », « Commande exécutée », « RAPPORT D'INCIDENT », « NE PAS »).
+    """
+    tokens = []
+    for tok in ent:
+        if "\n" in tok.text:
+            break
+        tokens.append(tok)
+    if entity in ("LOCATION", "ORGANIZATION"):
+        while tokens and not tokens[0].text[:1].isupper():
+            tokens = tokens[1:]
+    while tokens and tokens[-1].is_space:
+        tokens = tokens[:-1]
+    if not tokens:
+        return None
+
+    start, end = tokens[0].idx, tokens[-1].idx + len(tokens[-1].text)
+    span = text[start:end]
+    if NON_NAME_CHARS.search(span):
+        return None
+    if not any(tok.pos_ in ("PROPN", "X") for tok in tokens):
+        if span.isupper() or LINE_START.search(text, 0, start):
+            return None
+    return start, end
+
 
 def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> None:
     """
@@ -243,21 +283,24 @@ def _add_spacy_recognizers(analyzer: AnalyzerEngine, config: Dict[str, Any]) -> 
 
                 if not presidio_entity or presidio_entity not in entities:
                     continue
-                if ent.text.strip().casefold() in keywords:
+                span = _ner_span(text, ent, presidio_entity)
+                if span is None:
+                    continue
+                start, end = span
+                if text[start:end].casefold() in keywords:
                     continue
                 if presidio_entity in ("LOCATION", "ORGANIZATION"):
-                    if JOB_TITLE_PREFIX.search(text[max(0, ent.start_char - 30):ent.start_char]):
+                    if JOB_TITLE_PREFIX.search(text[max(0, start - 30):start]):
                         continue
-                    if ent.text.islower() and " " not in ent.text.strip():
+                    if text[start:end].islower() and " " not in text[start:end]:
                         continue
-                end = ent.end_char
                 if presidio_entity == "PERSON":
                     tail = UPPERCASE_NAME_TAIL.match(text, end)
                     if tail:
                         end = tail.end()
                 results.append(RecognizerResult(
                     entity_type=presidio_entity,
-                    start=ent.start_char,
+                    start=start,
                     end=end,
                     score=0.85
                 ))
