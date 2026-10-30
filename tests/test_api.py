@@ -1,7 +1,14 @@
 """Tests de l’API HTTP (Flask test client)."""
 
+import re
+
 import pytest
 import yaml
+
+
+def untimestamped(text):
+    """Retire le suffixe des jetons ([EMAIL_1_26_10_30_18_38_26] -> [EMAIL])."""
+    return re.sub(r"_\d+(?:_\d{2}){6}\]", "]", text)
 
 
 def test_health_reports_status_and_analyzer_state(client):
@@ -46,7 +53,7 @@ class TestAnonymizeEndpoint:
     def test_email_is_masked(self, client):
         body = client.post("/api/anonymize", json={"text": "Écrire à jean.dupont@exemple.fr"}).get_json()
 
-        assert body["anonymized_text"] == "Écrire à [EMAIL]"
+        assert untimestamped(body["anonymized_text"]) == "Écrire à [EMAIL]"
         assert body["stats"]["total_entities"] == 1
         assert body["entities_found"][0]["type"] == "EMAIL_ADDRESS"
 
@@ -61,7 +68,7 @@ class TestAnonymizeEndpoint:
         text = "jean@example.com et 192.168.1.10"
         body = client.post("/api/anonymize", json={"text": text, "entities": ["IP_ADDRESS"]}).get_json()
 
-        assert body["anonymized_text"] == "jean@example.com et [IP]"
+        assert untimestamped(body["anonymized_text"]) == "jean@example.com et [IP]"
 
     def test_disabled_entity_is_never_used(self, client):
         body = client.post(
@@ -74,7 +81,7 @@ class TestAnonymizeEndpoint:
         text = "Carte 4111 1111 1111 1111"
         body = client.post("/api/anonymize", json={"text": text, "language": "fr"}).get_json()
 
-        assert body["anonymized_text"] == "Carte [CARTE]"
+        assert untimestamped(body["anonymized_text"]) == "Carte [CARTE]"
 
     def test_context_word_boosts_score(self, client):
         def plate_score(text):
@@ -84,10 +91,16 @@ class TestAnonymizeEndpoint:
         assert plate_score("immatriculation AB-123-CD") > plate_score("AB-123-CD")
 
     def test_invalid_checksum_is_filtered_out(self, client):
-        body = client.post("/api/anonymize", json={"text": "SIREN 123456789"}).get_json()
+        # Validation stricte (REGON) ; SIREN, SIRET et NIR restent masqués même invalides
+        body = client.post("/api/anonymize", json={"text": "REGON 123456789"}).get_json()
 
         assert body["entities_found"] == []
-        assert body["anonymized_text"] == "SIREN 123456789"
+        assert body["anonymized_text"] == "REGON 123456789"
+
+    def test_invalid_checksum_is_still_masked_when_not_strict(self, client):
+        body = client.post("/api/anonymize", json={"text": "SIREN 123456789"}).get_json()
+
+        assert [e["type"] for e in body["entities_found"]] == ["FR_SIREN"]
 
     def test_response_keeps_original_text(self, client):
         text = "jean@example.com"
@@ -184,7 +197,7 @@ class TestAddEntityFlow:
         assert client.post("/api/reload").status_code == 200
 
         body = client.post("/api/anonymize", json={"text": "code ZZ-1234 ici"}).get_json()
-        assert body["anonymized_text"] == "code [TEST] ici"
+        assert untimestamped(body["anonymized_text"]) == "code [TEST] ici"
 
     def test_add_entity_with_invalid_name_returns_400(self, client, temp_config):
         payload = {"entities": {"mauvais nom": {"enabled": True, "mask": "[X]"}}}

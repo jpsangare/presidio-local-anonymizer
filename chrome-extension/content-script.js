@@ -518,3 +518,131 @@ document.addEventListener('click', async (e) => {
 
 // NOTE: Enter-to-send interception was removed - unreliable on ChatGPT/Claude/Perplexity.
 // PASTE (Ctrl+V) and send-button interception cover those flows.
+
+// =============================================================================
+// BOUTON « DÉSANONYMISER » SOUS LES MESSAGES CONTENANT DES JETONS
+// =============================================================================
+// Les jetons sont remplacés dans les nœuds texte (la mise en forme est conservée),
+// uniquement à l'affichage : rien n'est renvoyé au site.
+
+const TOKEN_RE = /\[[A-Z][A-Z_]*_\d+_(\d{2}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\]/g;
+// Conteneurs de message connus (ChatGPT, Claude, Gemini, Mistral, Perplexity…), sinon le bloc parent
+const MESSAGE_SELECTOR = [
+  '[data-message-author-role]', '.font-claude-response', '[data-testid="user-message"]',
+  'message-content', '.markdown', '.prose', 'article'
+].join(',');
+const BLOCK_SELECTOR = 'p, li, td, pre, blockquote, div';
+const SCAN_DELAY_MS = 1500; // attend que la réponse ait fini de s'écrire
+const TOKEN_SEPARATOR = '\n␞\n';
+
+const revealStates = new WeakMap(); // message -> { button, revealed, originals }
+let scanTimer = null;
+
+function messageContainerOf(node) {
+  const el = node.parentElement;
+  if (!el || el.closest('textarea, input, [contenteditable="true"], .masqueia-reveal')) return null;
+  return el.closest(MESSAGE_SELECTOR) || el.closest(BLOCK_SELECTOR);
+}
+
+function tokenTextNodes(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => (TOKEN_RE.lastIndex = 0, TOKEN_RE.test(n.data)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  return nodes;
+}
+
+function scanForTokens() {
+  if (!document.body) return;
+  const messages = new Set();
+  for (const node of tokenTextNodes(document.body)) {
+    const container = messageContainerOf(node);
+    if (container) messages.add(container);
+  }
+  // Ne garder que les conteneurs les plus externes
+  for (const message of messages) {
+    if (revealStates.has(message)) continue;
+    const parent = message.parentElement?.closest(MESSAGE_SELECTOR);
+    if (parent && messages.has(parent)) continue;
+    addRevealButton(message);
+  }
+}
+
+function addRevealButton(message) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'masqueia-reveal';
+  button.textContent = extensionText('revealButton', currentLanguage);
+  button.style.cssText = `
+    display: block; margin: 8px 0 0; padding: 4px 10px;
+    font: 500 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer;
+  `;
+  const state = { button, revealed: false, originals: [] };
+  revealStates.set(message, state);
+  button.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    state.revealed ? hideOriginals(state) : revealOriginals(message, state);
+  });
+  message.appendChild(button);
+}
+
+// Valeurs d'origine des jetons, par session (le timestamp porté par chaque jeton)
+async function resolveTokens(tokens) {
+  const bySession = new Map();
+  for (const token of tokens) {
+    const ts = token.match(/(\d{2}(?:_\d{2}){5})\]$/)[1];
+    if (!bySession.has(ts)) bySession.set(ts, []);
+    bySession.get(ts).push(token);
+  }
+  const values = new Map();
+  for (const [ts, sessionTokens] of bySession) {
+    const response = await chrome.runtime.sendMessage({
+      action: 'deanonymize', sessionId: ts, text: sessionTokens.join(TOKEN_SEPARATOR)
+    });
+    if (!response?.success) continue; // session inconnue : jetons laissés tels quels
+    const parts = response.data.deanonymized_text.split(TOKEN_SEPARATOR);
+    if (parts.length !== sessionTokens.length) continue;
+    sessionTokens.forEach((token, i) => { if (parts[i] !== token) values.set(token, parts[i]); });
+  }
+  return values;
+}
+
+async function revealOriginals(message, state) {
+  const nodes = tokenTextNodes(message);
+  const tokens = new Set(nodes.flatMap(n => n.data.match(TOKEN_RE) || []));
+  let values;
+  try {
+    values = await resolveTokens(tokens);
+  } catch (error) {
+    if (error.message?.includes('Extension context invalidated')) return;
+    values = new Map();
+  }
+  if (values.size === 0) {
+    showNotification(extensionText('revealError', currentLanguage), 'error');
+    return;
+  }
+  state.originals = nodes.map(node => ({ node, text: node.data }));
+  for (const node of nodes) {
+    node.data = node.data.replace(TOKEN_RE, token => values.get(token) ?? token);
+  }
+  state.revealed = true;
+  state.button.textContent = extensionText('hideButton', currentLanguage);
+}
+
+function hideOriginals(state) {
+  for (const { node, text } of state.originals) {
+    if (node.isConnected) node.data = text;
+  }
+  state.originals = [];
+  state.revealed = false;
+  state.button.textContent = extensionText('revealButton', currentLanguage);
+}
+
+new MutationObserver(() => {
+  clearTimeout(scanTimer);
+  scanTimer = setTimeout(scanForTokens, SCAN_DELAY_MS);
+}).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+scanTimer = setTimeout(scanForTokens, SCAN_DELAY_MS);

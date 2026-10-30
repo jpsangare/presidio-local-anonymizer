@@ -41,7 +41,11 @@ def anonymize_module(app_module):
 @pytest.fixture(scope="session")
 def client(app_module):
     app_module.app.config["TESTING"] = True
-    return app_module.app.test_client()
+    # Le serveur n'accepte que l'hôte local et l'origine de l'extension
+    app_module.app.config["SERVER_NAME"] = f"localhost:{app_module.PORT}"
+    test_client = app_module.app.test_client()
+    test_client.environ_base["HTTP_ORIGIN"] = app_module.EXTENSION_ORIGIN
+    return test_client
 
 
 @pytest.fixture(scope="session")
@@ -49,6 +53,15 @@ def models_ready(anonymize_module):
     """Saute les tests si les modèles spaCy ne sont pas installés."""
     if anonymize_module.analyzer is None:
         pytest.skip(f"Analyseur indisponible : {anonymize_module.analyzer_error}")
+
+
+@pytest.fixture
+def isolated_store(anonymize_module, tmp_path, monkeypatch):
+    """Redirige mappings et espaces de travail vers un dossier temporaire."""
+    monkeypatch.setattr(anonymize_module, "_DATA_DIR", str(tmp_path))
+    monkeypatch.setattr(anonymize_module, "_MAPPINGS_FILE", str(tmp_path / "mappings.json"))
+    monkeypatch.setattr(anonymize_module, "_WORKSPACES_FILE", str(tmp_path / "workspaces.json"))
+    return tmp_path
 
 
 @pytest.fixture

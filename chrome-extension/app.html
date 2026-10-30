@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MasqueIA</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-2: #f1f3f9;
+      --border: #e4e7ef;
+      --text: #0f172a;
+      --text-2: #475569;
+      --text-3: #94a3b8;
+      --accent: #5b5bf0;
+      --accent-hover: #4a4ae0;
+      --accent-soft: #eeeefe;
+      --accent-text: #3d3dc4;
+      --success: #059669;
+      --success-soft: #e7f8f1;
+      --warning: #b45309;
+      --warning-soft: #fdf4e3;
+      --danger: #dc2626;
+      --danger-soft: #fdeded;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.05);
+      --radius: 14px;
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0d14;
+        --surface: #141722;
+        --surface-2: #1b1f2d;
+        --border: #262b3b;
+        --text: #e8ebf4;
+        --text-2: #a3abc2;
+        --text-3: #69728c;
+        --accent: #7c7cf8;
+        --accent-hover: #8f8ffa;
+        --accent-soft: #23244a;
+        --accent-text: #b4b4fc;
+        --success: #34d399;
+        --success-soft: #0f2a22;
+        --warning: #fbbf24;
+        --warning-soft: #2b2312;
+        --danger: #f87171;
+        --danger-soft: #2d1517;
+        --code-bg: #07080d;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        color-scheme: dark;
+      }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
+    code { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.92em; }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 248px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 14px;
+      position: fixed;
+      inset: 0 auto 0 0;
+    }
+
+    .logo-container { display: flex; align-items: center; gap: 12px; padding: 0 8px; margin-bottom: 28px; }
+    .logo-icon { width: 36px; height: 36px; flex-shrink: 0; }
+    .logo-text h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+    .logo-text p { font-size: 11px; color: var(--text-3); letter-spacing: 0.06em; }
+
+    .nav-menu { display: flex; flex-direction: column; gap: 2px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: var(--text-2);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text); }
+    .nav-item.active { background: var(--accent-soft); color: var(--accent-text); }
+    .nav-icon { width: 19px; height: 19px; flex-shrink: 0; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 8px 0;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .lang-switcher { display: flex; gap: 10px; margin-bottom: 14px; }
+    .lang-flag {
+      width: 26px; height: 17px; border-radius: 3px; cursor: pointer;
+      opacity: 0.45; transition: opacity 0.15s, box-shadow 0.15s;
+    }
+    .lang-flag:hover { opacity: 0.85; }
+    .lang-flag.active { opacity: 1; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+    .sidebar-footer p { margin: 2px 0; }
+
+    /* Main */
+    .main-content { margin-left: 248px; flex: 1; padding: 36px 44px 96px; max-width: 1240px; }
+
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 4px; }
+    .page-header p { color: var(--text-2); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .card-hint { color: var(--text-2); margin-bottom: 16px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 16px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.05s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible, .nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--surface-2); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 8px; }
+    .btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+    /* Forms */
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      font: inherit;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea { resize: vertical; min-height: 64px; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .mono { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 13px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 13px; font-weight: 500; color: var(--text-2); }
+
+    /* Feedback panels */
+    .result { margin-top: 16px; padding: 14px 16px; border-radius: 10px; background: var(--surface-2); }
+    .result h4 { font-size: 13px; color: var(--success); margin-bottom: 6px; }
+    .result p { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 13px; white-space: pre-wrap; }
+    .result .meta { font-family: inherit; font-size: 12px; color: var(--text-3); margin-top: 8px; }
+    #ne-result { margin-top: 14px; padding: 12px 14px; border-radius: 10px; }
+
+    /* Fichiers */
+    .workspace-actions { flex-direction: row; align-items: flex-end; gap: 8px; }
+    .file-drop {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      margin-top: 14px; padding: 26px 16px; text-align: center; cursor: pointer;
+      border: 2px dashed var(--border); border-radius: var(--radius); color: var(--text-2);
+      transition: border-color .15s, background .15s;
+    }
+    .file-drop:hover, .file-drop:focus-visible, .file-drop.dragging { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+    .file-drop .meta { font-size: 12px; color: var(--text-3); }
+    .file-result h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: space-between; }
+    .file-result h4 span { overflow-wrap: anywhere; }
+    .file-result.error h4 { color: var(--danger, #d33); }
+    .file-result details { margin-top: 8px; font-size: 13px; }
+    .file-result summary { cursor: pointer; color: var(--text-2); }
+    .file-result .preview { max-height: 260px; overflow: auto; margin-top: 8px; }
+
+    .session-chip {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px; padding: 8px 12px;
+      background: var(--accent-soft); color: var(--accent-text);
+      border-radius: 10px; font-size: 12px;
+    }
+    .session-chip code { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    }
+    .status-badge.online { background: var(--success-soft); color: var(--success); }
+    .status-badge.offline { background: var(--danger-soft); color: var(--danger); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-dot.online { background: var(--success); box-shadow: 0 0 0 3px var(--success-soft); }
+    .status-dot.offline { background: var(--danger); }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 20px; display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      background: var(--accent-soft); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-icon svg { width: 22px; height: 22px; }
+    .stat-content h3 { font-size: 12px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat-content p { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    #status-value.online { color: var(--success); }
+    #status-value.offline { color: var(--danger); }
+
+    /* Entity settings */
+    .category-header {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 600;
+      list-style: none; cursor: pointer; user-select: none;
+    }
+    .category-header::-webkit-details-marker { display: none; }
+    .category-header::before {
+      content: ''; width: 7px; height: 7px; margin: 0 4px 0 2px;
+      border-right: 2px solid var(--text-3); border-bottom: 2px solid var(--text-3);
+      transform: rotate(-45deg);
+      transition: transform 0.2s;
+    }
+    .category-section[open] > .category-header::before { transform: rotate(45deg); }
+    .category-section[open] > .category-header {
+      padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .category-count {
+      margin-left: auto; padding: 2px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      background: var(--surface-2); color: var(--text-2);
+    }
+    .entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+
+    .entity-card {
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .entity-card:hover { border-color: var(--accent); }
+    .entity-card.enabled { background: var(--accent-soft); border-color: transparent; }
+    .entity-card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .entity-name { font-weight: 600; }
+    .entity-card.enabled .entity-name { color: var(--accent-text); }
+    .entity-description { font-size: 13px; color: var(--text-2); margin-bottom: 10px; }
+    .entity-example {
+      display: block; font-size: 12px; padding: 6px 8px; border-radius: 7px;
+      background: var(--surface-2); color: var(--text-2);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .entity-card.enabled .entity-example { background: var(--surface); }
+
+    .toggle-switch {
+      position: relative; flex-shrink: 0;
+      width: 36px; height: 20px; border-radius: 999px;
+      background: var(--border); transition: background 0.2s;
+    }
+    .toggle-switch.enabled { background: var(--accent); }
+    .toggle-knob {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+      background: #fff; border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.2s;
+    }
+    .toggle-switch.enabled .toggle-knob { transform: translateX(16px); }
+
+    /* Custom entity form, folded by default */
+    details.card > summary {
+      list-style: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    details.card > summary::-webkit-details-marker { display: none; }
+    details.card:not(.category-section) > summary::after { content: '＋'; color: var(--text-3); font-size: 18px; transition: transform 0.2s; }
+    details.card:not(.category-section)[open] > summary::after { transform: rotate(45deg); }
+    details.card[open] > summary { margin-bottom: 8px; }
+    details.card > summary p { color: var(--text-2); font-weight: 400; }
+
+    /* Sticky save bar */
+    .save-bar {
+      position: sticky; bottom: 16px; z-index: 5;
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+      margin-top: 8px; padding: 12px 14px;
+      background: color-mix(in srgb, var(--surface) 85%, transparent);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .save-bar .spacer { flex: 1; color: var(--text-3); font-size: 13px; }
+
+    /* Logs */
+    .log-entry {
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; margin-bottom: 12px; transition: border-color 0.15s;
+    }
+    .log-entry:hover { border-color: var(--accent); }
+    .log-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .log-time { font-size: 13px; color: var(--text-2); font-weight: 500; }
+    .log-badge { padding: 2px 10px; background: var(--accent-soft); color: var(--accent-text); border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .log-time-ms { font-size: 12px; color: var(--text-3); margin-left: auto; }
+    .log-content { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: start; }
+    .log-section { min-width: 0; }
+    .log-label { font-size: 11px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .log-text {
+      background: var(--surface-2); padding: 10px 12px; border-radius: 8px;
+      font-size: 13px; line-height: 1.6; word-wrap: break-word; border-left: 3px solid transparent;
+    }
+    .log-text.original { border-left-color: var(--danger); }
+    .log-text.anonymized { border-left-color: var(--success); }
+    .log-arrow { font-size: 18px; color: var(--text-3); align-self: center; }
+    .log-entities { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .entity-tag { background: var(--warning-soft); color: var(--warning); padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+    .entity-tag code { font-weight: 600; }
+
+    /* Setup */
+    #setup-checks ul { list-style: none; }
+    #setup-checks li { background: var(--surface-2) !important; border-radius: 10px !important; }
+    #setup ol { margin-top: 12px; padding-left: 22px; color: var(--text-2); }
+    pre { font-size: 13px; background: var(--code-bg) !important; color: var(--code-text) !important; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      body { display: block; }
+      .sidebar { position: static; width: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 14px 16px; }
+      .logo-container { margin-bottom: 12px; }
+      .nav-menu { flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+      .nav-item { white-space: nowrap; }
+      .sidebar-footer { display: none; }
+      .main-content { margin-left: 0; padding: 24px 16px 96px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .log-content { grid-template-columns: 1fr; }
+      .log-arrow { display: none; }
+      .save-bar .spacer { display: none; }
+      .save-bar .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo-container">
+      <svg class="logo-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="14" fill="url(#bgGradient)"/>
+        <ellipse cx="32" cy="34" rx="22" ry="14" fill="white" opacity="0.95"/>
+        <ellipse cx="23" cy="32" rx="6" ry="4" fill="#4f46e5"/>
+        <ellipse cx="41" cy="32" rx="6" ry="4" fill="#4f46e5"/>
+        <ellipse cx="21" cy="31" rx="2" ry="1.5" fill="white" opacity="0.5"/>
+        <ellipse cx="39" cy="31" rx="2" ry="1.5" fill="white" opacity="0.5"/>
+        <rect x="30" y="43" width="4" height="10" rx="2" fill="white" opacity="0.8"/>
+        <circle cx="16" cy="14" r="2" fill="white" opacity="0.7"/>
+        <circle cx="32" cy="10" r="3" fill="white" opacity="0.9"/>
+        <circle cx="48" cy="14" r="2" fill="white" opacity="0.7"/>
+      </svg>
+      <div class="logo-text">
+        <h1>MasqueIA</h1>
+        <p>ANONYMISEUR LOCAL</p>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-menu">
+      <div class="nav-item active" data-section="dashboard" tabindex="0" role="button">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-section="settings" tabindex="0" role="button">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span>Paramètres</span>
+      </div>
+      <div class="nav-item" data-section="logs" tabindex="0" role="button">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Journaux</span>
+      </div>
+      <div class="nav-item" data-section="setup" tabindex="0" role="button">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+        </svg>
+        <span>Installation</span>
+      </div>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div class="lang-switcher">
+        <svg class="lang-flag" data-lang="fr" viewBox="0 0 3 2" aria-label="Français">
+          <title>Français</title>
+          <rect width="1" height="2" fill="#002395"/>
+          <rect width="1" height="2" x="1" fill="#fff"/>
+          <rect width="1" height="2" x="2" fill="#ed2939"/>
+        </svg>
+        <svg class="lang-flag" data-lang="en" viewBox="0 0 60 30" aria-label="English">
+          <title>English</title>
+          <clipPath id="a"><path d="M0 0v30h60V0z"/></clipPath>
+          <path d="M0 0v30h60V0z" fill="#012169"/>
+          <g clip-path="url(#a)">
+            <path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/>
+            <path d="M0 0l60 30m0-30L0 30" stroke="#c8102e" stroke-width="4"/>
+            <path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/>
+            <path d="M30 0v30M0 15h60" stroke="#c8102e" stroke-width="6"/>
+          </g>
+        </svg>
+        <svg class="lang-flag" data-lang="de" viewBox="0 0 5 3" aria-label="Deutsch">
+          <title>Deutsch</title>
+          <rect width="5" height="3" fill="#000"/>
+          <rect width="5" height="2" y="1" fill="#D00"/>
+          <rect width="5" height="1" y="2" fill="#FFCE00"/>
+        </svg>
+      </div>
+      <p><span id="footer-version">Version</span> 1.0.0</p>
+      <p><span id="footer-created">Créé par</span> <a href="https://github.com/jpmsangare" target="_blank">jpmsangare</a></p>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- DASHBOARD SECTION -->
+    <section id="dashboard" class="section active">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Surveillez et testez le service d’anonymisation en temps réel.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3>État du service</h3>
+            <p id="status-value" class="online">Online</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3>Nombre de requêtes</h3>
+            <p id="request-count">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧪 Tester l’anonymisation</h2>
+        <p class="card-hint">Collez un texte : vous verrez exactement ce que l’IA recevra.</p>
+        <textarea id="test-input" class="mono" rows="5" placeholder="Saisissez un texte contenant des données personnelles..."></textarea>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-action="testAnonymize">🚀 Tester</button>
+          <button class="btn btn-secondary" data-action="clearTest">Effacer</button>
+        </div>
+        <div id="test-result" class="result hidden">
+          <h4>Texte anonymisé :</h4>
+          <p id="anonymized-text"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📄 Anonymiser des fichiers pour un projet IA</h2>
+        <p class="card-hint">
+          Pour les Projets ChatGPT ou Claude, NotebookLM, les Gems… : déposez le fichier anonymisé
+          à la place de l’original. Avec un espace de travail, une même personne garde le même jeton
+          dans tous les fichiers et dans vos questions.
+        </p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="file-workspace">Espace de travail</label>
+            <select id="file-workspace"></select>
+          </div>
+          <div class="field workspace-actions">
+            <button class="btn btn-secondary btn-sm" data-action="createWorkspace">➕ Nouvel espace</button>
+            <button class="btn btn-secondary btn-sm" data-action="deleteWorkspace">🗑 Supprimer</button>
+          </div>
+        </div>
+        <label id="file-drop" class="file-drop" tabindex="0">
+          <input id="file-input" type="file" multiple hidden>
+          <strong>Glissez vos fichiers ici</strong> ou cliquez pour choisir
+          <span id="file-formats" class="meta"></span>
+        </label>
+        <div id="file-results"></div>
+      </div>
+
+      <div class="card" id="deanon-panel" style="display:none;">
+        <h2>🔓 Désanonymiser une réponse IA</h2>
+        <p class="card-hint">
+          Collez la réponse de l'IA (contenant les jetons <code>[PERSONNE_1]</code>, etc.)
+          pour retrouver les valeurs originales.
+        </p>
+        <div id="session-id-display" class="session-chip">
+          <strong>🔑 Session :</strong>
+          <code id="session-id-value"></code>
+          <button class="btn btn-secondary btn-sm" data-action="copySessionId">📋 Copier</button>
+        </div>
+        <textarea id="deanon-input" class="mono" rows="4" placeholder="Collez ici la réponse de l'IA..."></textarea>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-action="deanonymizeResponse">🔓 Désanonymiser</button>
+          <button class="btn btn-secondary" data-action="clearDeanon">Effacer</button>
+        </div>
+        <div id="deanon-result" class="result hidden">
+          <h4>Réponse désanonymisée :</h4>
+          <p id="deanon-text"></p>
+          <p id="deanon-count" class="meta"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS SECTION -->
+    <section id="settings" class="section">
+      <div class="page-header">
+        <h1>Paramètres d’anonymisation</h1>
+        <p>Gérez les types de données personnelles à détecter et à anonymiser.</p>
+      </div>
+
+      <div class="card card-header">
+        <div>
+          <h2>État du service</h2>
+          <p class="card-hint" style="margin:0;">Cliquez sur une carte pour activer ou désactiver un type de donnée, puis enregistrez.</p>
+        </div>
+        <div class="status-badge online" id="status-badge-settings">
+          <div class="status-dot online"></div>
+          <span>Online</span>
+        </div>
+      </div>
+
+      <div class="card card-header">
+        <div>
+          <h2>📊 Formules d’anonymisation (Excel)</h2>
+          <p class="card-hint" style="margin:0;">
+            Exportez les entités et leurs regex, modifiez-les dans Excel, puis réimportez le classeur.
+            Les entités du classeur remplacent celles du même nom ; les autres sont conservées.
+          </p>
+        </div>
+        <div class="btn-row" style="margin:0;flex-shrink:0;white-space:nowrap;">
+          <button class="btn btn-secondary btn-sm" data-action="exportFormulas">⬇ Exporter</button>
+          <button class="btn btn-secondary btn-sm" data-action="chooseFormulasFile">⬆ Importer</button>
+          <input id="formulas-input" type="file" accept=".xlsx" hidden>
+        </div>
+      </div>
+
+      <div id="settings-container">
+        <p class="card">Chargement des paramètres...</p>
+      </div>
+
+      <details class="card">
+        <summary>
+          <div>
+            <h2>➕ Ajouter un type de données</h2>
+            <p>Définissez un motif regex personnalisé, actif immédiatement en français et en anglais.</p>
+          </div>
+        </summary>
+        <div class="form-grid">
+          <div class="field">
+            <label for="ne-name">Nom (majuscules, ex. FR_PASSEPORT)</label>
+            <input id="ne-name" class="mono" type="text" placeholder="FR_PASSEPORT">
+          </div>
+          <div class="field">
+            <label for="ne-mask">Masque (ex. [PASSEPORT])</label>
+            <input id="ne-mask" class="mono" type="text" placeholder="[PASSEPORT]">
+          </div>
+          <div class="field full">
+            <label for="ne-description">Description</label>
+            <input id="ne-description" type="text" placeholder="Numéro de passeport français">
+          </div>
+          <div class="field full">
+            <label for="ne-regex">Expression régulière</label>
+            <input id="ne-regex" class="mono" type="text" placeholder="\b\d{2}[A-Z]{2}\d{5}\b">
+          </div>
+          <div class="field">
+            <label for="ne-score">Score (0 à 1, seuil : 0,35)</label>
+            <input id="ne-score" type="number" min="0.05" max="1" step="0.05" value="0.5">
+          </div>
+          <div class="field">
+            <label for="ne-validator">Validateur (somme de contrôle)</label>
+            <select id="ne-validator">
+              <option value="">Aucun</option>
+              <option value="luhn">Luhn (SIREN, SIRET, cartes)</option>
+              <option value="nir">NIR (sécurité sociale française)</option>
+              <option value="regon">REGON</option>
+              <option value="nip">NIP</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="ne-context">Mots de contexte (séparés par des virgules, optionnel)</label>
+            <input id="ne-context" type="text" placeholder="passeport, passport">
+          </div>
+          <div class="field full">
+            <label for="ne-sample">Texte d’exemple pour tester</label>
+            <textarea id="ne-sample" class="mono" placeholder="Mon passeport est 12AB34567"></textarea>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary" data-action="testNewPattern">🧪 Tester le motif</button>
+          <button class="btn btn-primary" data-action="addNewEntity">➕ Ajouter et activer</button>
+        </div>
+        <div id="ne-result" class="hidden"></div>
+      </details>
+
+      <div class="save-bar">
+        <span class="spacer">Les modifications s’appliquent après enregistrement.</span>
+        <button id="reset-settings-button" class="btn btn-secondary" data-action="resetSettings">Rétablir les paramètres par défaut</button>
+        <button id="save-settings-button" class="btn btn-primary" data-action="saveSettings">Enregistrer les paramètres</button>
+      </div>
+    </section>
+
+    <!-- SETUP SECTION -->
+    <section id="setup" class="section">
+      <div class="page-header">
+        <h1>Assistant de configuration</h1>
+        <p>Vérifiez la configuration requise et installez le backend.</p>
+      </div>
+
+      <div class="card">
+        <h2>Vérification du système</h2>
+        <div id="setup-checks">
+          <p id="setup-checking">Vérification de la configuration requise...</p>
+        </div>
+      </div>
+
+      <div class="card hidden" id="setup-instructions">
+        <h2>Instructions d’installation</h2>
+        <p id="setup-backend-running">Le backend fonctionne ! ✅</p>
+        <p id="setup-repair-prompt" style="margin-top:12px;">Pour mettre à jour ou réparer l’installation :</p>
+        <ol>
+          <li id="setup-download-repository">Téléchargez le dépôt depuis GitHub</li>
+          <li id="setup-run-installer">Lancez le script d’installation correspondant à votre système</li>
+          <li id="setup-configured">Le backend sera configuré automatiquement</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- LOGS SECTION -->
+    <section id="logs" class="section">
+      <div class="page-header">
+        <h1 id="logs-title">Journaux d’anonymisation</h1>
+        <p id="logs-subtitle">Historique des textes anonymisés : contenu avant et après traitement.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header" style="margin-bottom:20px;">
+          <h2 id="logs-history-title">Historique des opérations</h2>
+          <button id="clear-logs-button" data-action="clearLogs" class="btn btn-secondary btn-sm">
+            🗑️ Effacer les journaux
+          </button>
+        </div>
+        <div id="logs-container">
+          <p style="text-align: center; color: var(--text-3); padding: 40px;">Chargement des journaux...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

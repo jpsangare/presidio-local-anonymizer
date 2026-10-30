@@ -79,6 +79,11 @@ def anonymize_text(
     return anonymized_result.text
 
 
+def _normalize(value: str) -> str:
+    """Clé de rapprochement des valeurs (« Jean  DUPONT » ≡ « jean dupont »)."""
+    return " ".join(value.split()).casefold()
+
+
 def _anonymize_with_mapping(
     text: str,
     analyzer_results: List[RecognizerResult],
@@ -86,17 +91,29 @@ def _anonymize_with_mapping(
     mapping: Dict[str, str],
     ts: Optional[str] = None,
 ) -> str:
-    """Anonymise avec tokens horodatés [TYPE_N_TS] et remplit la table de correspondance."""
+    """
+    Anonymise avec tokens horodatés [TYPE_N_TS] et remplit la table de correspondance.
+
+    Un mapping déjà rempli (espace de travail) est réutilisé : une valeur connue
+    reprend son jeton et la numérotation continue après les jetons existants.
+    """
     sorted_results = sorted(analyzer_results, key=lambda r: r.start, reverse=True)
 
     counters: Dict[str, int] = {}
     value_to_token: Dict[str, str] = {}
+    for token, value in mapping.items():
+        value_to_token.setdefault(_normalize(value), token)
+        body = token.strip('[]').removesuffix(f'_{ts}' if ts else '')
+        label, _, number = body.rpartition('_')
+        if number.isdigit():
+            counters[label] = max(counters.get(label, 0), int(number))
 
     result_text = text
     for result in sorted_results:
         original_value = text[result.start:result.end]
-        if original_value in value_to_token:
-            token = value_to_token[original_value]
+        key = _normalize(original_value)
+        if key in value_to_token:
+            token = value_to_token[key]
         else:
             label = _label_for(result.entity_type, config)
             counter_key = label.strip('[]')
@@ -105,7 +122,7 @@ def _anonymize_with_mapping(
                 token = f"[{counter_key}_{counters[counter_key]}_{ts}]"
             else:
                 token = f"[{counter_key}_{counters[counter_key]}]"
-            value_to_token[original_value] = token
+            value_to_token[key] = token
             mapping[token] = original_value
 
         result_text = result_text[:result.start] + token + result_text[result.end:]

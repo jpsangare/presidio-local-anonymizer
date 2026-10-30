@@ -7,6 +7,9 @@ Author: Bartosz Gaca
 License: MIT
 """
 
+import base64
+import hashlib
+import json
 import os
 import sys
 import logging
@@ -18,40 +21,77 @@ from flask_cors import CORS
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
+# Évite le chargement de torch par Presidio (démarrage nettement plus rapide)
+os.environ.setdefault('PRESIDIO_DEVICE', 'cpu')
+
+PORT = int(os.environ.get('PRESIDIO_PORT', '6677'))
+# Mode développement : autorise l'interface servie en HTTP par ce serveur et les outils (curl)
+DEV_MODE = os.environ.get('MASQUEIA_DEV') == '1'
+EXTENSION_DIR = backend_dir.parent / 'chrome-extension'
+
+
+def _extension_id() -> str:
+    """ID de l'extension, dérivé de la clé publique du manifeste (identique dans tous les navigateurs)."""
+    manifest = json.loads((EXTENSION_DIR / 'manifest.json').read_text(encoding='utf-8'))
+    digest = hashlib.sha256(base64.b64decode(manifest['key'])).hexdigest()[:32]
+    return ''.join(chr(ord('a') + int(c, 16)) for c in digest)
+
+
+EXTENSION_ORIGIN = f'chrome-extension://{_extension_id()}'
+LOCAL_HOSTS = {f'localhost:{PORT}', f'127.0.0.1:{PORT}', f'[::1]:{PORT}'}
+LOCAL_ORIGINS = {f'http://{host}' for host in LOCAL_HOSTS}
+
 from api.health import health_bp
 from api.anonymize import anonymize_bp
+from api.files import files_bp
 from api.config import config_bp
 from api.patterns import patterns_bp
 from api.setup import setup_bp
 
-# Configure logging
+# Configure logging (fichier si lancé sans console, p. ex. par pythonw au démarrage de session)
+_log_file = None
+if sys.stderr is None:
+    (backend_dir / 'logs').mkdir(exist_ok=True)
+    _log_file = backend_dir / 'logs' / 'backend.log'
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename=_log_file,
+    encoding='utf-8',
 )
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
-app = Flask(__name__, static_folder='../web-ui', static_url_path='')
+# Mode développement : sert l'interface de l'extension (app.html, app.js, api.js) en HTTP
+app = Flask(__name__, static_folder='../chrome-extension', static_url_path='')
 app.config['JSON_AS_ASCII'] = False  # Support for accented characters (French, Polish, etc.)
 
-# CORS configuration - allow only localhost and browser extension
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "http://localhost:*",
-            "http://127.0.0.1:*",
-            "chrome-extension://*",
-            "moz-extension://*"
-        ]
-    }
-})
+CORS(app, resources={r"/api/*": {"origins": [EXTENSION_ORIGIN, *(LOCAL_ORIGINS if DEV_MODE else [])]}})
 
-# No authentication needed - backend runs only on localhost
+
+@app.before_request
+def restrict_to_masqueia():
+    """
+    Le serveur n'écoute que sur la boucle locale ; on refuse en plus :
+    - un Host étranger (attaque par DNS rebinding depuis une page web) ;
+    - toute origine autre que MasqueIA (sites web, autres extensions), que le
+      navigateur ne permet pas de falsifier.
+    """
+    if request.host not in LOCAL_HOSTS:
+        return jsonify({'error': 'Forbidden', 'message': 'Hôte non autorisé'}), 403
+    if not request.path.startswith('/api/') or request.path == '/api/health':
+        return None
+    origin = request.headers.get('Origin')
+    if origin == EXTENSION_ORIGIN:
+        return None
+    if DEV_MODE and (origin is None or origin in LOCAL_ORIGINS):
+        return None
+    return jsonify({'error': 'Forbidden', 'message': 'Origine non autorisée'}), 403
 
 # Register blueprints
 app.register_blueprint(health_bp, url_prefix='/api')
 app.register_blueprint(anonymize_bp, url_prefix='/api')
+app.register_blueprint(files_bp, url_prefix='/api')
 app.register_blueprint(config_bp, url_prefix='/api')
 app.register_blueprint(patterns_bp, url_prefix='/api')
 app.register_blueprint(setup_bp, url_prefix='/api/setup')
@@ -63,7 +103,7 @@ app.register_blueprint(setup_bp, url_prefix='/api/setup')
 def index():
     """Serve main application - single page app"""
     from flask import send_from_directory
-    return send_from_directory('../web-ui', 'app.html')
+    return send_from_directory('../chrome-extension', 'app.html')
 
 # No token endpoint needed - no authentication required
 
@@ -88,7 +128,7 @@ def main():
     import threading
     from werkzeug.serving import make_server
 
-    port = int(os.environ.get('PRESIDIO_PORT', '6677'))
+    port = PORT
 
     logger.info("=" * 60)
     logger.info("Presidio Browser Anonymizer - Backend Service")

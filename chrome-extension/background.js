@@ -1,81 +1,75 @@
-// Background service worker for Presidio Browser Anonymizer
-// Import config functions
+// MasqueIA service worker : relaie les requêtes de l'extension au moteur local
 importScripts('locales.js');
-importScripts('config.js');
 
-// Listen for messages from content scripts
+// Le moteur n'accepte que l'origine de cette extension (ID fixé par "key" dans le manifeste)
+const ENGINE_URL = 'http://localhost:6677/api';
+const ENGINE_TIMEOUT_MS = 60000;
+// Conversion Docling : premier chargement des modèles, OCR des PDF scannés
+const FILE_TIMEOUT_MS = 10 * 60000;
+
+async function callEngine(method, path, body) {
+  try {
+    const response = await fetch(ENGINE_URL + path, {
+      method,
+      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: AbortSignal.timeout(path.startsWith('/files/') ? FILE_TIMEOUT_MS : ENGINE_TIMEOUT_MS)
+    });
+    return { status: response.status, body: await response.json().catch(() => null) };
+  } catch (error) {
+    const reason = error.name === 'TimeoutError'
+      ? 'Le moteur MasqueIA ne répond pas'
+      : 'Moteur MasqueIA injoignable (démarré ?)';
+    return { transportError: reason };
+  }
+}
+
+async function engineJson(method, path, body) {
+  const reply = await callEngine(method, path, body);
+  if (reply.transportError) throw new Error(reply.transportError);
+  if (reply.status >= 400) throw new Error(reply.body?.message || reply.body?.error || `Erreur ${reply.status}`);
+  return reply.body;
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Seules les pages et scripts de l'extension peuvent appeler le moteur
+  if (sender.id !== chrome.runtime.id) return;
+
+  if (request.action === 'api') {
+    callEngine(request.method, request.path, request.body).then(sendResponse);
+    return true;
+  }
+
   if (request.action === 'anonymize') {
     anonymizeText(request.text)
       .then(result => sendResponse({ success: true, data: result }))
       .catch(error => sendResponse({ success: false, error: error.message }));
-    return true; // Keep the message channel open for async response
-  }
-
-  if (request.action === 'getBackendUrl') {
-    getBackendUrl()
-      .then(url => sendResponse({ success: true, url }))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (request.action === 'testConnection') {
-    testBackendConnection(request.url)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, message: error.message }));
     return true;
   }
 
   if (request.action === 'deanonymize') {
-    deanonymizeText(request.sessionId, request.text)
+    engineJson('POST', '/deanonymize', { session_id: request.sessionId, text: request.text })
       .then(result => sendResponse({ success: true, data: result }))
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
 });
 
-// Anonymize text using the API
 async function anonymizeText(text) {
-  try {
-    const backendUrl = await getBackendUrl();
-    console.log('[Presidio Background] Sending request to:', `${backendUrl}/api/anonymize`);
-    console.log('[Presidio Background] Text length:', text.length);
-
-    const response = await fetch(`${backendUrl}/api/anonymize`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
-    });
-
-    console.log('[Presidio Background] Response status:', response.status);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: Anonymization failed`);
-    }
-
-    const data = await response.json();
-    console.log('[Presidio Background] Anonymization successful, entities:', data.stats?.total_entities);
-    const ts = data.ts || data.session_id;
-    if (ts) {
-      chrome.storage.local.set({ lastTs: ts, lastSessionId: ts });
-    }
-    return data;
-  } catch (error) {
-    console.error('[Presidio Background] Anonymization error:', error);
-    throw error;
+  // Espace de travail actif (popup) : mêmes jetons que les fichiers déposés dans le projet
+  const { activeWorkspace } = await chrome.storage.local.get('activeWorkspace');
+  let reply = await callEngine('POST', '/anonymize', { text, workspace_id: activeWorkspace || undefined });
+  if (activeWorkspace && reply.status === 404) {
+    // Espace supprimé entre-temps : on l'oublie et on anonymise quand même, en session simple
+    await chrome.storage.local.remove('activeWorkspace');
+    reply = await callEngine('POST', '/anonymize', { text });
   }
-}
-
-// Deanonymize AI response using saved session mapping
-async function deanonymizeText(sessionId, text) {
-  const backendUrl = await getBackendUrl();
-  const response = await fetch(`${backendUrl}/api/deanonymize`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId, text })
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  if (reply.transportError) throw new Error(reply.transportError);
+  if (reply.status >= 400) throw new Error(reply.body?.message || reply.body?.error || `Erreur ${reply.status}`);
+  const data = reply.body;
+  const ts = data.ts || data.session_id;
+  if (ts) chrome.storage.local.set({ lastTs: ts, lastSessionId: ts });
+  return data;
 }
 
 // Open the side panel (right side) when the toolbar icon is clicked

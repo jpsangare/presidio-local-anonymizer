@@ -1,5 +1,6 @@
 # Données PII persistées localement (ne pas versionner)
-backend/data/mappings.json
+backend/data/
+backend/logs/
 
 # Python
 __pycache__/

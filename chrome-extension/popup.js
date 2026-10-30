@@ -1,6 +1,5 @@
 // MasqueIA Popup Script
 
-let currentBackendUrl = '';
 let extensionEnabled = true;
 let currentLanguage = DEFAULT_UI_LANGUAGE;
 let currentSessionId = null;
@@ -9,10 +8,7 @@ let currentSessionId = null;
 document.addEventListener('DOMContentLoaded', async () => {
   currentLanguage = await getUiLanguage();
   applyPopupLanguage();
-  await loadBackendUrl();
   await loadExtensionState();
-  await checkBackendStatus();
-  await loadLastSession();
 
   document.getElementById('settings-btn')?.addEventListener('click', openSettings);
   document.getElementById('dashboard-btn')?.addEventListener('click', openDashboard);
@@ -40,11 +36,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('close-result-btn')?.addEventListener('click', () => {
     document.getElementById('deanon-result').classList.add('hidden');
   });
+  document.getElementById('workspace-select')?.addEventListener('change', (e) => {
+    chrome.storage.local.set({ activeWorkspace: e.target.value });
+    updateWorkspaceUI();
+  });
   document.getElementById('session-select')?.addEventListener('change', (e) => {
     setSession(e.target.value || null);
     if (e.target.value) chrome.storage.local.set({ lastTs: e.target.value, lastSessionId: e.target.value });
   });
 
+  // Après les boutons, sans await : le moteur peut mettre plusieurs secondes à démarrer
+  checkBackendStatus();
+  loadWorkspaces();
+  loadLastSession();
   setInterval(checkBackendStatus, 5000);
 });
 
@@ -82,47 +86,39 @@ async function changeLanguage(event) {
   currentLanguage = event.target.value;
   await chrome.storage.local.set({ uiLanguage: currentLanguage });
   applyPopupLanguage();
-  updateButtonLinks();
   checkBackendStatus();
 }
 
-// ── Backend URL ───────────────────────────────────────────────────────────────
-async function loadBackendUrl() {
-  try {
-    const r = await chrome.runtime.sendMessage({ action: 'getBackendUrl' });
-    currentBackendUrl = r.success ? r.url : 'http://localhost:6677';
-  } catch (_) {
-    currentBackendUrl = 'http://localhost:6677';
-  }
-  updateButtonLinks();
-}
+// ── Engine status ─────────────────────────────────────────────────────────────
+let statusCheckInFlight = false;
 
-function updateButtonLinks() {
-  // URLs are built dynamically in openSettings/openDashboard/openSetup
-  // Nothing to update on <button> elements
-}
-
-// ── Backend status ────────────────────────────────────────────────────────────
 async function checkBackendStatus() {
+  if (statusCheckInFlight) return;
+  statusCheckInFlight = true;
   const badge   = document.getElementById('status-badge');
   const dot     = document.getElementById('status-dot');
   const text    = document.getElementById('status-text');
   const warn    = document.getElementById('offline-warning');
   const setupBtn = document.getElementById('setup-btn');
   try {
-    const r = await chrome.runtime.sendMessage({ action: 'testConnection', url: currentBackendUrl });
-    if (!r.success) throw new Error(r.message);
+    const res = await apiFetch('/health');
+    const data = await res.json();
+    if (data.status !== 'healthy') throw new Error(data.analyzer_error || 'Moteur non prêt');
     badge.className = 'badge online';
     dot.className   = 'dot online';
     text.textContent = extensionText('online', currentLanguage);
     warn?.classList.add('hidden');
     setupBtn?.classList.add('hidden');
-  } catch (_) {
+  } catch (error) {
+    const help = document.getElementById('offline-warning-help');
+    if (help) help.textContent = error.message;
     badge.className = 'badge offline';
     dot.className   = 'dot offline';
     text.textContent = extensionText('offline', currentLanguage);
     warn?.classList.remove('hidden');
     setupBtn?.classList.remove('hidden');
+  } finally {
+    statusCheckInFlight = false;
   }
 }
 
@@ -147,10 +143,36 @@ function updateToggleUI() {
   t.setAttribute('aria-pressed', String(extensionEnabled));
 }
 
+// ── Workspace ─────────────────────────────────────────────────────────────────
+// Espace actif : le service worker l'utilise pour chaque collage anonymisé
+async function loadWorkspaces() {
+  const select = document.getElementById('workspace-select');
+  const { activeWorkspace = '' } = await chrome.storage.local.get('activeWorkspace');
+  try {
+    const res = await apiFetch('/workspaces');
+    if (res.ok) {
+      const { workspaces } = await res.json();
+      select.length = 1;
+      for (const w of workspaces) addSessionOption(select, w.id, `${w.name} (${w.count} valeur(s))`);
+    }
+  } catch (_) { /* moteur arrêté : liste vide */ }
+  const known = [...select.options].some(o => o.value === activeWorkspace);
+  select.value = known ? activeWorkspace : '';
+  updateWorkspaceUI();
+}
+
+function updateWorkspaceUI() {
+  const select = document.getElementById('workspace-select');
+  select.closest('.workspace-card').classList.toggle('active', !!select.value);
+}
+
 // ── Navigation ────────────────────────────────────────────────────────────────
-function openSettings()  { chrome.tabs.create({ url: `${currentBackendUrl}/?lang=${currentLanguage}` }); }
-function openDashboard() { chrome.tabs.create({ url: `${currentBackendUrl}/dashboard?lang=${currentLanguage}` }); }
-function openSetup()     { chrome.tabs.create({ url: `${currentBackendUrl}/setup?lang=${currentLanguage}` }); }
+function openAppSection(section) {
+  chrome.tabs.create({ url: chrome.runtime.getURL(`app.html?lang=${currentLanguage}&section=${section}`) });
+}
+function openSettings()  { openAppSection('settings'); }
+function openDashboard() { openAppSection('dashboard'); }
+function openSetup()     { openAppSection('setup'); }
 function openOptions()   { chrome.runtime.openOptionsPage(); }
 
 // ── Session ───────────────────────────────────────────────────────────────────
@@ -181,7 +203,7 @@ async function loadSessions() {
   const select = document.getElementById('session-select');
   if (!select) return;
   try {
-    const res = await fetch(`${currentBackendUrl}/api/sessions?limit=20`);
+    const res = await apiFetch('/sessions?limit=20');
     if (!res.ok) return;
     const { sessions } = await res.json();
     select.length = 1;
@@ -256,7 +278,7 @@ async function deanonymizeResponse() {
 
   try {
     // Appel direct au backend (plus fiable que le message passing)
-    const res = await fetch(`${currentBackendUrl}/api/deanonymize`, {
+    const res = await apiFetch('/deanonymize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: currentSessionId, text })

@@ -16,6 +16,16 @@ spacy==3.7.2
 # Configuration
 PyYAML==6.0.1
 
+# Chiffrement des mappings (clé dans le coffre du système)
+cryptography==46.0.7
+keyring==25.7.0
+
+# Import/export Excel des formules d'anonymisation
+openpyxl==3.1.5
+
+# Optionnel : anonymisation des PDF, Office et images (~1-2 Go, PyTorch inclus)
+# pip install docling
+
 # Utilities
 python-dotenv==1.0.0
 langdetect==1.0.9

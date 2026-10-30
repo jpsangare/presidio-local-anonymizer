@@ -166,6 +166,15 @@
       display: inline-block;
     }
 
+    /* ── Workspace ── */
+    .workspace-card { display: flex; flex-direction: column; gap: 6px; }
+    .workspace-card select {
+      width: 100%; padding: 5px 8px; font-size: 12px;
+      border: 1px solid #d1d5db; border-radius: 6px; background: white; color: #374151;
+    }
+    .workspace-card.active { box-shadow: 0 0 0 2px #7c3aed; }
+    .workspace-hint { font-size: 11px; color: #6b7280; }
+
     /* ── Offline warning ── */
     .offline-warn {
       background: #fef2f2;
@@ -375,6 +384,16 @@
       </div>
     </div>
 
+    <div class="card workspace-card">
+      <label class="toggle-label" for="workspace-select" id="workspace-label">Espace de travail</label>
+      <select id="workspace-select">
+        <option value="">Aucun : jetons propres à chaque collage</option>
+      </select>
+      <div class="workspace-hint" id="workspace-hint">
+        Pour un Projet ChatGPT/Claude ou un Notebook : vos collages reprennent les jetons des fichiers déposés.
+      </div>
+    </div>
+
     <div id="offline-warning" class="offline-warn hidden">
       <div id="offline-warning-title">⚠️ Le backend ne répond pas</div>
       <div id="offline-warning-help" style="opacity:0.8;margin-top:3px;">Démarrez ou installez le backend</div>
@@ -454,6 +473,7 @@
   </div>
 
   <script src="locales.js"></script>
+  <script src="api.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
