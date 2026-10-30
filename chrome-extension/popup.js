@@ -23,7 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Tabs
   document.getElementById('tab-main-btn')?.addEventListener('click', () => showTab('main'));
-  document.getElementById('tab-deanon-btn')?.addEventListener('click', () => showTab('deanon'));
+  document.getElementById('tab-deanon-btn')?.addEventListener('click', () => {
+    showTab('deanon');
+    loadSessions();
+  });
 
   // Deanon toolbar
   document.getElementById('tb-bold')?.addEventListener('click', () => execCmd('bold'));
@@ -37,7 +40,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('close-result-btn')?.addEventListener('click', () => {
     document.getElementById('deanon-result').classList.add('hidden');
   });
-  document.getElementById('session-id-apply')?.addEventListener('click', applyManualSession);
+  document.getElementById('session-select')?.addEventListener('change', (e) => {
+    setSession(e.target.value || null);
+    if (e.target.value) chrome.storage.local.set({ lastTs: e.target.value, lastSessionId: e.target.value });
+  });
 
   setInterval(checkBackendStatus, 5000);
 });
@@ -150,13 +156,47 @@ function openOptions()   { chrome.runtime.openOptionsPage(); }
 // ── Session ───────────────────────────────────────────────────────────────────
 async function loadLastSession() {
   const r = await chrome.storage.local.get(['lastSessionId', 'lastTs']);
-  setSession(r.lastTs || r.lastSessionId || null);
+  await loadSessions();
+  const select = document.getElementById('session-select');
+  const stored = r.lastTs || r.lastSessionId || null;
+  // Stored session, else the most recent one in the list
+  setSession(stored || select?.options[1]?.value || null);
+}
+
+// "26_10_30_06_59_30" → "30/10/26 06:59:30"
+function formatTs(ts) {
+  const p = ts.split('_');
+  return p.length === 6 ? `${p[2]}/${p[1]}/${p[0]} ${p[3]}:${p[4]}:${p[5]}` : ts;
+}
+
+function addSessionOption(select, ts, label) {
+  const opt = document.createElement('option');
+  opt.value = ts;
+  opt.textContent = label;
+  select.appendChild(opt);
+  return opt;
+}
+
+async function loadSessions() {
+  const select = document.getElementById('session-select');
+  if (!select) return;
+  try {
+    const res = await fetch(`${currentBackendUrl}/api/sessions?limit=20`);
+    if (!res.ok) return;
+    const { sessions } = await res.json();
+    select.length = 1;
+    for (const s of sessions) {
+      const types = s.types.slice(0, 3).join(', ') + (s.types.length > 3 ? ', …' : '');
+      addSessionOption(select, s.ts, `${formatTs(s.ts)} – ${s.count} entité(s) (${types})`);
+    }
+    if (currentSessionId) setSession(currentSessionId);
+  } catch (_) { /* backend offline: keep current list */ }
 }
 
 function setSession(id) {
   currentSessionId = id;
   const badge = document.getElementById('session-badge');
-  const input = document.getElementById('session-id-input');
+  const select = document.getElementById('session-select');
   if (badge) {
     if (id) {
       badge.textContent = '✓ Session active';
@@ -166,18 +206,12 @@ function setSession(id) {
       badge.className = 'session-badge missing';
     }
   }
-  if (input && id) input.value = id;
-}
-
-function applyManualSession() {
-  const input = document.getElementById('session-id-input');
-  let id = input?.value.trim();
-  if (!id) return;
-  // Normalize: if user pasted a full token counter prefix (e.g. "1_26_10_30_06_19_59"), strip it
-  const parts = id.split('_');
-  if (parts.length > 6) id = parts.slice(-6).join('_');
-  setSession(id);
-  chrome.storage.local.set({ lastTs: id, lastSessionId: id });
+  if (select) {
+    if (id && ![...select.options].some(o => o.value === id)) {
+      addSessionOption(select, id, formatTs(id));
+    }
+    select.value = id || '';
+  }
 }
 
 // ── Deanonymization ───────────────────────────────────────────────────────────
@@ -211,7 +245,7 @@ async function deanonymizeResponse() {
   }
 
   if (!currentSessionId) {
-    showError('Aucune session. Anonymisez un texte via l\'extension ou collez un ID de session.');
+    showError('Aucune session. Anonymisez un texte via l\'extension ou choisissez une session dans la liste.');
     return;
   }
 

@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 import logging
 import json
 import os
+import re
 import time
 import threading
 from datetime import datetime, timedelta
@@ -359,6 +360,22 @@ def deanonymize():
         'replacements': replacements,
         'ts': ts,
     }), 200
+
+
+_TOKEN_SUFFIX = re.compile(r'_\d+(?:_\d{2}){6}$')
+
+
+@anonymize_bp.route('/sessions', methods=['GET'])
+def list_sessions():
+    """Liste les sessions récentes (horodatage, nombre et types d'entités, sans les valeurs)."""
+    limit = min(request.args.get('limit', 20, type=int), 100)
+    with _MAPPINGS_LOCK:
+        data = _load_mappings()
+    sessions = []
+    for ts in sorted(data, reverse=True)[:limit]:
+        types = sorted({_TOKEN_SUFFIX.sub('', token.strip('[]')) for token in data[ts]})
+        sessions.append({'ts': ts, 'count': len(data[ts]), 'types': types})
+    return jsonify({'sessions': sessions}), 200
 
 
 @anonymize_bp.route('/reload', methods=['POST'])
