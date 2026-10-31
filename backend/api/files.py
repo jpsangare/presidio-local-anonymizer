@@ -55,7 +55,10 @@ def _to_markdown(filename: str, data: bytes) -> str:
 
     def convert(ocr):
         stream = DocumentStream(name=filename, stream=io.BytesIO(data))
-        return _converter(ocr).convert(stream).document.export_to_markdown()
+        # Texte brut destiné à une IA : sans échappement, « & » ne devient pas « &amp; » et
+        # « jean_dupont@… » reste détectable (pas de « \_ »)
+        document = _converter(ocr).convert(stream).document
+        return document.export_to_markdown(escape_html=False, escape_underscores=False)
 
     suffix = PurePath(filename).suffix.lower()
     markdown = convert(ocr=suffix in IMAGE_EXTENSIONS)

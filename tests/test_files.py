@@ -77,6 +77,7 @@ def test_docx_is_converted_to_markdown(client, models_ready, isolated_store):
     document = docx.Document()
     document.add_heading("Compte rendu", level=1)
     document.add_paragraph("Contact : jean.dupont@exemple.fr")
+    document.add_paragraph("Cabinet De La Tour & Associés, dossier ref_interne")
     buffer = io.BytesIO()
     document.save(buffer)
 
@@ -85,3 +86,6 @@ def test_docx_is_converted_to_markdown(client, models_ready, isolated_store):
     assert body["output_filename"].endswith(".md")
     assert "# Compte rendu" in body["anonymized_text"]
     assert "jean.dupont@exemple.fr" not in body["anonymized_text"]
+    # Ni « &amp; » ni « \_ » : le Markdown n'est pas échappé
+    assert "&amp;" not in body["anonymized_text"]
+    assert "ref_interne" in body["anonymized_text"]
