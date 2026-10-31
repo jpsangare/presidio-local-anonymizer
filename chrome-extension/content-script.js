@@ -532,7 +532,10 @@ const MESSAGE_SELECTOR = [
   'message-content', '.markdown', '.prose', 'article'
 ].join(',');
 const BLOCK_SELECTOR = 'p, li, td, pre, blockquote, div';
-const SCAN_DELAY_MS = 1500; // attend que la réponse ait fini de s'écrire
+// Pas de détection avant 1,5 s de calme (réponse en cours d'écriture), mais au plus
+// toutes les 4 s : ChatGPT et Claude modifient la page en continu (animations, minuteries)
+const SCAN_DELAY_MS = 1500;
+const SCAN_MAX_WAIT_MS = 4000;
 const TOKEN_SEPARATOR = '\n␞\n';
 
 const revealStates = new WeakMap(); // message -> { button, revealed, originals }
@@ -562,10 +565,15 @@ function scanForTokens() {
   }
   // Ne garder que les conteneurs les plus externes
   for (const message of messages) {
-    if (revealStates.has(message)) continue;
     const parent = message.parentElement?.closest(MESSAGE_SELECTOR);
     if (parent && messages.has(parent)) continue;
-    addRevealButton(message);
+    const state = revealStates.get(message);
+    if (!state) {
+      addRevealButton(message);
+    } else if (!state.button.isConnected) {
+      // Le site a redessiné le message (React, Angular) et effacé le bouton
+      message.appendChild(state.button);
+    }
   }
 }
 
@@ -617,7 +625,11 @@ async function revealOriginals(message, state) {
   try {
     values = await resolveTokens(tokens);
   } catch (error) {
-    if (error.message?.includes('Extension context invalidated')) return;
+    // Extension rechargée ou mise à jour : ce script n'a plus accès au moteur
+    if (!chrome.runtime?.id || error.message?.includes('Extension context invalidated')) {
+      showNotification(extensionText('reloadPage', currentLanguage), 'error');
+      return;
+    }
     values = new Map();
   }
   if (values.size === 0) {
@@ -641,8 +653,20 @@ function hideOriginals(state) {
   state.button.textContent = extensionText('revealButton', currentLanguage);
 }
 
-new MutationObserver(() => {
+let firstPendingChange = 0;
+
+function runScan() {
+  firstPendingChange = 0;
+  scanForTokens();
+}
+
+new MutationObserver(mutations => {
+  // Les ajouts de nos propres boutons ne relancent pas de détection
+  if (mutations.every(m => [...m.addedNodes].every(n => n.classList?.contains('masqueia-reveal')))) return;
+  const now = Date.now();
+  if (!firstPendingChange) firstPendingChange = now;
   clearTimeout(scanTimer);
-  scanTimer = setTimeout(scanForTokens, SCAN_DELAY_MS);
+  const delay = Math.min(SCAN_DELAY_MS, Math.max(0, firstPendingChange + SCAN_MAX_WAIT_MS - now));
+  scanTimer = setTimeout(runScan, delay);
 }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
-scanTimer = setTimeout(scanForTokens, SCAN_DELAY_MS);
+scanTimer = setTimeout(runScan, SCAN_DELAY_MS);
