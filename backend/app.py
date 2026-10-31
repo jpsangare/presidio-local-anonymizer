@@ -65,8 +65,9 @@ from api.patterns import patterns_bp
 from api.setup import setup_bp
 
 # Initialize Flask app
-# Mode développement : sert l'interface de l'extension (app.html, app.js, api.js) en HTTP
-app = Flask(__name__, static_folder='../chrome-extension', static_url_path='')
+# Mode développement seulement : sert l'interface de l'extension (app.html, app.js, api.js) en HTTP.
+# Hors de ce mode, le moteur refuse les appels de cette page : elle ne doit s'ouvrir que depuis l'extension.
+app = Flask(__name__, static_folder='../chrome-extension' if DEV_MODE else None, static_url_path='')
 app.config['JSON_AS_ASCII'] = False  # Support for accented characters (French, Polish, etc.)
 
 CORS(app, resources={r"/api/*": {"origins": [EXTENSION_ORIGIN, *(LOCAL_ORIGINS if DEV_MODE else [])]}})
@@ -87,6 +88,10 @@ def restrict_to_masqueia():
     origin = request.headers.get('Origin')
     if origin == EXTENSION_ORIGIN:
         return None
+    # GET de l'extension : Chrome n'y met pas d'Origin (hôte autorisé dans le manifeste).
+    # L'en-tête X-MasqueIA déclenche une vérification CORS préalable qu'aucun site n'obtient.
+    if origin is None and request.headers.get('X-MasqueIA') == '1':
+        return None
     if DEV_MODE and (origin is None or origin in LOCAL_ORIGINS):
         return None
     return jsonify({'error': 'Forbidden', 'message': 'Origine non autorisée'}), 403
@@ -105,8 +110,21 @@ app.register_blueprint(setup_bp, url_prefix='/api/setup')
 @app.route('/setup')
 def index():
     """Serve main application - single page app"""
+    if not DEV_MODE:
+        return EXTENSION_ONLY_PAGE, 200, {'Content-Type': 'text/html; charset=utf-8'}
     from flask import send_from_directory
     return send_from_directory('../chrome-extension', 'app.html')
+
+
+EXTENSION_ONLY_PAGE = """<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>MasqueIA</title>
+<style>body{font:16px/1.5 system-ui,sans-serif;max-width:560px;margin:15vh auto;padding:0 16px;color:#1f2330}</style>
+</head><body>
+<h1>Le moteur MasqueIA fonctionne ✅</h1>
+<p>Les paramètres et le tableau de bord s'ouvrent depuis l'extension : cliquez sur l'icône
+MasqueIA dans la barre d'outils du navigateur, puis sur « Paramètres » ou « Tableau de bord ».</p>
+<p>Pour protéger vos données, le moteur ne répond qu'à l'extension : cette adresse ne permet pas de le piloter.</p>
+</body></html>"""
 
 # No token endpoint needed - no authentication required
 
@@ -137,8 +155,10 @@ def main():
     logger.info("Presidio Browser Anonymizer - Backend Service")
     logger.info("=" * 60)
     logger.info(f"🌐 Backend URL: http://localhost:{port} (IPv4 + IPv6 loopback)")
-    logger.info(f"🔧 Settings: http://localhost:{port}")
-    logger.info(f"📊 Dashboard: http://localhost:{port}/dashboard")
+    if DEV_MODE:
+        logger.info(f"🔧 Settings (dev): http://localhost:{port}")
+    else:
+        logger.info("🔧 Settings and dashboard: open them from the MasqueIA extension icon")
     logger.info("=" * 60)
 
     s4 = make_server('127.0.0.1', port, app, threaded=True)

@@ -11,7 +11,9 @@ async function callEngine(method, path, body) {
   try {
     const response = await fetch(ENGINE_URL + path, {
       method,
-      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      // Chrome n'envoie pas d'en-tête Origin sur les GET d'une extension vers un hôte autorisé :
+      // cet en-tête les identifie (une page web ne peut pas l'ajouter sans l'accord CORS du moteur)
+      headers: { 'X-MasqueIA': '1', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(path.startsWith('/files/') ? FILE_TIMEOUT_MS : ENGINE_TIMEOUT_MS)
     });
@@ -56,7 +58,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function anonymizeText(text) {
-  // Espace de travail actif (popup) : mêmes jetons que les fichiers déposés dans le projet
+  // Espace de travail actif (onglet Extension) : mêmes jetons que les fichiers déposés dans le projet
   const { activeWorkspace } = await chrome.storage.local.get('activeWorkspace');
   let reply = await callEngine('POST', '/anonymize', { text, workspace_id: activeWorkspace || undefined });
   if (activeWorkspace && reply.status === 404) {

@@ -20,6 +20,32 @@ def test_health_reports_status_and_analyzer_state(client):
     assert "analyzer_ready" in body and "analyzer_error" in body
 
 
+def test_settings_page_is_not_served_outside_dev_mode(client):
+    # Ses appels seraient refusés (origine non autorisée) : on renvoie vers l'extension
+    page = client.get("/").get_data(as_text=True)
+
+    assert "depuis l'extension" in page
+    assert client.get("/app.js").status_code == 404
+
+
+class TestOriginRestriction:
+    """Seule l'extension pilote le moteur (Origin, ou en-tête X-MasqueIA sur ses GET sans Origin)."""
+
+    def get_config(self, client, headers):
+        environ = {"HTTP_ORIGIN": None}  # retire l'Origin ajoutée par défaut au client de test
+        environ.update({f"HTTP_{k.upper().replace('-', '_')}": v for k, v in headers.items()})
+        return client.get("/api/config", environ_overrides=environ).status_code
+
+    def test_extension_get_without_origin_is_accepted_with_header(self, client):
+        assert self.get_config(client, {"X-MasqueIA": "1"}) == 200
+
+    def test_request_without_origin_or_header_is_refused(self, client):
+        assert self.get_config(client, {}) == 403
+
+    def test_web_page_origin_is_refused_even_with_header(self, client):
+        assert self.get_config(client, {"Origin": "https://evil.example", "X-MasqueIA": "1"}) == 403
+
+
 def test_unknown_endpoint_returns_json_404(client):
     response = client.get("/api/does-not-exist")
 
