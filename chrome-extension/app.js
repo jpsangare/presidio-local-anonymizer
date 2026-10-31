@@ -291,6 +291,8 @@ function switchLanguage(lang) {
   if (!supportedLanguages.includes(lang)) return;
   currentLang = lang;
   localStorage.setItem('dashboardLanguage', lang);
+  // Langue des messages dans les sites (script de contenu) et du menu contextuel
+  if (IN_EXTENSION && ['fr', 'en'].includes(lang)) chrome.storage.local.set({ uiLanguage: lang });
   document.documentElement.lang = lang;
 
   // Update active flag
@@ -313,12 +315,18 @@ function updateUIText() {
     flag.classList.toggle('active', flag.dataset.lang === currentLang);
   });
 
-  // Navigation
-  const navItems = document.querySelectorAll('.nav-item span');
-  navItems[0].textContent = t('nav_dashboard');
-  navItems[1].textContent = t('nav_settings');
-  navItems[2].textContent = t('nav_logs');
-  navItems[3].textContent = t('nav_setup');
+  // Navigation (le libellé sert aussi d'infobulle : seules les icônes restent dans le panneau latéral)
+  const navLabels = {
+    extension: 'Extension', dashboard: t('nav_dashboard'), settings: t('nav_settings'),
+    logs: t('nav_logs'), setup: t('nav_setup')
+  };
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = navLabels[item.dataset.section];
+    item.querySelector('span').textContent = label;
+    item.title = label;
+  });
+  const languageSelect = document.getElementById('ext-language');
+  if (languageSelect) languageSelect.value = currentLang;
 
   // Dashboard
   document.querySelector('#dashboard .page-header h1').textContent = t('dashboard_title');
@@ -406,6 +414,7 @@ function showSection(sectionId) {
   document.getElementById(sectionId).classList.add('active');
 
   // Load section data
+  if (sectionId === 'extension') loadExtensionTab();
   if (sectionId === 'settings') loadSettings();
   if (sectionId === 'setup') checkSetup();
   if (sectionId === 'logs') loadLogs();
@@ -417,7 +426,7 @@ let currentSessionId = null;
 // Dashboard functions
 async function testAnonymize() {
   const text = document.getElementById('test-input').value;
-  if (!text) return alert(t('empty_test'));
+  if (!text) return notify(t('empty_test'));
 
   try {
     const res = await apiFetch(`/anonymize`, {
@@ -446,14 +455,14 @@ async function testAnonymize() {
     const count = parseInt(document.getElementById('request-count').textContent);
     document.getElementById('request-count').textContent = count + 1;
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
 async function deanonymizeResponse() {
   const text = document.getElementById('deanon-input').value.trim();
   if (!text) return;
-  if (!currentSessionId) return alert('Aucune session active. Testez d\'abord un texte.');
+  if (!currentSessionId) return notify('Aucune session active. Testez d\'abord un texte.');
 
   try {
     const res = await apiFetch(`/deanonymize`, {
@@ -462,14 +471,14 @@ async function deanonymizeResponse() {
       body: JSON.stringify({ session_id: currentSessionId, text })
     });
     const data = await res.json();
-    if (!res.ok) return alert(data.error || 'Erreur de désanonymisation');
+    if (!res.ok) return notify(data.error || 'Erreur de désanonymisation', 'error');
 
     document.getElementById('deanon-text').textContent = data.deanonymized_text;
     document.getElementById('deanon-count').textContent =
       `${data.replacements} substitution(s) effectuée(s)`;
     document.getElementById('deanon-result').classList.remove('hidden');
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
@@ -496,14 +505,25 @@ async function engineJson(path, options = {}) {
   return data;
 }
 
+// Les sélecteurs d'espace (onglet Extension, carte Fichiers) affichent le même espace actif
+let knownWorkspaces = [];
+
 async function loadWorkspaces(selectedId) {
-  const select = document.getElementById('file-workspace');
-  const { workspaces } = await engineJson('/workspaces');
+  ({ workspaces: knownWorkspaces } = await engineJson('/workspaces'));
   const remembered = selectedId === undefined ? await activeWorkspace() : selectedId;
-  select.innerHTML = '<option value="">Aucun : jetons propres à chaque fichier</option>' + workspaces
+  const options = '<option value="">Aucun : jetons propres à chaque collage ou fichier</option>' + knownWorkspaces
     .map(w => `<option value="${escapeHtml(w.id)}">${escapeHtml(w.name)} (${w.count} valeur(s))</option>`)
     .join('');
-  select.value = workspaces.some(w => w.id === remembered) ? remembered : '';
+  const value = knownWorkspaces.some(w => w.id === remembered) ? remembered : '';
+  document.querySelectorAll('.workspace-select').forEach(select => {
+    select.innerHTML = options;
+    select.value = value;
+  });
+  document.querySelectorAll('.workspace-card').forEach(card => card.classList.toggle('active', !!value));
+}
+
+function selectedWorkspace() {
+  return document.querySelector('.workspace-select')?.value || '';
 }
 
 async function loadFileFormats() {
@@ -514,8 +534,8 @@ async function loadFileFormats() {
 }
 
 async function createWorkspace() {
-  const name = prompt('Nom de l’espace (par ex. le nom du Projet ou du Notebook) :');
-  if (!name?.trim()) return;
+  const name = await askText('Nom du nouvel espace de travail', 'Nom du Projet ou du Notebook');
+  if (!name) return;
   try {
     const workspace = await engineJson('/workspaces', {
       method: 'POST',
@@ -524,26 +544,28 @@ async function createWorkspace() {
     });
     rememberWorkspace(workspace.id);
     await loadWorkspaces(workspace.id);
+    notify(`Espace « ${workspace.name} » créé et actif`, 'success');
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
 async function deleteWorkspace() {
-  const select = document.getElementById('file-workspace');
-  if (!select.value) return;
-  const name = select.selectedOptions[0].textContent;
-  if (!confirm(`Supprimer « ${name} » ? Les jetons de cet espace ne pourront plus être désanonymisés.`)) return;
+  const id = selectedWorkspace();
+  if (!id) return notify('Choisissez d’abord l’espace à supprimer');
+  const name = knownWorkspaces.find(w => w.id === id)?.name || id;
+  const message = `Supprimer « ${name} » ? Les jetons de cet espace ne pourront plus être désanonymisés.`;
+  if (!await askConfirm(message, 'Supprimer', true)) return;
   try {
-    await engineJson(`/workspaces/${encodeURIComponent(select.value)}`, { method: 'DELETE' });
+    await engineJson(`/workspaces/${encodeURIComponent(id)}`, { method: 'DELETE' });
     rememberWorkspace('');
     await loadWorkspaces('');
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
-// Dans l'extension, l'espace choisi ici est aussi celui des collages (popup, service worker)
+// Dans l'extension, l'espace choisi ici est aussi celui des collages (service worker)
 async function activeWorkspace() {
   if (IN_EXTENSION) return (await chrome.storage.local.get('activeWorkspace')).activeWorkspace || '';
   try { return localStorage.getItem(WORKSPACE_KEY) || ''; } catch { return ''; }
@@ -592,7 +614,7 @@ function renderFileResult(box, file, data) {
 
 async function anonymizeFiles(files) {
   const results = document.getElementById('file-results');
-  const workspaceId = document.getElementById('file-workspace').value || undefined;
+  const workspaceId = selectedWorkspace() || undefined;
 
   for (const file of files) {
     const box = document.createElement('div');
@@ -629,7 +651,10 @@ function initFileDrop() {
     drop.classList.remove('dragging');
     anonymizeFiles([...event.dataTransfer.files]);
   });
-  document.getElementById('file-workspace').addEventListener('change', (event) => rememberWorkspace(event.target.value));
+  document.querySelectorAll('.workspace-select').forEach(select => select.addEventListener('change', () => {
+    rememberWorkspace(select.value);
+    loadWorkspaces(select.value).catch(() => {});
+  }));
 
   loadWorkspaces().catch(() => {});
   loadFileFormats().catch(() => {});
@@ -1097,7 +1122,7 @@ async function exportFormulas() {
     Object.assign(document.createElement('a'), { href: url, download: filename }).click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
@@ -1106,7 +1131,7 @@ function chooseFormulasFile() {
 }
 
 async function importFormulas(file) {
-  if (!confirm(`Importer « ${file.name} » ? Les entités du classeur remplaceront celles du même nom.`)) return;
+  if (!await askConfirm(`Importer « ${file.name} » ? Les entités du classeur remplaceront celles du même nom.`, 'Importer')) return;
   try {
     const result = await engineJson('/config/import', {
       method: 'POST',
@@ -1117,9 +1142,9 @@ async function importFormulas(file) {
     await engineJson('/reload', { method: 'POST' });
     await loadSettings();
     const added = result.added.length ? `\nNouvelles entités : ${result.added.join(', ')}` : '';
-    alert(`✅ ${result.imported} entité(s) et ${result.patterns} motif(s) importés et actifs.${added}`);
+    notify(`✅ ${result.imported} entité(s) et ${result.patterns} motif(s) importés et actifs.${added}`, 'success');
   } catch (err) {
-    alert('❌ Import impossible : ' + err.message);
+    notify('❌ Import impossible : ' + err.message, 'error');
   }
 }
 
@@ -1146,14 +1171,14 @@ async function saveSettings() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ entities })
     });
-    alert(t('settings_saved'));
+    notify(t('settings_saved'), 'success');
   } catch (err) {
-    alert(t('request_error') + err.message);
+    notify(t('request_error') + err.message, 'error');
   }
 }
 
-function resetSettings() {
-  if (!confirm(t('confirm_reset'))) return;
+async function resetSettings() {
+  if (!await askConfirm(t('confirm_reset'), 'Rétablir', true)) return;
 
   // Reset to default settings - French/Polish entities enabled, rest disabled
   entitySettings = {
@@ -1297,7 +1322,7 @@ async function loadLogs() {
 
 // Clear logs
 async function clearLogs() {
-  if (!confirm(t('clear_logs_confirm'))) {
+  if (!await askConfirm(t('clear_logs_confirm'), 'Effacer', true)) {
     return;
   }
 
@@ -1308,7 +1333,7 @@ async function clearLogs() {
     }
   } catch (err) {
     console.error('Failed to clear logs:', err);
-    alert(t('clear_logs_error'));
+    notify(t('clear_logs_error'), 'error');
   }
 }
 
@@ -1319,31 +1344,183 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Messages et dialogues intégrés à la page : alert(), confirm() et prompt()
+// se comportent mal dans le panneau latéral du navigateur
+let toastTimer = null;
+
+function notify(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = `toast ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.add('hidden'), type === 'error' ? 7000 : 4000);
+}
+
+function openDialog(message, { input = false, placeholder = '', okLabel = 'OK', danger = false } = {}) {
+  const dialog = document.getElementById('app-dialog');
+  const field = document.getElementById('app-dialog-input');
+  const ok = document.getElementById('app-dialog-ok');
+  document.getElementById('app-dialog-message').textContent = message;
+  field.classList.toggle('hidden', !input);
+  field.value = '';
+  field.placeholder = placeholder;
+  ok.textContent = okLabel;
+  ok.classList.toggle('danger', danger);
+  dialog.returnValue = '';
+  dialog.showModal();
+  if (input) field.focus();
+  return new Promise(resolve => {
+    dialog.addEventListener('close', () => {
+      if (dialog.returnValue !== 'ok') return resolve(null);
+      resolve(input ? field.value.trim() : true);
+    }, { once: true });
+  });
+}
+
+async function askConfirm(message, okLabel = 'Confirmer', danger = false) {
+  return (await openDialog(message, { okLabel, danger })) === true;
+}
+
+function askText(message, placeholder = '') {
+  return openDialog(message, { input: true, placeholder, okLabel: 'Créer' });
+}
+
 // Check health
 async function checkHealth() {
+  let isOnline = false;
+  let reason = 'Moteur MasqueIA injoignable (démarré ?)';
   try {
     const res = await apiFetch(`/health`);
     const data = await res.json();
-    const isOnline = data.status === 'healthy';
-
-    document.getElementById('status-value').textContent = isOnline ? t('status_online') : t('status_offline');
-    document.getElementById('status-value').className = isOnline ? 'online' : 'offline';
+    isOnline = data.status === 'healthy' && data.analyzer_ready !== false;
+    if (!isOnline) reason = data.analyzer_error || 'Moteur non prêt';
   } catch (err) {
-    document.getElementById('status-value').textContent = t('status_offline');
-    document.getElementById('status-value').className = 'offline';
+    reason = err.message || reason;
+  }
+
+  document.getElementById('status-value').textContent = isOnline ? t('status_online') : t('status_offline');
+  document.getElementById('status-value').className = isOnline ? 'online' : 'offline';
+
+  const badge = document.getElementById('ext-status');
+  badge.className = `status-badge ${isOnline ? 'online' : 'offline'}`;
+  badge.querySelector('.status-dot').className = `status-dot ${isOnline ? 'online' : 'offline'}`;
+  document.getElementById('ext-status-text').textContent = isOnline ? t('status_online') : t('status_offline');
+  document.getElementById('ext-offline').classList.toggle('hidden', isOnline);
+  document.getElementById('ext-offline-reason').textContent = reason;
+}
+
+// ── Onglet Extension (ancienne popup) ────────────────────────────────────────
+async function loadExtensionTab() {
+  checkHealth();
+  loadWorkspaces().then(loadDeanonSessions).catch(() => {});
+  if (!IN_EXTENSION) return;
+  const { extensionEnabled } = await chrome.storage.local.get('extensionEnabled');
+  renderExtensionToggle(extensionEnabled !== false);
+}
+
+function renderExtensionToggle(enabled) {
+  const toggle = document.getElementById('ext-toggle');
+  toggle.classList.toggle('enabled', enabled);
+  toggle.setAttribute('aria-checked', String(enabled));
+}
+
+async function toggleExtension() {
+  const enabled = document.getElementById('ext-toggle').getAttribute('aria-checked') !== 'true';
+  renderExtensionToggle(enabled);
+  if (!IN_EXTENSION) return;
+  await chrome.storage.local.set({ extensionEnabled: enabled });
+  chrome.runtime.sendMessage({ action: 'setExtensionState', enabled }).catch(() => {});
+}
+
+// "26_10_30_06_59_30" → "30/10/26 06:59:30"
+function formatTs(ts) {
+  const p = ts.split('_');
+  return p.length === 6 ? `${p[2]}/${p[1]}/${p[0]} ${p[3]}:${p[4]}:${p[5]}` : ts;
+}
+
+async function loadDeanonSessions() {
+  const select = document.getElementById('ext-session');
+  const { sessions } = await engineJson('/sessions?limit=20');
+  const current = select.value;
+  const workspaceOptions = knownWorkspaces
+    .map(w => `<option value="${escapeHtml(w.id)}">Espace « ${escapeHtml(w.name)} »</option>`);
+  const sessionOptions = sessions.map(s => {
+    const types = s.types.slice(0, 3).join(', ') + (s.types.length > 3 ? ', …' : '');
+    return `<option value="${escapeHtml(s.ts)}">${formatTs(s.ts)} – ${s.count} entité(s) (${escapeHtml(types)})</option>`;
+  });
+  select.innerHTML = '<option value="">Détectée automatiquement</option>'
+    + workspaceOptions.join('') + sessionOptions.join('');
+  select.value = [...select.options].some(o => o.value === current) ? current : '';
+}
+
+const TOKEN_TS_RE = /\[[A-Z][A-Z_]*_\d+_(\d{2}(?:_\d{2}){5})\]/g;
+
+async function extDeanonymize() {
+  const text = document.getElementById('ext-deanon-input').value.trim();
+  if (!text) return notify('Collez d’abord la réponse de l’IA.');
+
+  // Une réponse peut citer plusieurs sessions (collages successifs) : chacune est résolue
+  const chosen = document.getElementById('ext-session').value;
+  const sessions = chosen ? [chosen] : [...new Set([...text.matchAll(TOKEN_TS_RE)].map(m => m[1]))];
+  if (sessions.length === 0) return notify('Aucun jeton MasqueIA dans ce texte.', 'error');
+
+  let result = text;
+  let replacements = 0;
+  for (const ts of sessions) {
+    try {
+      const data = await engineJson('/deanonymize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ts, text: result })
+      });
+      result = data.deanonymized_text;
+      replacements += data.replacements;
+    } catch { /* session expirée ou inconnue : ses jetons restent tels quels */ }
+  }
+  if (replacements === 0) return notify('Aucun jeton n’a pu être restauré (session expirée ou inconnue).', 'error');
+
+  document.getElementById('ext-deanon-text').textContent = result;
+  document.getElementById('ext-deanon-count').textContent = `${replacements} jeton(s) restauré(s)`;
+  document.getElementById('ext-deanon-result').classList.remove('hidden');
+}
+
+async function extPaste() {
+  try {
+    document.getElementById('ext-deanon-input').value = await navigator.clipboard.readText();
+  } catch {
+    notify('Collez le texte avec Ctrl+V dans la zone.');
+    document.getElementById('ext-deanon-input').focus();
   }
 }
+
+function extClear() {
+  document.getElementById('ext-deanon-input').value = '';
+  document.getElementById('ext-deanon-result').classList.add('hidden');
+}
+
+async function extCopy() {
+  await navigator.clipboard.writeText(document.getElementById('ext-deanon-text').textContent);
+  // Le prochain collage dans un site passe tel quel : c'est du texte déjà désanonymisé
+  if (IN_EXTENSION) chrome.storage.local.set({ skipNextPaste: true });
+  notify('Copié', 'success');
+}
+
+function openFullTab() {
+  const section = document.querySelector('.section.active')?.id || 'extension';
+  chrome.tabs.create({ url: chrome.runtime.getURL(`app.html?section=${section}`) });
+}
+
+document.getElementById('ext-language').addEventListener('change', event => switchLanguage(event.target.value));
 
 // Initialize
 updateUIText();
 initFileDrop();
-checkHealth();
 setInterval(checkHealth, 15000);
+// Dans le panneau latéral, le bouton ↗ ouvre la même page en plein écran
+document.getElementById('open-full-tab').classList.toggle('hidden', !IN_EXTENSION);
 
 const requestedSection = new URLSearchParams(window.location.search).get('section');
-if (requestedSection && document.getElementById(requestedSection)?.classList.contains('section')) {
-  showSection(requestedSection);
-}
+showSection(document.getElementById(requestedSection)?.classList.contains('section') ? requestedSection : 'extension');
 
 function copySessionId() {
   navigator.clipboard.writeText(document.getElementById('session-id-value').textContent);

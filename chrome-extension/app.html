@@ -360,6 +360,36 @@
     #setup ol { margin-top: 12px; padding-left: 22px; color: var(--text-2); }
     pre { font-size: 13px; background: var(--code-bg) !important; color: var(--code-text) !important; }
 
+    /* Onglet Extension */
+    .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .setting-row + .setting-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    button.toggle-switch { border: none; cursor: pointer; }
+    .offline-help { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--danger-soft); color: var(--danger); font-size: 13px; }
+    .offline-help .btn { margin-top: 8px; }
+    .workspace-card.active { box-shadow: 0 0 0 2px var(--accent); }
+    .field-inline { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; color: var(--text-2); }
+    .field-inline select { flex: 1; }
+    .compact-select { width: auto; }
+    .logo-container #open-full-tab { margin-left: auto; }
+
+    /* Messages et dialogues intégrés */
+    .toast {
+      position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 50;
+      max-width: min(92vw, 520px); padding: 10px 16px; border-radius: 10px;
+      background: var(--text); color: var(--bg); box-shadow: var(--shadow); font-weight: 500;
+    }
+    .toast.success { background: var(--success); color: #fff; }
+    .toast.error { background: var(--danger); color: #fff; }
+    dialog {
+      margin: auto; width: min(92vw, 420px); padding: 20px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: var(--shadow);
+    }
+    dialog::backdrop { background: rgba(15, 23, 42, 0.45); }
+    dialog p { white-space: pre-wrap; }
+    dialog input { margin-top: 12px; }
+    dialog .btn-row { justify-content: flex-end; }
+    .btn.danger { background: var(--danger); color: #fff; }
+
     .hidden { display: none !important; }
 
     @media (max-width: 900px) {
@@ -375,6 +405,29 @@
       .log-arrow { display: none; }
       .save-bar .spacer { display: none; }
       .save-bar .btn { flex: 1; }
+    }
+
+    /* Panneau latéral du navigateur (≈ 360-500 px) */
+    @media (max-width: 560px) {
+      .sidebar { padding: 10px 12px; position: sticky; top: 0; z-index: 10; }
+      .logo-container { margin-bottom: 8px; padding: 0; }
+      .logo-icon { width: 28px; height: 28px; }
+      .logo-text p { display: none; }
+      .nav-menu { justify-content: space-between; }
+      .nav-item { padding: 8px 10px; }
+      .nav-item span { display: none; }
+      .main-content { padding: 16px 12px 96px; }
+      .page-header { margin-bottom: 16px; }
+      .page-header h1 { font-size: 20px; }
+      .card { padding: 16px; margin-bottom: 14px; }
+      .card-header { flex-wrap: wrap; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+      .stat-card { padding: 12px; gap: 10px; }
+      .stat-icon { display: none; }
+      .stat-content p { font-size: 18px; }
+      .entity-grid { grid-template-columns: 1fr; }
+      .log-header { flex-wrap: wrap; }
+      .save-bar { bottom: 8px; padding: 8px; }
     }
   </style>
 </head>
@@ -404,11 +457,19 @@
         <h1>MasqueIA</h1>
         <p>ANONYMISEUR LOCAL</p>
       </div>
+      <button id="open-full-tab" class="btn btn-secondary btn-sm hidden" data-action="openFullTab"
+              title="Ouvrir en plein écran dans un onglet" aria-label="Ouvrir en plein écran">↗</button>
     </div>
 
     <!-- Navigation -->
     <nav class="nav-menu">
-      <div class="nav-item active" data-section="dashboard" tabindex="0" role="button">
+      <div class="nav-item active" data-section="extension" tabindex="0" role="button">
+        <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <span>Extension</span>
+      </div>
+      <div class="nav-item" data-section="dashboard" tabindex="0" role="button">
         <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
         </svg>
@@ -469,8 +530,81 @@
 
   <!-- Main Content -->
   <main class="main-content">
+    <!-- EXTENSION SECTION (ancienne popup) -->
+    <section id="extension" class="section active">
+      <div class="page-header">
+        <h1>MasqueIA</h1>
+        <p>Vos données personnelles sont masquées avant d’arriver chez l’IA.</p>
+      </div>
+
+      <div class="card">
+        <div class="setting-row">
+          <span>Anonymisation automatique</span>
+          <button id="ext-toggle" class="toggle-switch enabled" type="button" role="switch" aria-checked="true"
+                  aria-label="Anonymisation automatique" data-action="toggleExtension">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+        <div class="setting-row">
+          <span>Moteur local</span>
+          <span class="status-badge offline" id="ext-status">
+            <span class="status-dot offline"></span><span id="ext-status-text">Vérification…</span>
+          </span>
+        </div>
+        <div id="ext-offline" class="offline-help hidden">
+          <p id="ext-offline-reason">Moteur MasqueIA injoignable (démarré ?)</p>
+          <button class="btn btn-secondary btn-sm" data-action="showSection" data-arg="setup">🚀 Installer ou démarrer le moteur</button>
+        </div>
+      </div>
+
+      <div class="card workspace-card">
+        <h2>Espace de travail actif</h2>
+        <p class="card-hint">
+          Pour un Projet ChatGPT ou Claude, un Notebook… : vos collages reprennent les jetons des fichiers déposés dans ce projet.
+        </p>
+        <select id="ext-workspace" class="workspace-select" aria-label="Espace de travail actif"></select>
+        <div class="btn-row">
+          <button class="btn btn-secondary btn-sm" data-action="createWorkspace">➕ Nouvel espace</button>
+          <button class="btn btn-secondary btn-sm" data-action="deleteWorkspace">🗑 Supprimer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔓 Désanonymiser une réponse</h2>
+        <p class="card-hint">Collez la réponse de l’IA : la session est reconnue grâce aux jetons.</p>
+        <textarea id="ext-deanon-input" class="mono" rows="6" placeholder="Collez ici la réponse de l’IA…"></textarea>
+        <label class="field-inline">Session
+          <select id="ext-session">
+            <option value="">Détectée automatiquement</option>
+          </select>
+        </label>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-action="extDeanonymize">🔓 Désanonymiser</button>
+          <button class="btn btn-secondary" data-action="extPaste">📋 Coller</button>
+          <button class="btn btn-secondary" data-action="extClear">Effacer</button>
+        </div>
+        <div id="ext-deanon-result" class="result hidden">
+          <h4>Texte d’origine restauré</h4>
+          <p id="ext-deanon-text"></p>
+          <p id="ext-deanon-count" class="meta"></p>
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-sm" data-action="extCopy">📋 Copier</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card setting-row">
+        <label for="ext-language">Langue</label>
+        <select id="ext-language" class="compact-select">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
+    </section>
+
     <!-- DASHBOARD SECTION -->
-    <section id="dashboard" class="section active">
+    <section id="dashboard" class="section">
       <div class="page-header">
         <h1>Dashboard</h1>
         <p>Surveillez et testez le service d’anonymisation en temps réel.</p>
@@ -525,7 +659,7 @@
         <div class="form-grid">
           <div class="field">
             <label for="file-workspace">Espace de travail</label>
-            <select id="file-workspace"></select>
+            <select id="file-workspace" class="workspace-select"></select>
           </div>
           <div class="field workspace-actions">
             <button class="btn btn-secondary btn-sm" data-action="createWorkspace">➕ Nouvel espace</button>
@@ -708,6 +842,19 @@
       </div>
     </section>
   </main>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <dialog id="app-dialog">
+    <form method="dialog">
+      <p id="app-dialog-message"></p>
+      <input id="app-dialog-input" type="text" class="hidden" autocomplete="off">
+      <div class="btn-row">
+        <button class="btn btn-secondary" value="cancel" formnovalidate>Annuler</button>
+        <button id="app-dialog-ok" class="btn btn-primary" value="ok">OK</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="api.js"></script>
   <script src="app.js"></script>

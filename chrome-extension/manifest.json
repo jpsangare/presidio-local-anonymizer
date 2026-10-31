@@ -14,7 +14,7 @@
     "sidePanel"
   ],
   "side_panel": {
-    "default_path": "popup.html"
+    "default_path": "app.html"
   },
   "host_permissions": [
     "http://localhost:6677/*",
