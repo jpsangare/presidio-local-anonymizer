@@ -74,4 +74,4 @@ Vous souhaitez que le programme démarre automatiquement à l’ouverture de vot
 | Le texte n’est pas masqué | Cliquez sur l’icône de l’extension et vérifiez que le bouton est ACTIVÉ ; actualisez la page (F5). |
 | Je veux voir ce qui a été masqué | Ouvrez http://localhost:6677/dashboard → onglet « Logs ». |
 
-Pour obtenir davantage d’aide : [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) • [INSTALLATION.md](INSTALLATION.md)
+Pour obtenir davantage d’aide : [Guide pour tous.md](Guide%20pour%20tous.md) • [INSTALLATION.md](INSTALLATION.md)

@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="JAK-ZACZĄĆ.md">🇫🇷 Guide en français pour tous</a> •
+  <a href="Guide%20pour%20tous.md">🇫🇷 Guide en français pour tous</a> •
   <a href="#-features">Features</a> •
   <a href="#-quick-installation">Installation</a> •
   <a href="#-how-it-works">How It Works</a> •
@@ -60,7 +60,7 @@
 
 ## 🚀 Quick Installation
 
-> **🇫🇷 GUIDE SIMPLE EN FRANÇAIS :** [JAK-ZACZĄĆ.md](JAK-ZACZĄĆ.md) - Instructions pas à pas pour tous !
+> **🇫🇷 GUIDE SIMPLE EN FRANÇAIS :** [Guide pour tous.md](Guide%20pour%20tous.md) - Instructions pas à pas pour tous !
 >
 > **📖 Full Documentation:** [INSTALLATION.md](INSTALLATION.md) - Complete step-by-step guide with troubleshooting
 

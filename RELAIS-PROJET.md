@@ -40,7 +40,7 @@ fonctionnement.html  Page vitrine FR expliquant le produit
 
 ## 4. Décisions clés prises pendant la session
 
-1. **Traduction polonais → français** de toute l'UI/doc/commentaires. Restes volontaires : motifs polonais (PESEL, NIP, REGON…), exemples de test polonais, noms de fichiers (`Uruchom-Windows.bat`, `JAK-ZACZĄĆ.md`, `PLAN-ROZWOJU.md`).
+1. **Traduction polonais → français** de toute l'UI/doc/commentaires. Restes volontaires : motifs polonais (PESEL, NIP, REGON…), exemples de test polonais, nom de fichier `Uruchom-Windows.bat` (`JAK-ZACZĄĆ.md` et `PLAN-ROZWOJU.md` sont devenus `Guide pour tous.md` et `Plan de développement.md`).
 2. **Extension en panneau latéral droit** : `sidePanel` dans le manifest, `openPanelOnActionClick`, plus de `default_popup`.
 3. **Modèles spaCy fr/en** au lieu de `pl_core_news_md` ; marqueur d'installation renommé `install-ok-fr-en.txt` pour forcer le re-téléchargement.
 4. **Détection de langue** avant analyse (`langdetect`) : n'exécute que le modèle de la langue détectée ; texte court accepté seulement si confiance ≥ 0,99 ; langue non supportée → les deux modèles. A supprimé 3 faux positifs sur 4.
