@@ -525,13 +525,18 @@ document.addEventListener('click', async (e) => {
 // Les jetons sont remplacés dans les nœuds texte (la mise en forme est conservée),
 // uniquement à l'affichage : rien n'est renvoyé au site.
 
-const TOKEN_RE = /\[[A-Z][A-Z_]*_\d+_(\d{2}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\]/g;
-// Conteneurs de message connus (ChatGPT, Claude, Gemini, Mistral, Perplexity…), sinon le bloc parent
+// Le « ] » final est facultatif : les IA l'omettent parfois en recopiant un jeton
+const TOKEN_RE = /\[[A-Z][A-Z_]*_\d+_(\d{2}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})\]?/g;
+const fullToken = token => token.endsWith(']') ? token : token + ']';
+// Conteneurs de message connus (ChatGPT, Claude, Gemini, Mistral, Perplexity…)
 const MESSAGE_SELECTOR = [
-  '[data-message-author-role]', '.font-claude-response', '[data-testid="user-message"]',
-  'message-content', '.markdown', '.prose', 'article'
+  '[data-message-author-role]', '.font-claude-response', '.font-claude-message', '[data-is-streaming]',
+  '[data-testid="user-message"]', 'model-response', 'user-query', 'message-content', '[data-message-id]',
+  '[class*="markdown"]', '.prose', 'article'
 ].join(',');
-const BLOCK_SELECTOR = 'p, li, td, pre, blockquote, div';
+// Site inconnu : on remonte des paragraphes, titres et listes jusqu'au bloc qui contient toute la réponse
+const FLOW_SELECTOR = 'p, li, td, th, pre, blockquote, h1, h2, h3, h4, h5, h6';
+const STRUCTURE_SELECTOR = 'ul, ol, li, table, thead, tbody, tr, td, th, blockquote, pre';
 // Pas de détection avant 1,5 s de calme (réponse en cours d'écriture), mais au plus
 // toutes les 4 s : ChatGPT et Claude modifient la page en continu (animations, minuteries)
 const SCAN_DELAY_MS = 1500;
@@ -544,7 +549,13 @@ let scanTimer = null;
 function messageContainerOf(node) {
   const el = node.parentElement;
   if (!el || el.closest('textarea, input, [contenteditable="true"], .masqueia-reveal')) return null;
-  return el.closest(MESSAGE_SELECTOR) || el.closest(BLOCK_SELECTOR);
+  const known = el.closest(MESSAGE_SELECTOR);
+  if (known) return known;
+  let block = el.closest(FLOW_SELECTOR);
+  if (!block) return el.closest('div');
+  while (block.parentElement?.matches(STRUCTURE_SELECTOR)) block = block.parentElement;
+  const flow = block.parentElement;
+  return flow && flow !== document.body ? flow : block;
 }
 
 function tokenTextNodes(root) {
@@ -563,10 +574,9 @@ function scanForTokens() {
     const container = messageContainerOf(node);
     if (container) messages.add(container);
   }
-  // Ne garder que les conteneurs les plus externes
+  // Ne garder que les conteneurs les plus externes : un seul bouton par réponse
   for (const message of messages) {
-    const parent = message.parentElement?.closest(MESSAGE_SELECTOR);
-    if (parent && messages.has(parent)) continue;
+    if ([...messages].some(other => other !== message && other.contains(message))) continue;
     const state = revealStates.get(message);
     if (!state) {
       addRevealButton(message);
@@ -620,7 +630,7 @@ async function resolveTokens(tokens) {
 
 async function revealOriginals(message, state) {
   const nodes = tokenTextNodes(message);
-  const tokens = new Set(nodes.flatMap(n => n.data.match(TOKEN_RE) || []));
+  const tokens = new Set(nodes.flatMap(n => (n.data.match(TOKEN_RE) || []).map(fullToken)));
   let values;
   try {
     values = await resolveTokens(tokens);
@@ -638,7 +648,7 @@ async function revealOriginals(message, state) {
   }
   state.originals = nodes.map(node => ({ node, text: node.data }));
   for (const node of nodes) {
-    node.data = node.data.replace(TOKEN_RE, token => values.get(token) ?? token);
+    node.data = node.data.replace(TOKEN_RE, token => values.get(fullToken(token)) ?? token);
   }
   state.revealed = true;
   state.button.textContent = extensionText('hideButton', currentLanguage);
