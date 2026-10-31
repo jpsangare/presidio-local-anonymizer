@@ -1,4 +1,4 @@
-# Presidio Browser Anonymizer - Chrome Extension
+# MasqueIA - Chrome Extension
 
 Chrome extension for real-time PII anonymization powered by Microsoft Presidio.
 
@@ -17,8 +17,8 @@ Chrome extension for real-time PII anonymization powered by Microsoft Presidio.
 
 ```bash
 # Clone repository
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer/backend
+git clone https://github.com/jpsangare/masqueia
+cd masqueia/backend
 
 # Create virtual environment
 python -m venv .venv
@@ -43,11 +43,11 @@ Backend will start on `http://localhost:6677`
 1. Open Chrome → `chrome://extensions/`
 2. Enable "Developer mode" (top-right corner)
 3. Click "Load unpacked"
-4. Select `/path/to/presidio-local-anonymizer/chrome-extension` folder
+4. Select `/path/to/masqueia/chrome-extension` folder
 
 #### Option B: From GitHub Releases
 
-1. Download latest `.crx` or `.zip` from [Releases](https://github.com/jpsangare/presidio-local-anonymizer/releases)
+1. Download latest `.crx` or `.zip` from [Releases](https://github.com/jpsangare/masqueia/releases)
 2. Drag & drop into `chrome://extensions/`
 
 ## Configuration
@@ -211,6 +211,6 @@ MIT
 
 ## Links
 
-- **Repository**: https://github.com/jpsangare/presidio-local-anonymizer
-- **Issues**: https://github.com/jpsangare/presidio-local-anonymizer/issues
+- **Repository**: https://github.com/jpsangare/masqueia
+- **Issues**: https://github.com/jpsangare/masqueia/issues
 - **Presidio**: https://github.com/microsoft/presidio

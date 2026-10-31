@@ -1,4 +1,4 @@
-# Backend dependencies for Presidio Browser Anonymizer
+# Backend dependencies for MasqueIA
 # Python 3.10+
 
 # Web Framework

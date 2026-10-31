@@ -5,7 +5,7 @@
 ### 1. Rechargez l’extension après toute modification
 ```
 1. Ouvrez chrome://extensions/
-2. Repérez « Presidio Browser Anonymizer ».
+2. Repérez « MasqueIA ».
 3. Cliquez sur l’icône d’actualisation (⟳) ou basculez OFF/ON.
 4. FERMEZ tous les onglets ouverts avec des sites d’IA (ChatGPT, Claude, Perplexity).
 5. Rouvrez-les (F5 ne suffit pas !)
@@ -33,7 +33,7 @@ curl -X POST http://localhost:6677/api/anonymize \
 
 ```bash
 # Ouvrez test-extension.html
-open /Users/gaca/presidio-local-anonymizer/test-extension.html
+open /Users/gaca/masqueia/test-extension.html
 ```
 
 ### Étapes du test :
@@ -62,7 +62,7 @@ open /Users/gaca/presidio-local-anonymizer/test-extension.html
 ### Si une erreur apparaît :
 1. Consultez la **background service worker console** :
    - chrome://extensions/
-   - "Presidio Browser Anonymizer" → "Inspect views: service worker"
+   - "MasqueIA" → "Inspect views: service worker"
    - Vérifiez si une erreur de communication avec le backend est affichée.
 
 ## Test 2 : ChatGPT (https://chatgpt.com)
@@ -128,7 +128,7 @@ L’extension devrait fonctionner sur TOUS les sites (<all_urls>), notamment :
    ```bash
    curl http://localhost:6677/api/health
    # S’il ne fonctionne pas : démarrez le backend
-   cd /Users/gaca/presidio-local-anonymizer/backend
+   cd /Users/gaca/masqueia/backend
    source .venv/bin/activate
    python app.py
    ```
@@ -152,7 +152,7 @@ L’extension devrait fonctionner sur TOUS les sites (<all_urls>), notamment :
 
 1. Vérifiez que l’extension est installée :
    - chrome://extensions/
-   - « Presidio Browser Anonymizer » - ACTIVÉ
+   - « MasqueIA » - ACTIVÉ
 
 2. Vérifiez que le content script est chargé :
    - DevTools → onglet « Sources »
@@ -181,7 +181,7 @@ chrome.storage.local.get(['extensionEnabled'], (result) => {
 
 ### 2. Background Service Worker Console
 - chrome://extensions/
-- "Presidio Browser Anonymizer" → "Inspect views: service worker"
+- "MasqueIA" → "Inspect views: service worker"
 - Repérez les messages commençant par `[Presidio Background]`.
 
 ### 3. Backend Logs
@@ -248,7 +248,7 @@ chrome://extensions/ → ⟳ → Fermez les onglets → Rouvrez-les
 
 ### 2. Utilisez test-extension.html pour effectuer rapidement des tests
 ```bash
-open /Users/gaca/presidio-local-anonymizer/test-extension.html
+open /Users/gaca/masqueia/test-extension.html
 ```
 
 ### 3. Consultez les trois journaux (content, background, backend)

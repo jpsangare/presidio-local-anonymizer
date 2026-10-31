@@ -1,11 +1,11 @@
 #!/bin/bash
-# Presidio Browser Anonymizer - Linux Installer
+# MasqueIA - Linux Installer
 # Installation automatique du backend pour Linux
 
 set -e  # Exit on error
 
 echo "========================================"
-echo "Presidio Browser Anonymizer"
+echo "MasqueIA"
 echo "Installation du backend pour Linux"
 echo "========================================"
 echo ""

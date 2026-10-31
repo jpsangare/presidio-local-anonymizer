@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 REM ============================================================
-REM  Presidio Browser Anonymizer - tout-en-un pour Windows
+REM  MasqueIA - tout-en-un pour Windows
 REM  Au premier lancement : installation automatique.
 REM  Aux lancements suivants : le backend démarre directement.
 REM  Il suffit de DOUBLE-CLIQUER sur ce fichier.
@@ -15,7 +15,7 @@ set "VENV_PY=%~dp0backend\.venv\Scripts\python.exe"
 set "MARKER=%~dp0backend\.venv\install-ok-fr-en.txt"
 
 echo ============================================================
-echo  Presidio Browser Anonymizer
+echo  MasqueIA
 echo ============================================================
 echo.
 

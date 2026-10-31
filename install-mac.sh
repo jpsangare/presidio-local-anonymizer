@@ -1,11 +1,11 @@
 #!/bin/bash
-# Presidio Browser Anonymizer - macOS Installer
+# MasqueIA - macOS Installer
 # Installation automatique du backend pour macOS
 
 set -e  # Exit on error
 
 echo "========================================"
-echo "Presidio Browser Anonymizer"
+echo "MasqueIA"
 echo "Installation du backend pour macOS"
 echo "========================================"
 echo ""

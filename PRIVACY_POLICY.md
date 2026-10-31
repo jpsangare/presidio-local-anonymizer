@@ -1,10 +1,10 @@
-# Privacy Policy - Presidio Browser Anonymizer
+# Privacy Policy - MasqueIA
 
 **Last updated:** November 15, 2025
 
 ## Overview
 
-Presidio Browser Anonymizer is committed to protecting your privacy. This extension processes all data **locally on your computer** and does NOT send any information to external servers.
+MasqueIA is committed to protecting your privacy. This extension processes all data **locally on your computer** and does NOT send any information to external servers.
 
 ---
 
@@ -149,7 +149,7 @@ Uninstall the extension or clear logs in dashboard.
 
 ### Right to Audit
 Full source code available on GitHub:
-https://github.com/jpsangare/presidio-local-anonymizer
+https://github.com/jpsangare/masqueia
 
 You can inspect every line of code to verify our privacy claims.
 
@@ -193,8 +193,8 @@ We may update this Privacy Policy from time to time. We will notify users of any
 
 If you have questions about this Privacy Policy:
 
-- **GitHub Issues:** https://github.com/jpsangare/presidio-local-anonymizer/issues
-- **GitHub Discussions:** https://github.com/jpsangare/presidio-local-anonymizer/discussions
+- **GitHub Issues:** https://github.com/jpsangare/masqueia/issues
+- **GitHub Discussions:** https://github.com/jpsangare/masqueia/discussions
 - **Email:** (available on GitHub profile)
 
 ---
@@ -235,4 +235,4 @@ Your privacy is our priority. That's why we built this extension to work 100% lo
 
 **Last updated:** November 15, 2025
 **Version:** 1.3.0
-**GitHub:** https://github.com/jpsangare/presidio-local-anonymizer
+**GitHub:** https://github.com/jpsangare/masqueia

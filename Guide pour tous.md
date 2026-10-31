@@ -1,6 +1,6 @@
 # 🚀 Premiers pas - Guide pour tous
 
-**Guide simple pour installer Presidio Browser Anonymizer**
+**Guide simple pour installer MasqueIA**
 *Pour les personnes sans connaissances techniques : tout est expliqué étape par étape !*
 
 > 🪟 **Vous utilisez Windows ?** C’est encore plus simple : [WINDOWS.md](WINDOWS.md) — téléchargez l’archive ZIP et double-cliquez sur un fichier. C’est tout.
@@ -41,21 +41,21 @@ Il s’agit d’une extension pour le navigateur Chrome qui **masque automatique
 1. Ouvrez l’« Invite de commandes » (CMD).
 2. Saisissez :
 ```
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 ```
 
 **Mac ou Linux :**
 1. Ouvrez le Terminal.
 2. Saisissez :
 ```bash
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 ```
 
 ### Méthode 2 : télécharger l’archive ZIP (si Git n’est pas installé)
 
-1. Accédez à https://github.com/jpsangare/presidio-local-anonymizer.
+1. Accédez à https://github.com/jpsangare/masqueia.
 2. Cliquez sur le bouton vert **« Code »**.
 3. Sélectionnez **« Download ZIP »**.
 4. Extrayez l’archive téléchargée dans un dossier, par exemple `C:\presidio\` (Windows) ou `~/presidio/` (Mac/Linux).
@@ -128,11 +128,11 @@ Le backend est le programme qui détecte et masque les données personnelles.
 
 4. **Chargez l’extension :**
    - Cliquez sur **« Charger l’extension non empaquetée »**.
-   - Sélectionnez le dossier `presidio-local-anonymizer/chrome-extension/`.
+   - Sélectionnez le dossier `masqueia/chrome-extension/`.
    - Cliquez sur « Sélectionner un dossier ».
 
 5. **C’est prêt !** ✅
-   - La fiche « Presidio Browser Anonymizer » doit apparaître.
+   - La fiche « MasqueIA » doit apparaître.
    - Si une demande d’autorisation s’affiche, cliquez sur « Autoriser ».
 
 ---
@@ -142,7 +142,7 @@ Le backend est le programme qui détecte et masque les données personnelles.
 ### Test 1 : Vérifier la connexion
 
 1. Cliquez sur l’icône des extensions dans la barre Chrome (puzzle 🧩).
-2. Repérez « Presidio Browser Anonymizer ».
+2. Repérez « MasqueIA ».
 3. Cliquez dessus.
 4. Le statut **« Status: Online »** (en vert) doit s’afficher. ✅
 5. Si le statut « Offline » (en rouge) s’affiche :
@@ -213,7 +213,7 @@ Vous pouvez consulter l’activité de l’extension :
 1. Vérifiez que le terminal avec le backend est ouvert.
 2. Sinon, relancez le backend :
    ```bash
-   cd presidio-local-anonymizer/backend
+   cd masqueia/backend
    python app.py
    ```
 3. Rechargez l’extension dans Chrome : `chrome://extensions/` → ⟳.
@@ -274,7 +274,7 @@ Vous pouvez consulter l’activité de l’extension :
 1. **Consultez le tableau de bord :** http://localhost:6677/dashboard
    - Consultez les journaux pour voir ce qui se passe.
 
-2. **Issues GitHub :** https://github.com/jpsangare/presidio-local-anonymizer/issues
+2. **Issues GitHub :** https://github.com/jpsangare/masqueia/issues
    - Décrivez le problème.
    - Ajoutez une capture d’écran.
    - Indiquez votre système (Windows/Mac/Linux).
@@ -287,22 +287,22 @@ Vous pouvez consulter l’activité de l’extension :
 
 **Windows:**
 ```cmd
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 Uruchom-Windows.bat
 ```
 
 **Mac:**
 ```bash
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 ./install-mac.sh
 ```
 
 **Linux:**
 ```bash
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 ./install-linux.sh
 ```
 
@@ -361,5 +361,5 @@ cd presidio-local-anonymizer
 <p align="center">
   <a href="README.md">Documentation technique</a> •
   <a href="AI-SITES-GUIDE.md">Guide des sites d’IA</a> •
-  <a href="https://github.com/jpsangare/presidio-local-anonymizer/issues">Signaler un problème</a>
+  <a href="https://github.com/jpsangare/masqueia/issues">Signaler un problème</a>
 </p>

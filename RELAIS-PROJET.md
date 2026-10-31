@@ -1,4 +1,4 @@
-# 🔀 Synthèse de relais — Presidio Browser Anonymizer
+# 🔀 Synthèse de relais — MasqueIA
 
 > Document de passation pour une autre IA ou un nouveau développeur.
 > Dernière mise à jour : 2026-10-29.
@@ -7,7 +7,7 @@
 
 Extension Chrome + backend Python local qui **anonymisent les données personnelles** lors d'un collage de texte (ChatGPT, Claude, Gmail…). Tout tourne en local : `http://localhost:6677`, aucune donnée ne sort de la machine.
 
-- **Dépôt distant :** `https://github.com/jpsangare/presidio-local-anonymizer` (remote `origin` déjà basculé de `gacabartosz` vers `jpsangare`).
+- **Dépôt distant :** `https://github.com/jpsangare/masqueia` (remote `origin` déjà basculé de `gacabartosz` vers `jpsangare`).
 - **Langues NLP :** français + anglais (le polonais a été remplacé — voir §4).
 - **Langue de l'UI :** français par défaut, anglais disponible.
 

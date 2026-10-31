@@ -1,4 +1,4 @@
-# Installation de Presidio Browser Anonymizer
+# Installation de MasqueIA
 
 Guide complet pour installer l’extension Chrome et le backend.
 
@@ -19,8 +19,8 @@ Guide complet pour installer l’extension Chrome et le backend.
 
 1. **Téléchargez le projet** (avec Git ou via le bouton vert `Code` → `Download ZIP`, puis extrayez l’archive) :
    ```cmd
-   git clone https://github.com/jpsangare/presidio-local-anonymizer
-   cd presidio-local-anonymizer
+   git clone https://github.com/jpsangare/masqueia
+   cd masqueia
    ```
 
 2. **Double-cliquez sur `Uruchom-Windows.bat`** — au premier lancement, tout est installé (y compris Python s’il est absent), puis le backend démarre et le tableau de bord s’ouvre
@@ -31,8 +31,8 @@ Guide complet pour installer l’extension Chrome et le backend.
 
 1. **Téléchargez le projet :**
    ```bash
-   git clone https://github.com/jpsangare/presidio-local-anonymizer
-   cd presidio-local-anonymizer
+   git clone https://github.com/jpsangare/masqueia
+   cd masqueia
    ```
 
 2. **Lancez l’installateur :**
@@ -58,8 +58,8 @@ Guide complet pour installer l’extension Chrome et le backend.
 
 2. **Téléchargez le projet :**
    ```bash
-   git clone https://github.com/jpsangare/presidio-local-anonymizer
-   cd presidio-local-anonymizer
+   git clone https://github.com/jpsangare/masqueia
+   cd masqueia
    ```
 
 3. **Lancez l’installateur :**
@@ -80,12 +80,12 @@ Guide complet pour installer l’extension Chrome et le backend.
 1. Ouvrez Chrome et saisissez `chrome://extensions/` dans la barre d’adresse.
 2. Activez le **« Mode développeur »** (interrupteur en haut à droite).
 3. Cliquez sur **« Charger l’extension non empaquetée »**.
-4. Sélectionnez le dossier : `/path/to/presidio-local-anonymizer/chrome-extension`
+4. Sélectionnez le dossier : `/path/to/masqueia/chrome-extension`
 5. L’extension est chargée !
 
 #### Option B : À partir du fichier CRX (production)
 
-1. Téléchargez le fichier `.crx` depuis [GitHub Releases](https://github.com/jpsangare/presidio-local-anonymizer/releases).
+1. Téléchargez le fichier `.crx` depuis [GitHub Releases](https://github.com/jpsangare/masqueia/releases).
 2. Faites glisser le fichier dans `chrome://extensions/`.
 3. Cliquez sur « Ajouter l’extension ».
 
@@ -263,7 +263,7 @@ pip install https://github.com/explosion/spacy-models/releases/download/fr_core_
 ### Mise à jour du backend
 
 ```bash
-cd presidio-local-anonymizer
+cd masqueia
 git pull origin main
 
 cd backend
@@ -289,7 +289,7 @@ pip install -r requirements.txt --upgrade
 2. Sélectionnez Create Basic Task → « Presidio Backend ».
 3. Déclencheur : « When I log on ».
 4. Action : « Start a program ».
-5. Programme : `C:\path\to\presidio-local-anonymizer\Uruchom-Windows.bat`
+5. Programme : `C:\path\to\masqueia\Uruchom-Windows.bat`
 
 ### macOS (launchd)
 
@@ -304,7 +304,7 @@ Créez le fichier `~/Library/LaunchAgents/com.presidio.backend.plist` :
     <string>com.presidio.backend</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/path/to/presidio-local-anonymizer/install-mac.sh</string>
+        <string>/path/to/masqueia/install-mac.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -323,12 +323,12 @@ Créez le fichier `~/.config/systemd/user/presidio-backend.service` :
 
 ```ini
 [Unit]
-Description=Presidio Browser Anonymizer Backend
+Description=MasqueIA Backend
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/path/to/presidio-local-anonymizer/install-linux.sh
+ExecStart=/path/to/masqueia/install-linux.sh
 Restart=on-failure
 
 [Install]
@@ -371,7 +371,7 @@ Oui ! Elle fonctionne avec tous les navigateurs basés sur Chromium :
 
 ## Aide et assistance
 
-- **Issues GitHub :** https://github.com/jpsangare/presidio-local-anonymizer/issues
+- **Issues GitHub :** https://github.com/jpsangare/masqueia/issues
 - **Documentation Chrome :** chrome-extension/README.md
 - **Documentation du backend :** backend/README.md
 

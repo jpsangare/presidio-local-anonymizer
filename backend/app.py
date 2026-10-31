@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Presidio Browser Anonymizer - Backend API Server
+MasqueIA - Backend API Server
 Localhost service for real-time text anonymization in browser
 
 Author: Bartosz Gaca
@@ -152,7 +152,7 @@ def main():
     port = PORT
 
     logger.info("=" * 60)
-    logger.info("Presidio Browser Anonymizer - Backend Service")
+    logger.info("MasqueIA - Backend Service")
     logger.info("=" * 60)
     logger.info(f"🌐 Backend URL: http://localhost:{port} (IPv4 + IPv6 loopback)")
     if DEV_MODE:

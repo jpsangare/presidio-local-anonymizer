@@ -218,7 +218,7 @@ APRÈS COLLAGE (anonymisation automatique) :
    ```
 2. S’il ne fonctionne pas, démarrez-le :
    ```bash
-   cd /Users/gaca/presidio-local-anonymizer/backend
+   cd /Users/gaca/masqueia/backend
    source .venv/bin/activate
    python app.py
    ```
@@ -312,7 +312,7 @@ curl http://localhost:6677/api/health
 
 La réponse attendue est :
 ```json
-{"service":"presidio-browser-anonymizer","status":"healthy","version":"1.0.0"}
+{"service":"masqueia","status":"healthy","version":"1.0.0"}
 ```
 
 ---

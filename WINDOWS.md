@@ -12,10 +12,10 @@ Lorsque vous collez dans ChatGPT, Claude ou Gmail un texte contenant des donnée
 
 ## Étape 1 : Télécharger le programme (2 minutes)
 
-1. Accédez à **https://github.com/jpsangare/presidio-local-anonymizer**.
+1. Accédez à **https://github.com/jpsangare/masqueia**.
 2. Cliquez sur le bouton vert **« Code »**, puis sur **« Download ZIP »**.
 3. Ouvrez le dossier **Téléchargements**, faites un clic droit sur l’archive téléchargée, puis choisissez **« Extraire tout… »** → **« Extraire »**.
-4. Le dossier `presidio-local-anonymizer-main` s’ouvre. Laissez-le ouvert.
+4. Le dossier `masqueia-main` s’ouvre. Laissez-le ouvert.
 
 > 💡 **Conseil :** déplacez ce dossier, par exemple dans `Documents`, pour éviter de le supprimer par inadvertance. Le programme s’exécute depuis ce dossier.
 

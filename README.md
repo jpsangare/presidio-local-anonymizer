@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/logo-banner.svg" alt="Presidio Browser Anonymizer" width="600"/>
+  <img src="assets/logo-banner.svg" alt="MasqueIA" width="600"/>
 </p>
 
-<h1 align="center">🔐 Presidio Browser Anonymizer</h1>
+<h1 align="center">🔐 MasqueIA</h1>
 
 <p align="center">
   <strong>Chrome Extension + Local Backend - Auto-anonymize PII when pasting text!</strong>
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/jpsangare/presidio-local-anonymizer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/jpsangare/masqueia/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python"></a>
   <img src="https://img.shields.io/badge/chrome-extension-brightgreen.svg" alt="Chrome Extension">
   <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
@@ -76,23 +76,23 @@
 
 Or via git:
 ```cmd
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 Uruchom-Windows.bat
 ```
 
 #### macOS
 ```bash
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 chmod +x install-mac.sh
 ./install-mac.sh
 ```
 
 #### Linux
 ```bash
-git clone https://github.com/jpsangare/presidio-local-anonymizer
-cd presidio-local-anonymizer
+git clone https://github.com/jpsangare/masqueia
+cd masqueia
 chmod +x install-linux.sh
 ./install-linux.sh
 ```
@@ -298,7 +298,7 @@ python app.py
 
 Then reload extension:
 1. Open `chrome://extensions/`
-2. Find "Presidio Browser Anonymizer"
+2. Find "MasqueIA"
 3. Click 🔄 **Reload** button
 
 ### Text not anonymizing on paste
@@ -333,7 +333,7 @@ Then reload extension:
 ## 📦 Project Structure
 
 ```
-presidio-local-anonymizer/
+masqueia/
 ├── backend/                    # Flask API (localhost:6677)
 │   ├── app.py                 # Main server
 │   ├── api/                   # REST endpoints
@@ -448,7 +448,7 @@ presidio-local-anonymizer/
 
 **Create alias in `.bashrc` or `.zshrc`:**
 ```bash
-alias presidio='cd /path/to/presidio-local-anonymizer/backend && source .venv/bin/activate && python app.py'
+alias presidio='cd /path/to/masqueia/backend && source .venv/bin/activate && python app.py'
 ```
 
 Then just: `presidio` 🚀
@@ -506,8 +506,8 @@ For sensitive data, consider additional security measures.
 
 **Need help?**
 - 📖 [Documentation](INSTALLATION.md) - Start here
-- 🐛 [GitHub Issues](https://github.com/jpsangare/presidio-local-anonymizer/issues) - Report bugs
-- 💬 [GitHub Discussions](https://github.com/jpsangare/presidio-local-anonymizer/discussions) - Ask questions
+- 🐛 [GitHub Issues](https://github.com/jpsangare/masqueia/issues) - Report bugs
+- 💬 [GitHub Discussions](https://github.com/jpsangare/masqueia/discussions) - Ask questions
 - 📊 [Dashboard](http://localhost:6677/dashboard) - Service status and logs
 
 **Star this repo** if you find it useful! ⭐

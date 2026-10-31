@@ -5,7 +5,7 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1p9qhDKgb/nL6m4qRxlDqrdZFBuJN6pJZRSb4W6RUNfi1lPrk8F+4X+82PhNuz/MnzB8AtOaaCg2CM5k9rphBcmEesHJBF1w2maQV78k5nd/ba7f8VjKWymD1BER1iHkU9P1ZigDneMqUADbsln1J5QXlUT+DTIuTZWeJyk0Qf8cGBvww4nR8WA9XEby0w0W5B7Wt3wqdH7gOzL7C6dECfs15KPahIhL6OnRY4G+fGaS5IkpKnhPRJ8ALd+Az0QKcLGEYcKnQ7Q0/nFM787pvQsBSPEMwaKw2774QvFN66uq5rSkTs3O7meLj3FJXiqHdAl5H8uaqoeY593n19SE/QIDAQAB",
   "description": "Anonymise automatiquement vos données personnelles avant de les coller dans une IA. Détecte e-mails, téléphones, NIR, IBAN, cartes bancaires et plus. Fonctionne avec ChatGPT, Claude, Gmail.",
   "author": "jpmsangare",
-  "homepage_url": "https://github.com/jpsangare/presidio-local-anonymizer",
+  "homepage_url": "https://github.com/jpsangare/masqueia",
   "permissions": [
     "activeTab",
     "storage",

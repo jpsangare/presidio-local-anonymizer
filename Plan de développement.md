@@ -1,6 +1,6 @@
 # 📋 Plan de développement, d’amélioration et de maintenance
 
-**Presidio Browser Anonymizer** — état en juillet 2026, version 1.4.0.
+**MasqueIA** — état en juillet 2026, version 1.4.0.
 Ce document fait référence pour l’orientation du projet. Mettez-le à jour à chaque version.
 
 ---

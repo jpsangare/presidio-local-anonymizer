@@ -1,4 +1,4 @@
-// Content script for Presidio Browser Anonymizer
+// Content script for MasqueIA
 
 let extensionEnabled = true;
 let currentLanguage = DEFAULT_UI_LANGUAGE;

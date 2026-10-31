@@ -70,7 +70,7 @@
 
 ```
 1. Ouvrez : chrome://extensions/
-2. Repérez « Presidio Browser Anonymizer ».
+2. Repérez « MasqueIA ».
 3. Cliquez sur l’icône d’actualisation ⟳ (ou basculez OFF → ON).
 4. FERMEZ tous les onglets ChatGPT/Claude/Perplexity.
 5. Rouvrez-les (F5 ne suffit pas !).
@@ -88,10 +88,10 @@
 
 ```bash
 # Ouvrez la page de test
-open /Users/gaca/presidio-local-anonymizer/test-extension.html
+open /Users/gaca/masqueia/test-extension.html
 
 # Ou dans le terminal :
-cd /Users/gaca/presidio-local-anonymizer
+cd /Users/gaca/masqueia
 open test-extension.html
 ```
 
@@ -182,7 +182,7 @@ Guide complet sur l’anonymisation sur les sites d’IA :
 - Troubleshooting.
 
 ```bash
-cat /Users/gaca/presidio-local-anonymizer/AI-SITES-GUIDE.md
+cat /Users/gaca/masqueia/AI-SITES-GUIDE.md
 ```
 
 ### 2. **TESTING.md**
@@ -192,13 +192,13 @@ Instructions détaillées pour les tests :
 - Déboguer les problèmes.
 
 ```bash
-cat /Users/gaca/presidio-local-anonymizer/TESTING.md
+cat /Users/gaca/masqueia/TESTING.md
 ```
 
 ### 3. **test-extension.html**
 Page de test locale :
 ```bash
-open /Users/gaca/presidio-local-anonymizer/test-extension.html
+open /Users/gaca/masqueia/test-extension.html
 ```
 
 ---
@@ -214,7 +214,7 @@ curl http://localhost:6677/api/health
 
 S’il ne fonctionne pas :
 ```bash
-cd /Users/gaca/presidio-local-anonymizer/backend
+cd /Users/gaca/masqueia/backend
 source .venv/bin/activate
 python app.py
 ```

@@ -1,6 +1,6 @@
 # Extension Icons
 
-This directory contains the icons for the Presidio Browser Anonymizer Chrome extension.
+This directory contains the icons for the MasqueIA Chrome extension.
 
 ## Files
 

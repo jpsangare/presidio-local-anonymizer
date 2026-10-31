@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 REM ============================================================
-REM  Presidio Browser Anonymizer - démarrage automatique sous Windows
+REM  MasqueIA - démarrage automatique sous Windows
 REM  Double-cliquez : le backend démarrera en arrière-plan
 REM  à chaque démarrage de l’ordinateur.
 REM  Double-cliquez à nouveau pour désactiver le démarrage automatique.
